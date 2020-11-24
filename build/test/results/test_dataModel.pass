@@ -1,0 +1,22 @@
+---
+:source:
+  :path: test/core
+  :file: test_dataModel.c
+:successes:
+- :test: test_DataSet_Create
+  :line: 12
+  :message: ''
+  :unity_test_time: 0
+- :test: test_getValue
+  :line: 19
+  :message: ''
+  :unity_test_time: 0
+:failures: []
+:ignores: []
+:counts:
+  :total: 2
+  :passed: 2
+  :failed: 0
+  :ignored: 0
+:stdout: []
+:time: 0.0009417999990546377

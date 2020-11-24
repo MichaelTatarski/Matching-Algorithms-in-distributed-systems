@@ -32,6 +32,6 @@ DataSet dataSet_Create(int id, int value, int errorcode);
  * @param key key to which the value should be returned.
  * @return value of the given key.
  */
-int *getValue(DataSet dataset, key key);
+int dataSet_getValue(DataSet dataset, key key);
 
 #endif // DATAMODEL_H

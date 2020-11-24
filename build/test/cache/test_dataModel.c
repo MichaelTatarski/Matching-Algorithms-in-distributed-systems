@@ -43,19 +43,19 @@ void test_getValue(void)
 
     DataSet newDataSet = dataSet_Create(1, 2, 3);
 
-    UnityAssertEqualNumber((UNITY_INT)((1)), (UNITY_INT)((getValue(newDataSet, ID))), (
+    UnityAssertEqualNumber((UNITY_INT)((1)), (UNITY_INT)((dataSet_getValue(newDataSet, ID))), (
 
    ((void *)0)
 
    ), (UNITY_UINT)(22), UNITY_DISPLAY_STYLE_INT);
 
-    UnityAssertEqualNumber((UNITY_INT)((2)), (UNITY_INT)((getValue(newDataSet, VALUE))), (
+    UnityAssertEqualNumber((UNITY_INT)((2)), (UNITY_INT)((dataSet_getValue(newDataSet, VALUE))), (
 
    ((void *)0)
 
    ), (UNITY_UINT)(23), UNITY_DISPLAY_STYLE_INT);
 
-    UnityAssertEqualNumber((UNITY_INT)((3)), (UNITY_INT)((getValue(newDataSet, ERRORCODE))), (
+    UnityAssertEqualNumber((UNITY_INT)((3)), (UNITY_INT)((dataSet_getValue(newDataSet, ERRORCODE))), (
 
    ((void *)0)
 
