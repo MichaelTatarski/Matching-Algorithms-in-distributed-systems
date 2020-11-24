@@ -1,0 +1,9 @@
+---
+src/core/bruteForceAlgorithm.c:
+- TEST
+src/core/dataModel.c:
+- TEST
+src/core/filterModel.c:
+- TEST
+src/core/predicateCountingAlgorithm.c:
+- TEST

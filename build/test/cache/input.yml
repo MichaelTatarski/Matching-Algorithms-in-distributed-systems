@@ -207,9 +207,11 @@
   :enabled:
   - stdout_pretty_tests_report
   - module_generator
+  - xml_tests_report
   :display_raw_test_results: false
   :stdout_pretty_tests_report_path: "/home/michael/.rbenv/versions/2.7.2/lib/ruby/gems/2.7.0/gems/ceedling-0.30.0/lib/../plugins/stdout_pretty_tests_report"
   :module_generator_path: "/home/michael/.rbenv/versions/2.7.2/lib/ruby/gems/2.7.0/gems/ceedling-0.30.0/lib/../plugins/module_generator"
+  :xml_tests_report_path: "/home/michael/.rbenv/versions/2.7.2/lib/ruby/gems/2.7.0/gems/ceedling-0.30.0/lib/../plugins/xml_tests_report"
 :gcov:
   :reports:
   - HtmlDetailed
