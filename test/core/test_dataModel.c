@@ -1,5 +1,4 @@
 #include "unity.h"
-
 #include "dataModel.h"
 
 void setUp(void)
@@ -10,7 +9,17 @@ void tearDown(void)
 {
 }
 
-void test_dataModel_NeedToImplement(void)
+void test_DataSet_Create(void)
 {
-    TEST_IGNORE_MESSAGE("Need to Implement dataModel");
+    int simple_array[3] = {1, 2, 3};
+    DataSet correspondingDataSet = dataSet_Create(simple_array[0], simple_array[1], simple_array[2]);
+    TEST_ASSERT_EQUAL_INT_ARRAY(simple_array, correspondingDataSet->lookupArray, 3);
+}
+
+void test_getValue(void)
+{
+    DataSet newDataSet = dataSet_Create(1, 2, 3);
+    TEST_ASSERT_EQUAL_INT(1, getValue(newDataSet, ID));
+    TEST_ASSERT_EQUAL_INT(2, getValue(newDataSet, VALUE));
+    TEST_ASSERT_EQUAL_INT(3, getValue(newDataSet, ERRORCODE));
 }

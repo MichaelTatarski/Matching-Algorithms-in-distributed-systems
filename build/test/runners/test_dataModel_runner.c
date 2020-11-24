@@ -10,7 +10,8 @@ char* GlobalOrderError;
 /*=======External Functions This Runner Calls=====*/
 extern void setUp(void);
 extern void tearDown(void);
-extern void test_dataModel_NeedToImplement(void);
+extern void test_DataSet_Create(void);
+extern void test_getValue(void);
 
 
 /*=======Mock Management=====*/
@@ -75,7 +76,8 @@ static void run_test(UnityTestFunction func, const char* name, int line_num)
 int main(void)
 {
   UnityBegin("test_dataModel.c");
-  run_test(test_dataModel_NeedToImplement, "test_dataModel_NeedToImplement", 13);
+  run_test(test_DataSet_Create, "test_DataSet_Create", 12);
+  run_test(test_getValue, "test_getValue", 19);
 
   return UnityEnd();
 }

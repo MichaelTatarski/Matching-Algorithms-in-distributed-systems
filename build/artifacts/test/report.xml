@@ -1,24 +1,18 @@
 <?xml version='1.0' encoding='utf-8' ?>
 <TestRun>
 	<FailedTests/>
-	<SuccessfulTests/>
-	<IgnoredTests>
+	<SuccessfulTests>
 		<Test id="1">
-			<Name>test/core/test_bruteForceAlgorithm.c::test_bruteForceAlgorithm_NeedToImplement</Name>
+			<Name>test/core/test_dataModel.c::test_DataSet_Create</Name>
 		</Test>
 		<Test id="2">
-			<Name>test/core/test_dataModel.c::test_dataModel_NeedToImplement</Name>
+			<Name>test/core/test_dataModel.c::test_getValue</Name>
 		</Test>
-		<Test id="3">
-			<Name>test/core/test_filterModel.c::test_filterModel_NeedToImplement</Name>
-		</Test>
-		<Test id="4">
-			<Name>test/core/test_predicateCountingAlgorithm.c::test_predicateCountingAlgorithm_NeedToImplement</Name>
-		</Test>
-	</IgnoredTests>
+	</SuccessfulTests>
+	<IgnoredTests/>
 	<Statistics>
-		<Tests>4</Tests>
-		<Ignores>4</Ignores>
+		<Tests>2</Tests>
+		<Ignores>0</Ignores>
 		<FailuresTotal>0</FailuresTotal>
 		<Errors>0</Errors>
 		<Failures>0</Failures>
