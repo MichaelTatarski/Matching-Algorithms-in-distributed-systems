@@ -8,7 +8,7 @@ typedef enum
     ID,
     VALUE,
     ERRORCODE
-} key;
+} Key;
 
 typedef struct
 {
@@ -32,6 +32,6 @@ DataSet dataSet_Create(int id, int value, int errorcode);
  * @param key key to which the value should be returned.
  * @return value of the given key.
  */
-int dataSet_getValue(DataSet dataset, key key);
+int dataSet_getValue(DataSet dataSet, Key key);
 
 #endif // DATAMODEL_H

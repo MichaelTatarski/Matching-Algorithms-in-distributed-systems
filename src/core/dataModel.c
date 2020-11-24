@@ -10,7 +10,7 @@ DataSet dataSet_Create(int id, int value, int errorcode)
     return newDataSet;
 }
 
-int dataSet_getValue(DataSet dataset, key key)
+int dataSet_getValue(DataSet dataSet, Key key)
 {
-    return dataset->lookupArray[key];
+    return dataSet->lookupArray[key];
 }
