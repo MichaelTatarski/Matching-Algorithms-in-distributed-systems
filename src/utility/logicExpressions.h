@@ -1,10 +1,11 @@
-#ifndef LOGIC_OPERATORS_H
-#define LOGIC_OPERATORS_H
+#ifndef LOGIC_EXPRESSIONS_H
+#define LOGIC_EXPRESSIONS_H
 
 typedef enum
 {
     AND,
     OR,
+    FIRST_EXPRESSION
 
 } BooleanOperator;
 
@@ -18,4 +19,4 @@ typedef enum
 
 } ConstraintOperator;
 
-#endif // LOGIC_OPERATORS_H
+#endif // LOGIC_EXPRESSIONS_H

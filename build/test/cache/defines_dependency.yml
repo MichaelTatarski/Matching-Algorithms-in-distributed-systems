@@ -7,3 +7,5 @@ src/core/filterModel.c:
 - TEST
 src/core/predicateCountingAlgorithm.c:
 - TEST
+src/utility/filterList.c:
+- TEST

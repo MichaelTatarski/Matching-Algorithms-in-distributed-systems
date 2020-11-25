@@ -1,24 +1,21 @@
 #include <stdlib.h>
 #include "filterModel.h"
+#include "../utility/filterList.h"
 
-KeyConstraint *keyConstrain_Create(Key key, ConstraintOperator constrainOperator, int constrainValue)
-{
-    KeyConstraint *newKeyConstraint = malloc(sizeof(KeyConstraint));
-    newKeyConstraint->key = key;
-    newKeyConstraint->constraintOperator = constrainOperator;
-    newKeyConstraint->constrainValue = constrainValue;
-    return &newKeyConstraint;
-}
+FilterList *filterList;
 
-Filter *filter_Create(Key key, ConstraintOperator constraintOperator, int constrainValue)
+void *filter_Create(Key key, ConstraintOperator constrainOperator, int constrainValue, BooleanOperator booleanOperator)
 {
-    KeyConstraint *newKeyConstraint = keyConstrain_Create(key, constraintOperator, constrainValue);
-    Filter *newFilter = malloc(sizeof(Filter));
-    newFilter->keyConstraint = newKeyConstraint;
-    newFilter->BooleanOperator = NULL;
-    newFilter->next = NULL;
-}
+    if (filterList == NULL)
+    {
+        FilterList *filterList = make_filterList();
+    }
 
-Filter *filter_AddAdditionalConstrainToFilter(Filter filter, BooleanOperator booleanOperator, Key key, ConstraintOperator constrainOperator, int constrainValue)
-{
+    KeyFilter *newKeyFilter = malloc(sizeof(KeyFilter));
+    newKeyFilter->key = key;
+    newKeyFilter->constraintOperator = constrainOperator;
+    newKeyFilter->constraintValue = constrainValue;
+    newKeyFilter->next = NULL;
+    newKeyFilter->booleanOperator = booleanOperator;
+    List_add(*newKeyFilter, filterList);
 }

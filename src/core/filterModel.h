@@ -2,26 +2,26 @@
 #define FILTERMODEL_H
 
 #include "keys.h"
-#include "../utility/logicOperators.h"
+#include "../utility/logicExpressions.h"
 
-typedef struct
+typedef struct FilterNode
 {
     Key key;
     ConstraintOperator constraintOperator;
-    int constrainValue;
+    int constraintValue;
+    BooleanOperator booleanOperator;
+    struct FilterNode *next;
 
-} KeyConstraint;
+} FilterNode;
 
 typedef struct
 {
-    KeyConstraint *keyConstraint;
-    BooleanOperator BooleanOperator;
-    KeyConstraint *next;
+    FilterNode *head;
 
 } Filter;
 
-Filter *filter_Create(Key key, ConstraintOperator constrainOperator, int constrainValue);
+void *filter_Create(Key key, ConstraintOperator constrainOperator, int constrainValue, BooleanOperator booleanOperator);
 
-Filter *filter_AddAdditionalConstraintToFilter(Filter filter, BooleanOperator booleanOperator, Key key, ConstraintOperator constrainOperator, int constrainValue);
+void *filter_AddConstraintToFilter(FilterNode filterNode, BooleanOperator booleanOperator, Key key, ConstraintOperator constraintOperator, int constrainValue);
 
 #endif // FILTERMODEL_H

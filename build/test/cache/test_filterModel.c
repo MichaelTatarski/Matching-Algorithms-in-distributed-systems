@@ -1,5 +1,6 @@
 #include "build/temp/_test_filterModel.c"
-#include "src/core/filterModel.h"
+#include "src/utility/../utility/../core/filterModel.h"
+#include "src/utility/../utility/filterList.h"
 #include "/home/michael/.rbenv/versions/2.7.2/lib/ruby/gems/2.7.0/gems/ceedling-0.30.0/vendor/unity/src/unity.h"
 
 
@@ -21,10 +22,12 @@ void tearDown(void)
 
 
 
-void test_filterModel_NeedToImplement(void)
+void test_List_filter_Create(void)
 
 {
 
-    UnityIgnore( (("Need to Implement filterModel")), (UNITY_UINT)(15));
+    KeyFilter *newKeyFilter = filter_Create(ID, GREATER_THAN, 10);
+
+    printf("%d", newKeyFilter->constraintValue);
 
 }

@@ -5,7 +5,7 @@
 
 typedef struct
 {
-    Filter *filter;
+    Filter *keyFilter;
     Filter *next;
 
 } Node;
@@ -16,7 +16,8 @@ typedef struct
 
 } FilterList;
 
-void List_add(Filter filter, FilterList *filterList);
-void List_delete(Filter filter, FilterList *filterList);
+FilterList *make_filterList();
+void filter_add(Filter filter, FilterList *filterList);
+void filter_delete(Filter filter, FilterList *filterList);
 
 #endif // FILTER_LIST_H
