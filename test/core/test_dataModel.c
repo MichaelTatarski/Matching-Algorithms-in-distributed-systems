@@ -11,9 +11,9 @@ void tearDown(void)
 
 void test_DataSet_Create(void)
 {
-    int simple_array[3] = {1, 2, 3};
-    DataSet correspondingDataSet = dataSet_Create(simple_array[0], simple_array[1], simple_array[2]);
-    TEST_ASSERT_EQUAL_INT_ARRAY(simple_array, correspondingDataSet->lookupArray, 3);
+    int simpleArray[3] = {1, 2, 3};
+    DataSet correspondingDataSet = dataSet_Create(simpleArray[0], simpleArray[1], simpleArray[2]);
+    TEST_ASSERT_EQUAL_INT_ARRAY(simpleArray, correspondingDataSet->lookupArray, 3);
 }
 
 void test_getValue(void)

@@ -23,11 +23,11 @@ void test_DataSet_Create(void)
 
 {
 
-    int simple_array[3] = {1, 2, 3};
+    int simpleArray[3] = {1, 2, 3};
 
-    DataSet correspondingDataSet = dataSet_Create(simple_array[0], simple_array[1], simple_array[2]);
+    DataSet correspondingDataSet = dataSet_Create(simpleArray[0], simpleArray[1], simpleArray[2]);
 
-    UnityAssertEqualIntArray(( const void*)((simple_array)), ( const void*)((correspondingDataSet->lookupArray)), (UNITY_UINT32)((3)), (
+    UnityAssertEqualIntArray(( const void*)((simpleArray)), ( const void*)((correspondingDataSet->lookupArray)), (UNITY_UINT32)((3)), (
 
    ((void *)0)
 
