@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "filterList.h"
 #include "../core/filterModel.h"
 
 Node *createnode(Filter filter)
 {
     Node *newNode = malloc(sizeof(Node));
-    newNode->keyFilter = &filter;
+    newNode->filter = &filter;
     newNode->next = NULL;
     return newNode;
 }
@@ -42,7 +43,7 @@ void filter_delete(Filter filter, FilterList *filterList)
     Node *previous = current;
     while (current != NULL)
     {
-        if (current->keyFilter == &filter)
+        if (current->filter == &filter)
         {
             previous->next = current->next;
             if (current == filterList->head)

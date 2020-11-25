@@ -1,5 +1,4 @@
 #include "unity.h"
-
 #include "bruteForceAlgorithm.h"
 
 void setUp(void)

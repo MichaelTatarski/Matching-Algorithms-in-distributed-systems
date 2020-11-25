@@ -5,7 +5,7 @@
 
 typedef struct
 {
-    Filter *keyFilter;
+    Filter *filter;
     Filter *next;
 
 } Node;

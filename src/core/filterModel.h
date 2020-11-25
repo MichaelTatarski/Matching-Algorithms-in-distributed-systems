@@ -4,24 +4,24 @@
 #include "keys.h"
 #include "../utility/logicExpressions.h"
 
-typedef struct FilterNode
+typedef struct KeyConstraint
 {
     Key key;
     ConstraintOperator constraintOperator;
     int constraintValue;
     BooleanOperator booleanOperator;
-    struct FilterNode *next;
+    struct KeyConstraint *next;
 
-} FilterNode;
+} KeyConstraint;
 
 typedef struct
 {
-    FilterNode *head;
+    KeyConstraint *head;
 
 } Filter;
 
-void *filter_Create(Key key, ConstraintOperator constrainOperator, int constrainValue, BooleanOperator booleanOperator);
+void *KeyConstraint_Create(Key key, ConstraintOperator constrainOperator, int constrainValue);
 
-void *filter_AddConstraintToFilter(FilterNode filterNode, BooleanOperator booleanOperator, Key key, ConstraintOperator constraintOperator, int constrainValue);
+void *KeyConstraint_AddConstraintToFilter(KeyConstraint keyConstraint, BooleanOperator booleanOperator, Key key, ConstraintOperator constraintOperator, int constraintValue);
 
 #endif // FILTERMODEL_H

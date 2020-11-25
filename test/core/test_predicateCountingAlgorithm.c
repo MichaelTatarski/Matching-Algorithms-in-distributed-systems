@@ -1,5 +1,4 @@
 #include "unity.h"
-
 #include "predicateCountingAlgorithm.h"
 
 void setUp(void)

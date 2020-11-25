@@ -75,7 +75,7 @@ static void run_test(UnityTestFunction func, const char* name, int line_num)
 int main(void)
 {
   UnityBegin("test_filterModel.c");
-  run_test(test_List_filter_Create, "test_List_filter_Create", 14);
+  run_test(test_List_filter_Create, "test_List_filter_Create", 13);
 
   return UnityEnd();
 }
