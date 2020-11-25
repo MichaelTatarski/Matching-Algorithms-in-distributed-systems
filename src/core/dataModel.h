@@ -1,18 +1,15 @@
 #ifndef DATAMODEL_H
 #define DATAMODEL_H
 
-#define LOOKUPARRAY_SIZE 3
+#include "keys.h"
 
-typedef enum
-{
-    ID,
-    VALUE,
-    ERRORCODE
-} Key;
+/**equals the number of possible keys.*/
+#define LOOKUPARRAY_SIZE 3
 
 typedef struct
 {
     int lookupArray[LOOKUPARRAY_SIZE];
+
 } * DataSet;
 
 /**
