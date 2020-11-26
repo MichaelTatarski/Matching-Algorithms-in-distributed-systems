@@ -75,7 +75,7 @@ static void run_test(UnityTestFunction func, const char* name, int line_num)
 int main(void)
 {
   UnityBegin("test_predicateCountingAlgorithm.c");
-  run_test(test_predicateCountingAlgorithm_NeedToImplement, "test_predicateCountingAlgorithm_NeedToImplement", 13);
+  run_test(test_predicateCountingAlgorithm_NeedToImplement, "test_predicateCountingAlgorithm_NeedToImplement", 12);
 
   return UnityEnd();
 }

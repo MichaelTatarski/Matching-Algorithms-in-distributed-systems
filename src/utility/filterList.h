@@ -10,14 +10,7 @@ typedef struct Node
 
 } Node;
 
-typedef struct FilterList
-{
-    Node *head;
-
-} FilterList;
-
-FilterList *make_filterList();
-void filterList_add(Filter filter, FilterList *filterList);
-void filterList_delete(Filter filter, FilterList *filterList);
+void filterList_add(Filter filter, Node *filterList);
+void filterList_delete(Filter filter, Node *filterList);
 
 #endif // FILTER_LIST_H

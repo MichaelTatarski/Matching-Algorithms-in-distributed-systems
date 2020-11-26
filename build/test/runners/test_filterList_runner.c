@@ -75,7 +75,7 @@ static void run_test(UnityTestFunction func, const char* name, int line_num)
 int main(void)
 {
   UnityBegin("test_filterList.c");
-  run_test(test_filterList_add, "test_filterList_add", 13);
+  run_test(test_filterList_add, "test_filterList_add", 12);
 
   return UnityEnd();
 }

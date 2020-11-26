@@ -20,7 +20,7 @@ typedef struct Filter
 
 } Filter;
 
-Filter *filter_Create(Key key, ConstraintOperator constraintOperator, int constraintValue);
+Filter *filter_Create();
 
 void filter_AddConstraintToFilter(Filter *filter, Key key, ConstraintOperator constraintOperator, int constraintValue, BooleanOperator booleanOperator);
 

@@ -1,6 +1,5 @@
 #include "build/temp/_test_filterList.c"
 #include "src/utility/filterList.h"
-#include "src/utility/../core/filterModel.h"
 #include "/home/michael/.rbenv/versions/2.7.2/lib/ruby/gems/2.7.0/gems/ceedling-0.30.0/vendor/unity/src/unity.h"
 
 
@@ -24,16 +23,14 @@ void test_filterList_add(void)
 
 {
 
-    Filter *testFilter;
-
-    testFilter->head = 
+    Node *filterList = 
 
                       ((void *)0)
 
                           ;
 
-    FilterList *testFilterList = make_filterList();
+    Filter testFilter;
 
-    filterList_add(*testFilter, testFilterList);
+    filterList_add(testFilter, filterList);
 
 }

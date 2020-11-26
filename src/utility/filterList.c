@@ -12,23 +12,16 @@ Node *createnode(Filter filter)
     return newNode;
 }
 
-FilterList *make_filterList()
-{
-    FilterList *filterList = malloc(sizeof(FilterList));
-    filterList->head = NULL;
-    return filterList;
-}
-
-void filterList_add(Filter filter, FilterList *filterList)
+void filterList_add(Filter filter, Node *filterList)
 {
     Node *current = NULL;
-    if (filterList->head == NULL)
+    if (filterList == NULL)
     {
-        filterList->head = createnode(filter);
+        filterList = createnode(filter);
     }
     else
     {
-        current = filterList->head;
+        current = filterList;
         while (current->next != NULL)
         {
             current = current->next;
@@ -37,17 +30,17 @@ void filterList_add(Filter filter, FilterList *filterList)
     }
 }
 
-void filterList_delete(Filter filter, FilterList *filterList)
+void filterList_delete(Filter filter, Node *filterList)
 {
-    Node *current = filterList->head;
+    Node *current = filterList;
     Node *previous = current;
     while (current != NULL)
     {
         if (current->filter == &filter)
         {
             previous->next = current->next;
-            if (current == filterList->head)
-                filterList->head = current->next;
+            if (current == filterList)
+                filterList = current->next;
             free(current);
             return;
         }

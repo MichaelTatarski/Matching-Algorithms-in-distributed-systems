@@ -4,12 +4,7 @@
 #include "../utility/filterList.h"
 #include <stdbool.h>
 
-FilterList *filterList;
-
-bool isFilterListcreated()
-{
-    return filterList == NULL ? false : true;
-}
+Node *filterList = NULL;
 
 Filter *make_filter()
 {
@@ -40,16 +35,11 @@ KeyConstraint *createKeyConstraint(Key key, ConstraintOperator constraintOperato
     return keyConstraint;
 }
 
-Filter *filter_Create(Key key, ConstraintOperator constraintOperator, int constraintValue)
+Filter *filter_Create()
 {
-    if (isFilterListcreated == false)
-    {
-        FilterList *filterList = make_filterList();
-    }
-
     Filter *newFilter = make_filter();
-    KeyConstraint *headKeyConstraint = createHeadKeyConstrait(key, constraintOperator, constraintValue);
     filterList_add(*newFilter, filterList);
+    return newFilter;
 }
 
 void filter_AddConstraintToFilter(Filter *filter, Key key, ConstraintOperator constraintOperator, int constraintValue, BooleanOperator booleanOperator)
@@ -57,7 +47,7 @@ void filter_AddConstraintToFilter(Filter *filter, Key key, ConstraintOperator co
     KeyConstraint *current = NULL;
     if (filter->head == NULL)
     {
-        filter->head = createKeyConstraint(key, constraintOperator, constraintValue, booleanOperator);
+        filter->head = createHeadKeyConstrait(key, constraintOperator, constraintValue);
     }
     else
     {

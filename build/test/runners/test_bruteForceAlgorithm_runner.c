@@ -75,7 +75,7 @@ static void run_test(UnityTestFunction func, const char* name, int line_num)
 int main(void)
 {
   UnityBegin("test_bruteForceAlgorithm.c");
-  run_test(test_bruteForceAlgorithm_NeedToImplement, "test_bruteForceAlgorithm_NeedToImplement", 13);
+  run_test(test_bruteForceAlgorithm_NeedToImplement, "test_bruteForceAlgorithm_NeedToImplement", 12);
 
   return UnityEnd();
 }
