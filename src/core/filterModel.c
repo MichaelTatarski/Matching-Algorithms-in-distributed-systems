@@ -7,7 +7,7 @@ FilterList *filterList;
 
 bool isFilterListcreated()
 {
-    return filterList = NULL ? false : true;
+    return filterList == NULL ? false : true;
 }
 
 Filter *make_filter()
@@ -17,18 +17,29 @@ Filter *make_filter()
     return filter;
 }
 
-KeyConstraint *createHeadKeyConstrait(Key key, ConstraintOperator constrainOperator, int constrainValue)
+KeyConstraint *createHeadKeyConstrait(Key key, ConstraintOperator constraintOperator, int constraintValue)
 {
     KeyConstraint *keyConstraint = malloc(sizeof(KeyConstraint));
     keyConstraint->key = key;
-    keyConstraint->constraintOperator = constrainOperator;
-    keyConstraint->constraintValue = constrainValue;
+    keyConstraint->constraintOperator = constraintOperator;
+    keyConstraint->constraintValue = constraintValue;
     keyConstraint->next = NULL;
     keyConstraint->booleanOperator = FIRST_EXPRESSION;
     return keyConstraint;
 }
 
-Filter *filter_Create(Key key, ConstraintOperator constrainOperator, int constrainValue)
+KeyConstraint *createKeyConstraint(Key key, ConstraintOperator constraintOperator, int constraintValue, BooleanOperator booleanOperator)
+{
+    KeyConstraint *keyConstraint = malloc(sizeof(KeyConstraint));
+    keyConstraint->key = key;
+    keyConstraint->constraintOperator = constraintOperator;
+    keyConstraint->constraintValue = constraintValue;
+    keyConstraint->next = NULL;
+    keyConstraint->booleanOperator = booleanOperator;
+    return keyConstraint;
+}
+
+Filter *filter_Create(Key key, ConstraintOperator constraintOperator, int constraintValue)
 {
     if (isFilterListcreated == false)
     {
@@ -36,6 +47,24 @@ Filter *filter_Create(Key key, ConstraintOperator constrainOperator, int constra
     }
 
     Filter *newFilter = make_filter();
-    KeyConstraint *headKeyConstraint = createHeadKeyConstrait(key, constrainOperator, constrainValue);
+    KeyConstraint *headKeyConstraint = createHeadKeyConstrait(key, constraintOperator, constraintValue);
     filter_add(*newFilter, filterList);
+}
+
+void filter_AddConstraintToFilter(Filter *filter, Key key, ConstraintOperator constraintOperator, int constraintValue, BooleanOperator booleanOperator)
+{
+    KeyConstraint *current = NULL;
+    if (filter->head == NULL)
+    {
+        filter->head = createKeyConstraint(key, constraintOperator, constraintValue, booleanOperator);
+    }
+    else
+    {
+        current = filter->head;
+        while (current->next != NULL)
+        {
+            current = current->next;
+        }
+        current->next = createKeyConstraint(key, constraintOperator, constraintValue, booleanOperator);
+    }
 }

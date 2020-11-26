@@ -14,14 +14,14 @@ typedef struct KeyConstraint
 
 } KeyConstraint;
 
-typedef struct
+typedef struct Filter
 {
     KeyConstraint *head;
 
 } Filter;
 
-Filter *filter_Create(Key key, ConstraintOperator constrainOperator, int constrainValue);
+Filter *filter_Create(Key key, ConstraintOperator constraintOperator, int constraintValue);
 
-void filter_AddConstraintToFilter(KeyConstraint keyConstraint, BooleanOperator booleanOperator, Key key, ConstraintOperator constraintOperator, int constraintValue);
+void filter_AddConstraintToFilter(Filter *filter, Key key, ConstraintOperator constraintOperator, int constraintValue, BooleanOperator booleanOperator);
 
 #endif // FILTERMODEL_H

@@ -3,14 +3,14 @@
 
 #include "../core/filterModel.h"
 
-typedef struct
+typedef struct Node
 {
     Filter *filter;
-    Filter *next;
+    struct Node *next;
 
 } Node;
 
-typedef struct
+typedef struct FilterList
 {
     Node *head;
 

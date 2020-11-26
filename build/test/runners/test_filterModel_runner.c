@@ -10,7 +10,7 @@ char* GlobalOrderError;
 /*=======External Functions This Runner Calls=====*/
 extern void setUp(void);
 extern void tearDown(void);
-extern void test_List_filter_Create(void);
+extern void test_filter_Create(void);
 
 
 /*=======Mock Management=====*/
@@ -75,7 +75,7 @@ static void run_test(UnityTestFunction func, const char* name, int line_num)
 int main(void)
 {
   UnityBegin("test_filterModel.c");
-  run_test(test_List_filter_Create, "test_List_filter_Create", 13);
+  run_test(test_filter_Create, "test_filter_Create", 13);
 
   return UnityEnd();
 }
