@@ -1,4 +1,5 @@
 #include <stdlib.h>
+
 #include "filterModel.h"
 #include "../utility/filterList.h"
 #include <stdbool.h>
@@ -48,7 +49,7 @@ Filter *filter_Create(Key key, ConstraintOperator constraintOperator, int constr
 
     Filter *newFilter = make_filter();
     KeyConstraint *headKeyConstraint = createHeadKeyConstrait(key, constraintOperator, constraintValue);
-    filter_add(*newFilter, filterList);
+    filterList_add(*newFilter, filterList);
 }
 
 void filter_AddConstraintToFilter(Filter *filter, Key key, ConstraintOperator constraintOperator, int constraintValue, BooleanOperator booleanOperator)

@@ -1,5 +1,6 @@
 #include "build/temp/_test_filterList.c"
 #include "src/utility/filterList.h"
+#include "src/utility/../core/filterModel.h"
 #include "/home/michael/.rbenv/versions/2.7.2/lib/ruby/gems/2.7.0/gems/ceedling-0.30.0/vendor/unity/src/unity.h"
 
 
@@ -19,10 +20,20 @@ void tearDown(void)
 
 
 
-void test_needToImplement(void)
+void test_filterList_add(void)
 
 {
 
-    UnityIgnore( (("Need to Implement filterList")), (UNITY_UINT)(14));
+    Filter *testFilter;
+
+    testFilter->head = 
+
+                      ((void *)0)
+
+                          ;
+
+    FilterList *testFilterList = make_filterList();
+
+    filterList_add(*testFilter, testFilterList);
 
 }

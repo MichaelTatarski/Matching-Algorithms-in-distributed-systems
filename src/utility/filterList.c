@@ -19,7 +19,7 @@ FilterList *make_filterList()
     return filterList;
 }
 
-void filter_add(Filter filter, FilterList *filterList)
+void filterList_add(Filter filter, FilterList *filterList)
 {
     Node *current = NULL;
     if (filterList->head == NULL)
@@ -37,7 +37,7 @@ void filter_add(Filter filter, FilterList *filterList)
     }
 }
 
-void filter_delete(Filter filter, FilterList *filterList)
+void filterList_delete(Filter filter, FilterList *filterList)
 {
     Node *current = filterList->head;
     Node *previous = current;

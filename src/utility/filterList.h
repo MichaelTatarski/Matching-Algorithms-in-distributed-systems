@@ -17,7 +17,7 @@ typedef struct FilterList
 } FilterList;
 
 FilterList *make_filterList();
-void filter_add(Filter filter, FilterList *filterList);
-void filter_delete(Filter filter, FilterList *filterList);
+void filterList_add(Filter filter, FilterList *filterList);
+void filterList_delete(Filter filter, FilterList *filterList);
 
 #endif // FILTER_LIST_H
