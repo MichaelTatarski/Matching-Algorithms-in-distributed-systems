@@ -10,6 +10,6 @@ void tearDown(void)
 {
 }
 
-void test_List_filter_Create(void)
+void test_filter_Create(void)
 {
 }

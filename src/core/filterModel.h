@@ -20,8 +20,8 @@ typedef struct
 
 } Filter;
 
-void *KeyConstraint_Create(Key key, ConstraintOperator constrainOperator, int constrainValue);
+Filter *filter_Create(Key key, ConstraintOperator constrainOperator, int constrainValue);
 
-void *KeyConstraint_AddConstraintToFilter(KeyConstraint keyConstraint, BooleanOperator booleanOperator, Key key, ConstraintOperator constraintOperator, int constraintValue);
+void filter_AddConstraintToFilter(KeyConstraint keyConstraint, BooleanOperator booleanOperator, Key key, ConstraintOperator constraintOperator, int constraintValue);
 
 #endif // FILTERMODEL_H
