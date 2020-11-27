@@ -3,12 +3,15 @@
 	<FailedTests/>
 	<SuccessfulTests>
 		<Test id="1">
-			<Name>test/utility/test_filterList.c::test_filterList_add</Name>
+			<Name>test/core/test_dataModel.c::test_DataSet_Create</Name>
+		</Test>
+		<Test id="2">
+			<Name>test/core/test_dataModel.c::test_getValue</Name>
 		</Test>
 	</SuccessfulTests>
 	<IgnoredTests/>
 	<Statistics>
-		<Tests>1</Tests>
+		<Tests>2</Tests>
 		<Ignores>0</Ignores>
 		<FailuresTotal>0</FailuresTotal>
 		<Errors>0</Errors>

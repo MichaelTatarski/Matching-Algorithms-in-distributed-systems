@@ -2,7 +2,6 @@
 
 #include "filterModel.h"
 #include "../utility/filterList.h"
-#include <stdbool.h>
 
 Node *filterList = NULL;
 

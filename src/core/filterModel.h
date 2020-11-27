@@ -26,7 +26,7 @@ typedef struct Filter
 Filter *filter_Create();
 
 /**
- * Add a constraint for a key to an existing filter.
+ * Adds a subfilter(aka keyconstraint) to an existing filter.
  *
  * @param filter filter in which a keyconstraint should be added to.
  * @param key key that should be filtered.
