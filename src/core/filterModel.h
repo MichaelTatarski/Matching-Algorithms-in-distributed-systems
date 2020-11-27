@@ -2,7 +2,7 @@
 #define FILTERMODEL_H
 
 #include "keys.h"
-#include "../utility/logicExpressions.h"
+#include "../utility/logicalExpressions.h"
 
 typedef struct KeyConstraint
 {
@@ -21,18 +21,18 @@ typedef struct Filter
 } Filter;
 
 /**
- * Creates an empty filter and add it to the tail of filterlist.
+ * Create an empty filter and adds it to filterlist.
  */
 Filter *filter_Create();
 
 /**
- * Adds a subfilter(aka keyconstrain) to an existing filter.
+ * Add a constraint for a key to an existing filter.
  *
- * @param filter filter which should be extended
- * @param key key that should be constrained
- * @param constraintOperator determines how the key should be filtered.
- * @param constraintValue value which corresponds to the filter.
- * @param booleanOperator determines how to link keyconstraint to the existing filter (either as a conjunction or disjunction).
+ * @param filter filter in which a keyconstraint should be added to.
+ * @param key key that should be filtered.
+ * @param constraintOperator determines how to filter the key.
+ * @param constraintValue corresponding value for the filter.
+ * @param booleanoperator determines if the created keyconstraint should be linked as a conjunction or disjunction to the filter.
  */
 void filter_AddConstraintToFilter(Filter *filter, Key key, ConstraintOperator constraintOperator, int constraintValue, BooleanOperator booleanOperator);
 
