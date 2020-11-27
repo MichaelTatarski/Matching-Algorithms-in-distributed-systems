@@ -31,6 +31,10 @@ void test_filterList_add(void)
 
     Filter testFilter;
 
+    Filter newFilter;
+
     filterList_add(testFilter, filterList);
+
+    filterList_add(newFilter, filterList);
 
 }
