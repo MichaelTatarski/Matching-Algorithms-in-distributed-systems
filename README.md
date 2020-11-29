@@ -4,7 +4,7 @@ This project is part of the NEiDI course of the winter lecture 2020/2021. The ob
 
 ## Documentation
 
-Navigate to the header files of the **core folder** to find a brief explanation of the APIs.
+Navigate to the header files inside the **core folder** to find a brief explanation of the APIs.
 
     .
     ├── ...

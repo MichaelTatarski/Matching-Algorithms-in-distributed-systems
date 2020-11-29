@@ -3,7 +3,7 @@
 #include "filterModel.h"
 #include "../utility/filterList.h"
 
-Node *filterList = NULL;
+Node *filterListHead = NULL;
 
 Filter *make_filter()
 {
@@ -37,7 +37,7 @@ KeyConstraint *createKeyConstraint(Key key, ConstraintOperator constraintOperato
 Filter *filter_Create()
 {
     Filter *newFilter = make_filter();
-    filterList_add(*newFilter, filterList);
+    filterList_add(*newFilter, filterListHead);
     return newFilter;
 }
 

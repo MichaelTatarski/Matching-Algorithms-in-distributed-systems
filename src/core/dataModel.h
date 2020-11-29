@@ -6,7 +6,7 @@
 /**equals the number of possible keys.*/
 #define LOOKUPARRAY_SIZE 3
 
-typedef struct
+typedef struct DataSet
 {
     int lookupArray[LOOKUPARRAY_SIZE];
 
