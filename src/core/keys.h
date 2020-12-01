@@ -1,7 +1,7 @@
 #ifndef KEYS_H
 #define KEYS_H
 
-typedef enum
+typedef enum Key
 {
     ID,
     VALUE,

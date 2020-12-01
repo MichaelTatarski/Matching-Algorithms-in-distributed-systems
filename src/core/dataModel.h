@@ -3,12 +3,12 @@
 
 #include "keys.h"
 
-/**equals the number of possible keys.*/
-#define LOOKUPARRAY_SIZE 3
+/**equals the number of possible keys (counted manually, keep these in sync).*/
+#define KEY_NUMBER 3
 
 typedef struct DataSet
 {
-    int lookupArray[LOOKUPARRAY_SIZE];
+    int lookupArray[KEY_NUMBER];
 
 } * DataSet;
 
