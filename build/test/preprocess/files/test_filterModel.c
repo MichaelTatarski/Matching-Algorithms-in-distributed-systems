@@ -26,9 +26,9 @@ void test_filter_Create(void)
 
     Filter *testFilter = filter_Create();
 
-    filter_AddConstraintToFilter(testFilter, ID, EQUALS, 20, FIRST_EXPRESSION);
+    filter_AddConstraintToFilter(testFilter, ID, EQUALS, 20);
 
-    filter_AddConstraintToFilter(testFilter, VALUE, EQUALS, 30, AND);
+    filter_AddConstraintToFilter(testFilter, VALUE, EQUALS, 30);
 
     Filter *secondFilter = filter_Create();
 

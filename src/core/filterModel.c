@@ -3,7 +3,7 @@
 #include "filterModel.h"
 #include "../utility/filterList.h"
 
-Node *filterListHead = NULL;
+FilterListNode *filterListHead = NULL;
 
 Filter *make_filter()
 {
@@ -12,26 +12,14 @@ Filter *make_filter()
     return filter;
 }
 
-KeyConstraint *createHeadKeyConstrait(Key key, ConstraintOperator constraintOperator, int constraintValue)
+SubFilter *createSubFilter(Key key, ConstraintOperator constraintOperator, int constraintValue)
 {
-    KeyConstraint *keyConstraint = malloc(sizeof(KeyConstraint));
-    keyConstraint->key = key;
-    keyConstraint->constraintOperator = constraintOperator;
-    keyConstraint->constraintValue = constraintValue;
-    keyConstraint->next = NULL;
-    keyConstraint->booleanOperator = FIRST_EXPRESSION;
-    return keyConstraint;
-}
-
-KeyConstraint *createKeyConstraint(Key key, ConstraintOperator constraintOperator, int constraintValue, BooleanOperator booleanOperator)
-{
-    KeyConstraint *keyConstraint = malloc(sizeof(KeyConstraint));
-    keyConstraint->key = key;
-    keyConstraint->constraintOperator = constraintOperator;
-    keyConstraint->constraintValue = constraintValue;
-    keyConstraint->next = NULL;
-    keyConstraint->booleanOperator = booleanOperator;
-    return keyConstraint;
+    SubFilter *subFilter = malloc(sizeof(SubFilter));
+    subFilter->key = key;
+    subFilter->constraintOperator = constraintOperator;
+    subFilter->constraintValue = constraintValue;
+    subFilter->next = NULL;
+    return subFilter;
 }
 
 Filter *filter_Create()
@@ -41,12 +29,12 @@ Filter *filter_Create()
     return newFilter;
 }
 
-void filter_AddConstraintToFilter(Filter *filter, Key key, ConstraintOperator constraintOperator, int constraintValue, BooleanOperator booleanOperator)
+void filter_AddConstraintToFilter(Filter *filter, Key key, ConstraintOperator constraintOperator, int constraintValue)
 {
-    KeyConstraint *current = NULL;
+    SubFilter *current = NULL;
     if (filter->head == NULL)
     {
-        filter->head = createHeadKeyConstrait(key, constraintOperator, constraintValue);
+        filter->head = createSubFilter(key, constraintOperator, constraintValue);
     }
     else
     {
@@ -55,6 +43,6 @@ void filter_AddConstraintToFilter(Filter *filter, Key key, ConstraintOperator co
         {
             current = current->next;
         }
-        current->next = createKeyConstraint(key, constraintOperator, constraintValue, booleanOperator);
+        current->next = createSubFilter(key, constraintOperator, constraintValue);
     }
 }

@@ -3,7 +3,7 @@
 	<FailedTests/>
 	<SuccessfulTests>
 		<Test id="1">
-			<Name>test/core/test_filterModel.c::test_filter_Create</Name>
+			<Name>test/utility/test_filterList.c::test_filterList_add</Name>
 		</Test>
 	</SuccessfulTests>
 	<IgnoredTests/>

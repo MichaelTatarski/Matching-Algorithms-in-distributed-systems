@@ -3,14 +3,6 @@
 
 typedef enum
 {
-    AND,
-    OR,
-    FIRST_EXPRESSION
-
-} BooleanOperator;
-
-typedef enum
-{
     GREATER_THAN,
     GREATER_EQUAL,
     SMALLER_THAN,

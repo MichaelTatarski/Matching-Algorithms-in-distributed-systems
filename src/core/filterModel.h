@@ -4,19 +4,18 @@
 #include "keys.h"
 #include "../utility/logicalExpressions.h"
 
-typedef struct KeyConstraint
+typedef struct SubFilter
 {
     Key key;
     ConstraintOperator constraintOperator;
     int constraintValue;
-    BooleanOperator booleanOperator;
-    struct KeyConstraint *next;
+    struct SubFilter *next;
 
-} KeyConstraint;
+} SubFilter;
 
 typedef struct Filter
 {
-    KeyConstraint *head;
+    SubFilter *head;
 
 } Filter;
 
@@ -34,6 +33,6 @@ Filter *filter_Create();
  * @param constraintValue corresponding value for the filter.
  * @param booleanoperator determines if the created keyconstraint should be linked as a conjunction or disjunction to the filter.
  */
-void filter_AddConstraintToFilter(Filter *filter, Key key, ConstraintOperator constraintOperator, int constraintValue, BooleanOperator booleanOperator);
+void filter_AddConstraintToFilter(Filter *filter, Key key, ConstraintOperator constraintOperator, int constraintValue);
 
 #endif // FILTERMODEL_H

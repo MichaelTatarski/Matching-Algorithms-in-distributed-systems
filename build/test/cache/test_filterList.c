@@ -23,11 +23,11 @@ void test_filterList_add(void)
 
 {
 
-    Node *filterList = 
+    FilterListNode *filterList = 
 
-                      ((void *)0)
+                                ((void *)0)
 
-                          ;
+                                    ;
 
     Filter testFilter;
 

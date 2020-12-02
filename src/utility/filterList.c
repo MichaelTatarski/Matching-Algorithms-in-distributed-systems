@@ -4,17 +4,17 @@
 #include "filterList.h"
 #include "../core/filterModel.h"
 
-Node *createnode(Filter filter)
+FilterListNode *createnode(Filter filter)
 {
-    Node *newNode = malloc(sizeof(Node));
+    FilterListNode *newNode = malloc(sizeof(FilterListNode));
     newNode->filter = &filter;
     newNode->next = NULL;
     return newNode;
 }
 
-void filterList_add(Filter filter, Node *filterList)
+void filterList_add(Filter filter, FilterListNode *filterList)
 {
-    Node *current = NULL;
+    FilterListNode *current = NULL;
     if (filterList == NULL)
     {
         filterList = createnode(filter);
@@ -30,10 +30,10 @@ void filterList_add(Filter filter, Node *filterList)
     }
 }
 
-void filterList_delete(Filter filter, Node *filterList)
+void filterList_delete(Filter filter, FilterListNode *filterList)
 {
-    Node *current = filterList;
-    Node *previous = current;
+    FilterListNode *current = filterList;
+    FilterListNode *previous = current;
     while (current != NULL)
     {
         if (current->filter == &filter)
