@@ -1,34 +1,33 @@
 #ifndef DATAMODEL_H
 #define DATAMODEL_H
 
-#include "keys.h"
+#include "../utility/uthash.h"
+#include "../utility/dataType.h"
 
-/**equals the number of possible keys (counted manually, keep these in sync).*/
-#define KEY_NUMBER 3
+// necessary to make struct hashable (please read https://troydhanson.github.io/uthash/ for reference)
 
-typedef struct DataSet
+typedef struct Attribute
 {
-    int lookupArray[KEY_NUMBER];
 
-} * DataSet;
+    char *Name[32];
+    Data data;
+    DataType type;
+    UT_hash_handle hh;
 
-/**
- * Create a new dataset.
- *
- * @param id ID of the new dataset.
- * @param value Value of the new dataset.
- * @param errorcode ERRORCODE of the new dataset.
- * @return new dataset.
- */
-DataSet dataSet_Create(int id, int value, int errorcode);
+} Attribute;
 
-/**
- * Access the value for a given key in the lookuparray of a dataset.
- *
- * @param dataset dataset in which the value should be accessed.
- * @param key key to which the value should be returned.
- * @return value of the given key.
- */
-int dataSet_getValue(DataSet dataSet, Key key);
+int getDataType(char name[32]);
+
+void dataModel_createAttributeINT64(char name[32], int64_t value);
+int64_t getValueINT64(char name[32]);
+
+void dataModel_createAttributeINT32(char name[32], int32_t value);
+int32_t getValueINT32(char name[32]);
+
+void dataModel_createAttributeDOUBLE(char name[32], double value);
+double getValueDOUBLE(char name[32]);
+
+void dataModel_createAttributeTEXT32(char name[32], char *text[32]);
+char getValueTEXT32(char name[32]);
 
 #endif // DATAMODEL_H

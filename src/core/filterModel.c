@@ -1,40 +1,37 @@
 #include <stdlib.h>
-
 #include "filterModel.h"
-#include "../utility/filterList.h"
 
-FilterListNode *filterListHead = NULL;
+Filter *filterListHead = NULL;
 
-Filter *make_filter()
+Filter *make_newFilter()
 {
     Filter *filter = malloc(sizeof(Filter));
-    filter->head = NULL;
+    filter->SubFilterHead = NULL;
     return filter;
 }
 
-SubFilter *createSubFilter(Key key, ConstraintOperator constraintOperator, int constraintValue)
+Filter *CreateFilter()
+{
+    Filter *newFilter = make_filter();
+    LL_APPEND(filterListHead, newFilter);
+    return newFilter;
+}
+
+SubFilter *createSubFilter(ConstraintOperator constraintOperator, int constraintValue)
 {
     SubFilter *subFilter = malloc(sizeof(SubFilter));
-    subFilter->key = key;
     subFilter->constraintOperator = constraintOperator;
     subFilter->constraintValue = constraintValue;
     subFilter->next = NULL;
     return subFilter;
 }
 
-Filter *filter_Create()
-{
-    Filter *newFilter = make_filter();
-    filterList_add(*newFilter, filterListHead);
-    return newFilter;
-}
-
-void filter_AddConstraintToFilter(Filter *filter, Key key, ConstraintOperator constraintOperator, int constraintValue)
+void AddSubFilter(Filter *filter, ConstraintOperator constraintOperator, int constraintValue)
 {
     SubFilter *current = NULL;
     if (filter->head == NULL)
     {
-        filter->head = createSubFilter(key, constraintOperator, constraintValue);
+        filter->head = createSubFilter(constraintOperator, constraintValue);
     }
     else
     {
@@ -43,6 +40,6 @@ void filter_AddConstraintToFilter(Filter *filter, Key key, ConstraintOperator co
         {
             current = current->next;
         }
-        current->next = createSubFilter(key, constraintOperator, constraintValue);
+        current->next = createSubFilter(constraintOperator, constraintValue);
     }
 }

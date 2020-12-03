@@ -1,4 +1,5 @@
 #include "build/temp/_test_dataModel.c"
+#include "src/core/../utility/uthash.h"
 #include "src/core/dataModel.h"
 #include "/home/michael/.rbenv/versions/2.7.2/lib/ruby/gems/2.7.0/gems/ceedling-0.30.0/vendor/unity/src/unity.h"
 
@@ -19,46 +20,26 @@ void tearDown(void)
 
 
 
-void test_DataSet_Create(void)
+void test_getValueINT64(void)
 
 {
 
-    int simpleArray[3] = {1, 2, 3};
+    char testString[] = "Test";
 
-    DataSet correspondingDataSet = dataSet_Create(simpleArray[0], simpleArray[1], simpleArray[2]);
+    int64_t testInt64 = 2020;
 
-    UnityAssertEqualIntArray(( const void*)((simpleArray)), ( const void*)((correspondingDataSet->lookupArray)), (UNITY_UINT32)((3)), (
+    dataModel_createAttributeINT64(testString, testInt64);
 
-   ((void *)0)
+    int64_t returnValue;
 
-   ), (UNITY_UINT)(16), UNITY_DISPLAY_STYLE_INT, UNITY_ARRAY_TO_ARRAY);
+    returnValue = getValueINT64(testString);
 
-}
-
-
-
-void test_getValue(void)
-
-{
-
-    DataSet newDataSet = dataSet_Create(1, 2, 3);
-
-    UnityAssertEqualNumber((UNITY_INT)((1)), (UNITY_INT)((dataSet_getValue(newDataSet, ID))), (
+    UnityAssertEqualNumber((UNITY_INT)((testInt64)), (UNITY_INT)((returnValue)), (
 
    ((void *)0)
 
-   ), (UNITY_UINT)(22), UNITY_DISPLAY_STYLE_INT);
+   ), (UNITY_UINT)(20), UNITY_DISPLAY_STYLE_INT64);
 
-    UnityAssertEqualNumber((UNITY_INT)((2)), (UNITY_INT)((dataSet_getValue(newDataSet, VALUE))), (
-
-   ((void *)0)
-
-   ), (UNITY_UINT)(23), UNITY_DISPLAY_STYLE_INT);
-
-    UnityAssertEqualNumber((UNITY_INT)((3)), (UNITY_INT)((dataSet_getValue(newDataSet, ERRORCODE))), (
-
-   ((void *)0)
-
-   ), (UNITY_UINT)(24), UNITY_DISPLAY_STYLE_INT);
+    printf("%d and %d", returnValue, testInt64);
 
 }

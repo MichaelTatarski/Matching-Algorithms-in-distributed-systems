@@ -1,38 +1,31 @@
 #ifndef FILTERMODEL_H
 #define FILTERMODEL_H
 
-#include "keys.h"
+#include "../utility/dataType.h"
 #include "../utility/logicalExpressions.h"
+#include "../utility/utlist.h"
 
 typedef struct SubFilter
 {
-    Key key;
+    char name[32];
     ConstraintOperator constraintOperator;
-    int constraintValue;
+    Data constrainValue;
+    Data dataType;
     struct SubFilter *next;
 
 } SubFilter;
 
 typedef struct Filter
 {
-    SubFilter *head;
+    SubFilter *SubFilterHead;
+    struct Filter *next
 
 } Filter;
 
-/**
- * Create an empty filter and adds it to filterlist.
- */
-Filter *filter_Create();
-
-/**
- * Adds a subfilter(aka keyconstraint) to an existing filter.
- *
- * @param filter filter in which a keyconstraint should be added to.
- * @param key key that should be filtered.
- * @param constraintOperator determines how to filter the key.
- * @param constraintValue corresponding value for the filter.
- * @param booleanoperator determines if the created keyconstraint should be linked as a conjunction or disjunction to the filter.
- */
-void filter_AddConstraintToFilter(Filter *filter, Key key, ConstraintOperator constraintOperator, int constraintValue);
+Filter *CreateFilter();
+void AddSubFilterINT64(Filter *filter, char name[32], ConstraintOperator constraintOperator, int64_t constraintValue);
+void AddSubFilterINT32(Filter *filter, char name[32], ConstraintOperator constraintOperator, int32_t constraintValue);
+void AddSubFilterDOUBLE(Filter *filter, char name[32], ConstraintOperator constraintOperator, double constraintValue);
+void AddSubFilterTEXT32(Filter *filter, char name[32], ConstraintOperator constraintOperator, char constraintValue[32]);
 
 #endif // FILTERMODEL_H
