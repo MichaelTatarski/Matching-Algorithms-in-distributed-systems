@@ -8,6 +8,14 @@
 
 // necessary to make struct hashable (please read https://troydhanson.github.io/uthash/ for reference)
 
+typedef union Data
+{
+    int64_t INTEGER64;
+    int32_t INTEGER32;
+    double DOUBLE;
+    char TEXT[TEXT32];
+} Data;
+
 typedef struct Attribute
 {
 
@@ -26,18 +34,18 @@ typedef struct DataModel
 
 DataModel *dataModel_create();
 
-DataType getDataType(char name[TEXT256]);
+DataType getDataType(DataModel *dataModel, char name[TEXT256]);
 
-void dataModel_addAttributeINT64(char name[TEXT256], int64_t value);
-int64_t getValueINT64(char name[TEXT256]);
+void dataModel_addAttributeINT64(DataModel *dataModel, char name[TEXT256], int64_t value);
+int64_t getValueINT64(DataModel *dataModel, char name[TEXT256]);
 
-void dataModel_addAttributeINT32(char name[TEXT256], int32_t value);
-int32_t getValueINT32(char name[TEXT256]);
+void dataModel_addAttributeINT32(DataModel *dataModel, char name[TEXT256], int32_t value);
+int32_t getValueINT32(DataModel *dataModel, char name[TEXT256]);
 
-void dataModel_addAttributeDOUBLE(char name[TEXT256], double value);
-double getValueDOUBLE(char name[TEXT256]);
+void dataModel_addAttributeDOUBLE(DataModel *dataModel, char name[TEXT256], double value);
+double getValueDOUBLE(DataModel *dataModel, char name[TEXT256]);
 
-void dataModel_addAttributeTEXT32(char name[TEXT256], char text[TEXT32]);
-void getValueTEXT32(char name[TEXT256], char returnString[TEXT32]);
+void dataModel_addAttributeTEXT32(DataModel *dataModel, char name[TEXT256], char text[TEXT32]);
+void getValueTEXT32(DataModel *dataModel, char name[TEXT256], char returnString[TEXT32]);
 
 #endif // DATAMODEL_H

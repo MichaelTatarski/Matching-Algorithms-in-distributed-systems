@@ -83,10 +83,10 @@ int main(void)
 {
   UnityBegin("test_dataModel.c");
   run_test(test_getValueINT64, "test_getValueINT64", 13);
-  run_test(test_getValueINT32, "test_getValueINT32", 23);
-  run_test(test_getValueDOUBLE, "test_getValueDOUBLE", 33);
-  run_test(test_getTEXT32, "test_getTEXT32", 43);
-  run_test(test_getDataType, "test_getDataType", 52);
+  run_test(test_getValueINT32, "test_getValueINT32", 24);
+  run_test(test_getValueDOUBLE, "test_getValueDOUBLE", 35);
+  run_test(test_getTEXT32, "test_getTEXT32", 46);
+  run_test(test_getDataType, "test_getDataType", 56);
 
   return UnityEnd();
 }
