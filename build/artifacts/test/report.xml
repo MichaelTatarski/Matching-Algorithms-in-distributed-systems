@@ -15,7 +15,7 @@
 			<Name>test/core/test_dataModel.c::test_getTEXT32</Name>
 		</Test>
 		<Test id="5">
-			<Name>test/core/test_dataModel.c::test_getDataType</Name>
+			<Name>test/core/test_dataModel.c::test_dataModel_getDataType</Name>
 		</Test>
 	</SuccessfulTests>
 	<IgnoredTests/>

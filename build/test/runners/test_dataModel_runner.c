@@ -17,7 +17,7 @@ extern void test_getValueINT64(void);
 extern void test_getValueINT32(void);
 extern void test_getValueDOUBLE(void);
 extern void test_getTEXT32(void);
-extern void test_getDataType(void);
+extern void test_dataModel_getDataType(void);
 
 
 /*=======Mock Management=====*/
@@ -86,7 +86,7 @@ int main(void)
   run_test(test_getValueINT32, "test_getValueINT32", 24);
   run_test(test_getValueDOUBLE, "test_getValueDOUBLE", 35);
   run_test(test_getTEXT32, "test_getTEXT32", 46);
-  run_test(test_getDataType, "test_getDataType", 56);
+  run_test(test_dataModel_getDataType, "test_dataModel_getDataType", 56);
 
   return UnityEnd();
 }

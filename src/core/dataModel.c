@@ -20,7 +20,7 @@ DataModel *dataModel_create()
     return newDataModel;
 }
 
-DataType getDataType(DataModel *dataModel, char name[32])
+DataType dataModel_getDataType(DataModel *dataModel, char name[32])
 {
     Attribute *returnAttribute = findAttribute(dataModel, name);
     return returnAttribute->type;

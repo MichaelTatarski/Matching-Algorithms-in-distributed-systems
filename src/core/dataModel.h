@@ -8,14 +8,6 @@
 
 // necessary to make struct hashable (please read https://troydhanson.github.io/uthash/ for reference)
 
-typedef union Data
-{
-    int64_t INTEGER64;
-    int32_t INTEGER32;
-    double DOUBLE;
-    char TEXT[TEXT32];
-} Data;
-
 typedef struct Attribute
 {
 
@@ -34,7 +26,7 @@ typedef struct DataModel
 
 DataModel *dataModel_create();
 
-DataType getDataType(DataModel *dataModel, char name[TEXT256]);
+DataType dataModel_getDataType(DataModel *dataModel, char name[TEXT256]);
 
 void dataModel_addAttributeINT64(DataModel *dataModel, char name[TEXT256], int64_t value);
 int64_t getValueINT64(DataModel *dataModel, char name[TEXT256]);

@@ -1,7 +1,7 @@
 #ifndef LOGIC_EXPRESSIONS_H
 #define LOGIC_EXPRESSIONS_H
 
-typedef enum ConstraintOperator
+typedef enum Operator
 {
     GREATER_THAN,
     GREATER_EQUAL,
@@ -9,6 +9,6 @@ typedef enum ConstraintOperator
     SMALLER_EQUAL,
     EQUALS
 
-} ConstraintOperator;
+} Operator;
 
 #endif // LOGIC_EXPRESSIONS_H

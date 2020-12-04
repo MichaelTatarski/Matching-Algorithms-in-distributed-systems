@@ -53,12 +53,12 @@ void test_getTEXT32(void)
     getValueTEXT32(testDataModel, testName, returnString);
     TEST_ASSERT_EQUAL_STRING(testString, returnString);
 }
-void test_getDataType(void)
+void test_dataModel_getDataType(void)
 {
     DataModel *testDataModel = dataModel_create();
     char testName[] = "TestDouble";
     double testDouble = 2020;
     dataModel_addAttributeDOUBLE(testDataModel, testName, testDouble);
     DataType expected = DOUBLE;
-    TEST_ASSERT_EQUAL_INT(expected, getDataType(testDataModel, testName));
+    TEST_ASSERT_EQUAL_INT(expected, dataModel_getDataType(testDataModel, testName));
 }

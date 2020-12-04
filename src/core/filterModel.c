@@ -17,7 +17,7 @@ Filter *CreateFilter()
     return newFilter;
 }
 
-SubFilter *createSubFilter(ConstraintOperator constraintOperator, int constraintValue)
+SubFilter *createSubFilter(Operator constraintOperator, int constraintValue)
 {
     SubFilter *subFilter = malloc(sizeof(SubFilter));
     subFilter->constraintOperator = constraintOperator;
@@ -26,7 +26,7 @@ SubFilter *createSubFilter(ConstraintOperator constraintOperator, int constraint
     return subFilter;
 }
 
-void AddSubFilter(Filter *filter, ConstraintOperator constraintOperator, int constraintValue)
+void AddSubFilter(Filter *filter, Operator constraintOperator, int constraintValue)
 {
     SubFilter *current = NULL;
     if (filter->head == NULL)

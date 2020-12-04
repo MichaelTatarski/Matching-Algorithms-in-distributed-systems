@@ -122,7 +122,7 @@ void test_getTEXT32(void)
 
 }
 
-void test_getDataType(void)
+void test_dataModel_getDataType(void)
 
 {
 
@@ -136,7 +136,7 @@ void test_getDataType(void)
 
     DataType expected = DOUBLE;
 
-    UnityAssertEqualNumber((UNITY_INT)((expected)), (UNITY_INT)((getDataType(testDataModel, testName))), (
+    UnityAssertEqualNumber((UNITY_INT)((expected)), (UNITY_INT)((dataModel_getDataType(testDataModel, testName))), (
 
    ((void *)0)
 
