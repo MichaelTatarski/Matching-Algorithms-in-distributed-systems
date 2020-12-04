@@ -3,12 +3,15 @@
 
 #include <stdint.h>
 
+#define TEXT32 4
+#define TEXT256 32
+
 typedef union Data
 {
     int64_t INTEGER64;
     int32_t INTEGER32;
     double DOUBLE;
-    char TEXT32[32];
+    char *TEXT[TEXT32];
 } Data;
 
 typedef enum DataType
@@ -16,7 +19,7 @@ typedef enum DataType
     INTEGER64,
     INTEGER32,
     DOUBLE,
-    TEXT32
+    TEXT
 } DataType;
 
 #endif //DATA_TYPE_H

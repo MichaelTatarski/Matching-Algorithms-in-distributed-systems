@@ -2,6 +2,9 @@
 
 /*=======Automagically Detected Files To Include=====*/
 #include "unity.h"
+#ifndef UNITY_INCLUDE_DOUBLE
+#define UNITY_INCLUDE_DOUBLE
+#endif /* UNITY_INCLUDE_DOUBLE */
 
 int GlobalExpectCount;
 int GlobalVerifyOrder;
@@ -11,6 +14,10 @@ char* GlobalOrderError;
 extern void setUp(void);
 extern void tearDown(void);
 extern void test_getValueINT64(void);
+extern void test_getValueINT32(void);
+extern void test_getValueDOUBLE(void);
+extern void test_getTEXT32(void);
+extern void test_getDataType(void);
 
 
 /*=======Mock Management=====*/
@@ -76,6 +83,10 @@ int main(void)
 {
   UnityBegin("test_dataModel.c");
   run_test(test_getValueINT64, "test_getValueINT64", 13);
+  run_test(test_getValueINT32, "test_getValueINT32", 23);
+  run_test(test_getValueDOUBLE, "test_getValueDOUBLE", 33);
+  run_test(test_getTEXT32, "test_getTEXT32", 43);
+  run_test(test_getDataType, "test_getDataType", 52);
 
   return UnityEnd();
 }

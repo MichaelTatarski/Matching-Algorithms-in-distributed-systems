@@ -10,7 +10,6 @@ typedef struct SubFilter
     char name[32];
     ConstraintOperator constraintOperator;
     Data constrainValue;
-    Data dataType;
     struct SubFilter *next;
 
 } SubFilter;

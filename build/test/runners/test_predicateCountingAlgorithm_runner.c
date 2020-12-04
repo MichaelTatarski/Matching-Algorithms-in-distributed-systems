@@ -2,6 +2,9 @@
 
 /*=======Automagically Detected Files To Include=====*/
 #include "unity.h"
+#ifndef UNITY_INCLUDE_DOUBLE
+#define UNITY_INCLUDE_DOUBLE
+#endif /* UNITY_INCLUDE_DOUBLE */
 
 int GlobalExpectCount;
 int GlobalVerifyOrder;

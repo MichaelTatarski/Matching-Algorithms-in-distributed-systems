@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include "dataModel.h"
 
 Attribute *MakeAttributeHashable = NULL;
@@ -10,7 +9,7 @@ int getDataType(char name[32])
     return returnAttribute->type;
 }
 
-void dataModel_createAttributeINT64(char name[32], int64_t value)
+void dataModel_addAttributeINT64(char name[TEXT256], int64_t value)
 {
     Attribute *newAttribute = malloc(sizeof(Attribute));
     strcpy(newAttribute->Name, name);
@@ -18,14 +17,14 @@ void dataModel_createAttributeINT64(char name[32], int64_t value)
     HASH_ADD_STR(MakeAttributeHashable, Name, newAttribute);
 }
 
-int64_t getValueINT64(char name[32])
+int64_t getValueINT64(char name[TEXT256])
 {
     Attribute *returnAttribute;
     HASH_FIND_STR(MakeAttributeHashable, name, returnAttribute);
     return returnAttribute->data.INTEGER64;
 }
 
-void dataModel_createAttributeINT32(char name[32], int32_t value)
+void dataModel_addAttributeINT32(char name[TEXT256], int32_t value)
 {
     Attribute *newAttribute = malloc(sizeof(Attribute));
     strcpy(newAttribute->Name, name);
@@ -33,14 +32,14 @@ void dataModel_createAttributeINT32(char name[32], int32_t value)
     HASH_ADD_STR(MakeAttributeHashable, Name, newAttribute);
 }
 
-int32_t getValueINT32(char name[32])
+int32_t getValueINT32(char name[TEXT256])
 {
     Attribute *returnAttribute;
     HASH_FIND_STR(MakeAttributeHashable, name, returnAttribute);
     return returnAttribute->data.INTEGER32;
 }
 
-void dataModel_createAttributeDOUBLE(char name[32], double value)
+void dataModel_addAttributeDOUBLE(char name[TEXT256], double value)
 {
     Attribute *newAttribute = malloc(sizeof(Attribute));
     strcpy(newAttribute->Name, name);
@@ -48,23 +47,23 @@ void dataModel_createAttributeDOUBLE(char name[32], double value)
     HASH_ADD_STR(MakeAttributeHashable, Name, newAttribute);
 }
 
-double getValueDOUBLE(char name[32])
+double getValueDOUBLE(char name[TEXT256])
 {
     Attribute *returnAttribute;
     HASH_FIND_STR(MakeAttributeHashable, name, returnAttribute);
     return returnAttribute->data.DOUBLE;
 }
 
-void dataModel_createAttributeTEXT32(char name[32], char *text[32])
+void dataModel_addAttributeTEXT32(char name[TEXT256], char text[TEXT32])
 {
     Attribute *newAttribute = malloc(sizeof(Attribute));
     strcpy(newAttribute->Name, name);
-    strcpy(newAttribute->data.TEXT32, text);
+    strcpy(newAttribute->data.TEXT, text);
     HASH_ADD_STR(MakeAttributeHashable, Name, newAttribute);
 }
-char getValueTEXT32(char name[32])
+void getValueTEXT32(char name[TEXT256], char *returnString[TEXT32])
 {
     Attribute *returnAttribute;
     HASH_FIND_STR(MakeAttributeHashable, name, returnAttribute);
-    return returnAttribute->data.TEXT32;
+    strcpy(returnString, returnAttribute->data.TEXT);
 }

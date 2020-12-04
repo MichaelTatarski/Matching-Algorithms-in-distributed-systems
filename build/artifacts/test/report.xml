@@ -5,10 +5,22 @@
 		<Test id="1">
 			<Name>test/core/test_dataModel.c::test_getValueINT64</Name>
 		</Test>
+		<Test id="2">
+			<Name>test/core/test_dataModel.c::test_getValueINT32</Name>
+		</Test>
+		<Test id="3">
+			<Name>test/core/test_dataModel.c::test_getValueDOUBLE</Name>
+		</Test>
+		<Test id="4">
+			<Name>test/core/test_dataModel.c::test_getTEXT32</Name>
+		</Test>
+		<Test id="5">
+			<Name>test/core/test_dataModel.c::test_getDataType</Name>
+		</Test>
 	</SuccessfulTests>
 	<IgnoredTests/>
 	<Statistics>
-		<Tests>1</Tests>
+		<Tests>5</Tests>
 		<Ignores>0</Ignores>
 		<FailuresTotal>0</FailuresTotal>
 		<Errors>0</Errors>
