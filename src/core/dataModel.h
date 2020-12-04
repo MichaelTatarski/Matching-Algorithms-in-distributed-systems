@@ -11,7 +11,7 @@
 typedef struct Attribute
 {
 
-    char *Name[TEXT256];
+    char Name[TEXT256];
     Data data;
     DataType type;
     UT_hash_handle hh;
@@ -20,13 +20,13 @@ typedef struct Attribute
 
 typedef struct DataModel
 {
-    Attribute DataModelHead;
+    Attribute *DataModelHead;
 
 } DataModel;
 
-DataModel dataModel_create();
+DataModel *dataModel_create();
 
-int getDataType(char name[TEXT256]);
+DataType getDataType(char name[TEXT256]);
 
 void dataModel_addAttributeINT64(char name[TEXT256], int64_t value);
 int64_t getValueINT64(char name[TEXT256]);
@@ -38,6 +38,6 @@ void dataModel_addAttributeDOUBLE(char name[TEXT256], double value);
 double getValueDOUBLE(char name[TEXT256]);
 
 void dataModel_addAttributeTEXT32(char name[TEXT256], char text[TEXT32]);
-void getValueTEXT32(char name[TEXT256], char *returnString[TEXT32]);
+void getValueTEXT32(char name[TEXT256], char returnString[TEXT32]);
 
 #endif // DATAMODEL_H

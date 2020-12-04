@@ -11,7 +11,7 @@ typedef union Data
     int64_t INTEGER64;
     int32_t INTEGER32;
     double DOUBLE;
-    char *TEXT[TEXT32];
+    char TEXT[TEXT32];
 } Data;
 
 typedef enum DataType

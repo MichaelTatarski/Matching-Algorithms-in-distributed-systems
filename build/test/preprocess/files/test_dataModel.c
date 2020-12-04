@@ -102,7 +102,7 @@ void test_getTEXT32(void)
 
     dataModel_addAttributeTEXT32(testName, testString);
 
-    char *returnString[4];
+    char returnString[4];
 
     getValueTEXT32(testName, returnString);
 
@@ -117,5 +117,19 @@ void test_getTEXT32(void)
 void test_getDataType(void)
 
 {
+
+    char testName[] = "TestDouble";
+
+    double testDouble = 2020;
+
+    dataModel_addAttributeDOUBLE(testName, testDouble);
+
+    DataType expected = DOUBLE;
+
+    UnityAssertEqualNumber((UNITY_INT)((expected)), (UNITY_INT)((getDataType(testName))), (
+
+   ((void *)0)
+
+   ), (UNITY_UINT)(58), UNITY_DISPLAY_STYLE_INT);
 
 }

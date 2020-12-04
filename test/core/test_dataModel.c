@@ -45,10 +45,15 @@ void test_getTEXT32(void)
     char testName[] = "TestString";
     char testString[TEXT32] = "KZH";
     dataModel_addAttributeTEXT32(testName, testString);
-    char *returnString[TEXT32];
+    char returnString[TEXT32];
     getValueTEXT32(testName, returnString);
     TEST_ASSERT_EQUAL_STRING(testString, returnString);
 }
 void test_getDataType(void)
 {
+    char testName[] = "TestDouble";
+    double testDouble = 2020;
+    dataModel_addAttributeDOUBLE(testName, testDouble);
+    DataType expected = DOUBLE;
+    TEST_ASSERT_EQUAL_INT(expected, getDataType(testName));
 }
