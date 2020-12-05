@@ -2,6 +2,9 @@
 
 /*=======Automagically Detected Files To Include=====*/
 #include "unity.h"
+#ifndef UNITY_INCLUDE_DOUBLE
+#define UNITY_INCLUDE_DOUBLE
+#endif /* UNITY_INCLUDE_DOUBLE */
 
 int GlobalExpectCount;
 int GlobalVerifyOrder;
@@ -10,7 +13,10 @@ char* GlobalOrderError;
 /*=======External Functions This Runner Calls=====*/
 extern void setUp(void);
 extern void tearDown(void);
-extern void test_filter_Create(void);
+extern void test_addSubFilterINT64(void);
+extern void test_addSubFilterINT32(void);
+extern void test_addSubFilterDouble(void);
+extern void test_addSubFilterText(void);
 
 
 /*=======Mock Management=====*/
@@ -75,7 +81,10 @@ static void run_test(UnityTestFunction func, const char* name, int line_num)
 int main(void)
 {
   UnityBegin("test_filterModel.c");
-  run_test(test_filter_Create, "test_filter_Create", 13);
+  run_test(test_addSubFilterINT64, "test_addSubFilterINT64", 12);
+  run_test(test_addSubFilterINT32, "test_addSubFilterINT32", 22);
+  run_test(test_addSubFilterDouble, "test_addSubFilterDouble", 32);
+  run_test(test_addSubFilterText, "test_addSubFilterText", 42);
 
   return UnityEnd();
 }

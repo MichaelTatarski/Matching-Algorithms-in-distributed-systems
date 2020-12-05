@@ -7,6 +7,7 @@ src/core/dataModel.c:
 - UNITY_INCLUDE_DOUBLE
 src/core/filterModel.c:
 - TEST
+- UNITY_INCLUDE_DOUBLE
 src/core/predicateCountingAlgorithm.c:
 - TEST
 - UNITY_INCLUDE_DOUBLE
