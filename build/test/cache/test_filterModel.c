@@ -96,3 +96,19 @@ void test_addSubFilterText(void)
     Filter_addSubFilterTEXT32(testFilter, "2ndtestName", EQUALS, "KES");
 
 }
+
+
+
+void test_FilterList_addFilter(void)
+
+{
+
+    FilterList *testFilterList = FilterList_create();
+
+    Filter *testFilter = Filter_create();
+
+    Filter_addSubFilterDOUBLE(testFilter, "TestName", GREATER_THAN, 40.2);
+
+    FilterList_addFilter(testFilterList, testFilter);
+
+}

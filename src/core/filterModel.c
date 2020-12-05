@@ -49,3 +49,10 @@ FilterList *FilterList_create(void)
     newFilterList = NULL;
     return newFilterList;
 }
+
+void FilterList_addFilter(FilterList *filterList, Filter *filter)
+{
+    FilterList *newFilterListNode = malloc(sizeof(FilterList));
+    newFilterListNode->FilterHead = filter;
+    LL_APPEND(filterList, newFilterListNode);
+}

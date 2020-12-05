@@ -17,6 +17,7 @@ extern void test_addSubFilterINT64(void);
 extern void test_addSubFilterINT32(void);
 extern void test_addSubFilterDouble(void);
 extern void test_addSubFilterText(void);
+extern void test_FilterList_addFilter(void);
 
 
 /*=======Mock Management=====*/
@@ -85,6 +86,7 @@ int main(void)
   run_test(test_addSubFilterINT32, "test_addSubFilterINT32", 22);
   run_test(test_addSubFilterDouble, "test_addSubFilterDouble", 32);
   run_test(test_addSubFilterText, "test_addSubFilterText", 42);
+  run_test(test_FilterList_addFilter, "test_FilterList_addFilter", 52);
 
   return UnityEnd();
 }
