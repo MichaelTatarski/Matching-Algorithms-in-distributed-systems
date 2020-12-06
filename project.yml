@@ -20,7 +20,7 @@
 #  :use_assembly: TRUE
 
 #:release_build:
-#  :output: MyApp.out
+#  :output: libMADS.a
 #  :use_assembly: FALSE
 
 :environment:

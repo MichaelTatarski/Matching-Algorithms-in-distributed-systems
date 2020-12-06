@@ -3,19 +3,19 @@
 	<FailedTests/>
 	<SuccessfulTests>
 		<Test id="1">
-			<Name>test/core/test_dataModel.c::test_getValueINT64</Name>
+			<Name>test/core/test_filterModel.c::test_addSubFilterINT64</Name>
 		</Test>
 		<Test id="2">
-			<Name>test/core/test_dataModel.c::test_getValueINT32</Name>
+			<Name>test/core/test_filterModel.c::test_addSubFilterINT32</Name>
 		</Test>
 		<Test id="3">
-			<Name>test/core/test_dataModel.c::test_getValueDOUBLE</Name>
+			<Name>test/core/test_filterModel.c::test_addSubFilterDouble</Name>
 		</Test>
 		<Test id="4">
-			<Name>test/core/test_dataModel.c::test_getTEXT32</Name>
+			<Name>test/core/test_filterModel.c::test_addSubFilterText</Name>
 		</Test>
 		<Test id="5">
-			<Name>test/core/test_dataModel.c::test_dataModel_getDataType</Name>
+			<Name>test/core/test_filterModel.c::test_FilterList_addFilter</Name>
 		</Test>
 	</SuccessfulTests>
 	<IgnoredTests/>

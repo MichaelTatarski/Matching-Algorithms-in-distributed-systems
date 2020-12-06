@@ -19,7 +19,7 @@
 :release_build:
   :use_assembly: false
   :artifacts: []
-  :output: libDFM.a
+  :output: libMADS.a
 :paths:
   :test:
   - "+:test/**"
