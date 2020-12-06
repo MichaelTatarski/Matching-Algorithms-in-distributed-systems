@@ -34,7 +34,7 @@ void test_getValueINT64(void)
 
     int64_t returnValue;
 
-    returnValue = dataModel_getValueINT64(testDataModel, testName);
+    returnValue = attribute_getValueINT64(testDataModel, testName);
 
     UnityAssertEqualNumber((UNITY_INT)((testInt64)), (UNITY_INT)((returnValue)), (
 
@@ -60,7 +60,7 @@ void test_getValueINT32(void)
 
     int32_t returnValue;
 
-    returnValue = dataModel_getValueINT32(testDataModel, testName);
+    returnValue = attribute_getValueINT32(testDataModel, testName);
 
     UnityAssertEqualNumber((UNITY_INT)((testInt32)), (UNITY_INT)((returnValue)), (
 
@@ -86,7 +86,7 @@ void test_getValueDOUBLE(void)
 
     int32_t returnValue;
 
-    returnValue = dataModel_getValueDOUBLE(testDataModel, testName);
+    returnValue = attribute_getValueDOUBLE(testDataModel, testName);
 
     UnityAssertDoublesWithin((UNITY_DOUBLE)((UNITY_DOUBLE)((testDouble)) * (UNITY_DOUBLE)(1e-12)), (UNITY_DOUBLE)((UNITY_DOUBLE)((testDouble))), (UNITY_DOUBLE)((UNITY_DOUBLE)((returnValue))), ((
 
@@ -112,7 +112,7 @@ void test_getTEXT32(void)
 
     char returnString[4];
 
-    dataModel_getValueTEXT32(testDataModel, testName, returnString);
+    attribute_getValueTEXT32(testDataModel, testName, returnString);
 
     UnityAssertEqualString((const char*)((testString)), (const char*)((returnString)), (
 
@@ -136,7 +136,7 @@ void test_dataModel_getDataType(void)
 
     DataType expected = DOUBLE;
 
-    UnityAssertEqualNumber((UNITY_INT)((expected)), (UNITY_INT)((dataModel_getDataType(testDataModel, testName))), (
+    UnityAssertEqualNumber((UNITY_INT)((expected)), (UNITY_INT)((attribute_getDataType(testDataModel, testName))), (
 
    ((void *)0)
 
