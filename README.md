@@ -2,7 +2,7 @@
 
 This project is part of the NEiDI course of the winter lecture 2020/2021. The objective of our project is to implement different matching algorithms in a Pub/Sub system and compare them with regard to their time efficiency on a testbed. In order to accomplish that, we will develop a simple data and filter model as well.
 
-> **Note:** Our tool is intended to be used on an embedded Linux system with a GCC compiler. It is not yet supported for other platforms and will probably not compile on other architectures.
+> **Note:** Our tool is intended to be used on an embedded Linux system with a GCC compiler. It is not yet supported for other platforms and will probably not compile on other architectures. Please be aware that our tool doesn't provide a command line interface - it merely comes as a simple static library.
 
 ## Installation
 
