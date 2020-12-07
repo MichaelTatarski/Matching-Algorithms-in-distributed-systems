@@ -18,28 +18,28 @@ Filter *Filter_create(void)
 void Filter_addSubFilterINT64(Filter *filter, char name[32], Operator constraintOperator, int64_t constraintValue)
 {
     Filter *newSubFilter = createSubFilter(name, constraintOperator);
-    newSubFilter->constrainValue.INTEGER64 = constraintValue;
+    newSubFilter->constraintValue.INTEGER64 = constraintValue;
     LL_APPEND(filter, newSubFilter);
 }
 
 void Filter_addSubFilterINT32(Filter *filter, char name[32], Operator constraintOperator, int32_t constraintValue)
 {
     Filter *newSubFilter = createSubFilter(name, constraintOperator);
-    newSubFilter->constrainValue.INTEGER32 = constraintValue;
+    newSubFilter->constraintValue.INTEGER32 = constraintValue;
     LL_APPEND(filter, newSubFilter);
 }
 
 void Filter_addSubFilterDOUBLE(Filter *filter, char name[32], Operator constraintOperator, double constraintValue)
 {
     Filter *newSubFilter = createSubFilter(name, constraintOperator);
-    newSubFilter->constrainValue.DOUBLE = constraintValue;
+    newSubFilter->constraintValue.DOUBLE = constraintValue;
     LL_APPEND(filter, newSubFilter);
 }
 
 void Filter_addSubFilterTEXT32(Filter *filter, char name[32], Operator constraintOperator, char constraintValue[32])
 {
     Filter *newSubFilter = createSubFilter(name, constraintOperator);
-    strcpy(newSubFilter->constrainValue.TEXT, constraintValue);
+    strcpy(newSubFilter->constraintValue.TEXT, constraintValue);
     LL_APPEND(filter, newSubFilter);
 }
 

@@ -12,7 +12,7 @@ typedef struct Filter
 {
     char name[32];
     Operator Operator;
-    Data constrainValue;
+    Data constraintValue;
     struct Filter *next;
 
 } Filter;
