@@ -23,9 +23,7 @@ Simply follow the steps listed below to integrate the tool into your own project
 Before we start using the matching algorithms included in our tool, we need to define a data model and some corresponding filters, which are being used as an input. Creating an empty data model can be done by declaring a pointer variable of the type `DataModel` and allocating memory space by calling `dataModel_create()`
 
 ```c
-
 DataModel *newdataModel =  dataModel_create();
-
 ```
 
 Now we can add some attributes to our newly created datamodel. For the sake of simplicity, we will consider a real life example of a temperature notifcation with the following attributes:
@@ -89,7 +87,6 @@ Building = KZH \wedge Floor = 3 \wedge Temperature \geq 18 \wedge Temperature < 
 This is how we would express our logical formula with our tool interface:
 
 ```c
-
 Filter *newFilter =  Filter_create();
 
 
@@ -101,7 +98,6 @@ Filter_addSubFilterTEXT32(newFilter, "Floor", EQUALS, 3);
 Filter_addSubFilterTEXT32(newFilter, "Temperature", GREATER_EQUAL, 18);
 
 Filter_addSubFilterTEXT32(newFilter, "Temperature", SMALLER_THAN, 22);
-
 ```
 
 However, In most cases we aren't interested in whether or not just one particular filter is matching a data model, but rather if an entire filter list containing multiple filters matches a data model.
