@@ -82,9 +82,9 @@ Each filter consists of an arbitrary number of subfilters in our tool. A subfilt
 
 The procedure is quite similar to the creation of a datamodel. First we declare and allocate memory for our filter by calling `Filter_create()`, then we add some subfilters to it. Lets say for instance we want to initialise a filter with these properties:
 
-$$
-Building = KZH \wedge Floor = 3\wedge Temperature \geq  18 \wedge Temperature < 22
-$$
+```math
+Building = KZH \wedge Floor = 3 \wedge Temperature \geq 18 \wedge Temperature < 22
+```
 
 This is how we would express our logical formula with our tool interface:
 
