@@ -1,6 +1,6 @@
 # NEidI AVA - matching algorithms in PubSub systems
 
-This project is part of the NEiDI course of the winter lecture 2020/2021. The objective of our project is to implement different matching algorithms in a _Pub/Sub system_ and compare them with regard to their time efficiency on a testbed. In order to accomplish that, we will develop a simple _data and filter model_ as well.
+This project is part of the NEiDI course of the winter lecture 2020/2021. The objective of our project is to implement different matching algorithms in a Pub/Sub system and compare them with regard to their time efficiency on a testbed. In order to accomplish that, we will develop a simple data and filter model as well.
 
 > **Note:** Our tool is intended to be used on an embedded Linux system with a GCC compiler. It is not yet supported for other platforms and will probably not compile on other architectures.
 
@@ -46,7 +46,7 @@ Now we can add some attributes to our newly created data model. For the sake of 
 
 - Room (text 32, utf8): 273
 
-Transferring these attributes into our data model is quite straight forward with the interface provided by our tool. The API supports INT64, INT32, DOUBLE and TEXT32 as valid data types.
+Transferring these attributes into our data model is quite straight forward with the interface provided by our tool. The API supports _INT64_, _INT32_, _DOUBLE_ and _TEXT32_ as valid data types.
 
 ```c
 dataModel_addAttributeINT64(newdataModel, "VendorID", 1234567890);
@@ -59,8 +59,6 @@ dataModel_addAttributeTEXT32(newdataModel, "Building", KZH);
 dataModel_addAttributeTEXT32(newdataModel, "Floor", 2);
 dataModel_addAttributeTEXT32(newdataModel, "Room", 273);
 ```
-
----
 
 ### 2. Creating some corresponding filters
 
@@ -79,10 +77,10 @@ This is how we would express our logical formula with our tool interface:
 ```c
 Filter *newFilter =  Filter_create();
 
-Filter_addSubFilterTEXT32(newFilter, "Building", EQUALS, KZH);
-Filter_addSubFilterTEXT32(newFilter, "Floor", EQUALS, 3);
-Filter_addSubFilterTEXT32(newFilter, "Temperature", GREATER_EQUAL, 18);
-Filter_addSubFilterTEXT32(newFilter, "Temperature", SMALLER_THAN, 22);
+Filter_addSubFilterTEXT32(newFilter, "Building", EQUALS, "KZH");
+Filter_addSubFilterTEXT32(newFilter, "Floor", EQUALS, "3");
+Filter_addSubFilterDOUBLE(newFilter, "Temperature", GREATER_EQUAL, 18);
+Filter_addSubFilterDOUBLE(newFilter, "Temperature", SMALLER_THAN, 22);
 ```
 
 However, In most cases we aren't interested in whether or not just one particular filter is matching a data model, but rather if an entire filter list containing multiple filters matches a data model.
@@ -94,8 +92,6 @@ FilterList *newFilterList =  FilterList_create();
 
 FilterList_addFilter(newFilterList, newFilter);
 ```
-
----
 
 ### 3. Utilizing the matching algorithms (not yet implemented)
 
