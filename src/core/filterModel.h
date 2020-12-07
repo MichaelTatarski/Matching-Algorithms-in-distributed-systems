@@ -30,7 +30,7 @@ void filter_addSubFilterINT32(Filter *filter, char name[32], Operator constraint
 void filter_addSubFilterDOUBLE(Filter *filter, char name[32], Operator constraintOperator, double constraintValue);
 void filter_addSubFilterTEXT32(Filter *filter, char name[32], Operator constraintOperator, char constraintValue[32]);
 
-FilterList *FilterList_create(void);
-void FilterList_addFilter(FilterList *filterList, Filter *filter);
+FilterList *filterList_create(void);
+void filterList_addFilter(FilterList *filterList, Filter *filter);
 
 #endif // FILTERMODEL_H

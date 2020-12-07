@@ -62,7 +62,7 @@ dataModel_addAttributeTEXT32(newdataModel, "Room", 273);
 
 ### 2. Creating some corresponding filters
 
-At this stage our data model is basically finished. Now its time to create some corresponding filters. Each filter consists of an arbitrary number of subfilters in our tool. A subfilter contains a predicate which the user wants to be filtered as well as an operator and a value. The procedure is quite similar to the creation of a data model. First we declare and allocate memory for our filter by calling `filter_create()`, then we add some subfilters to it. Let's say for instance we want to initialize a filter with these properties:
+At this stage our data model is basically finished. Now it's time to create some corresponding filters. Each filter consists of an arbitrary number of subfilters in our tool. A subfilter contains a predicate which the user wants to be filtered as well as an operator and a value. The procedure is quite similar to the creation of a data model. First we declare and allocate memory for our filter by calling `filter_create()`, then we add some subfilters to it. Let's say for instance we want to initialize a filter with these properties:
 
 ```math
 Building = KZH \wedge Floor = 3 \wedge Temperature \geq 18 \wedge Temperature < 22
@@ -82,9 +82,9 @@ filter_addSubFilterDOUBLE(newFilter, "Temperature", SMALLER_THAN, 22);
 However, in most cases we aren't interested in whether or not just one particular filter is matching a data model, but rather if an entire filter list containing multiple filters matches a data model. For that purpose our tool provides an easy-to-use filter list interface:
 
 ```c
-FilterList *newFilterList =  FilterList_create();
+FilterList *newFilterList =  filterList_create();
 
-FilterList_addFilter(newFilterList, newFilter);
+filterList_addFilter(newFilterList, newFilter);
 ```
 
 ### 3. Utilizing the matching algorithms (not yet implemented)

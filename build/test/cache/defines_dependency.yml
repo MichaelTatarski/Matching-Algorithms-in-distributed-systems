@@ -1,7 +1,0 @@
----
-src/core/dataModel.c:
-- TEST
-- UNITY_INCLUDE_DOUBLE
-src/core/filterModel.c:
-- TEST
-- UNITY_INCLUDE_DOUBLE
