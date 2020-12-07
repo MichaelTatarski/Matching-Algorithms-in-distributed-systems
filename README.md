@@ -26,7 +26,7 @@ Before we start using the matching algorithms included in our tool, we need to d
 DataModel *newdataModel =  dataModel_create();
 ```
 
-Now we can add some attributes to our newly created datamodel. For the sake of simplicity, we will consider a real life example of a temperature notifcation with the following attributes:
+Now we can add some attributes to our newly created data model. For the sake of simplicity, we will consider a real life example of a temperature notification with the following attributes:
 
 - VendorID (int64): 1234567890
 
@@ -49,36 +49,26 @@ Now we can add some attributes to our newly created datamodel. For the sake of s
 Transferring these attributes into our data model is quite straight forward with the interface provided by our tool. The API supports INT64, INT32, DOUBLE and TEXT32 as valid data types.
 
 ```c
-
 dataModel_addAttributeINT64(newdataModel, "VendorID", 1234567890);
-
 dataModel_addAttributeINT64(newdataModel, "SensorID", 471108151337);
-
 dataModel_addAttributeDOUBLE(newdataModel, "Temperature", 20.45);
-
 dataModel_addAttributeINT32(newdataModel, "Unit", 1);
-
 dataModel_addAttributeINT64(newdataModel, "Timestamp", 1606841111);
-
 dataModel_addAttributeTEXT32(newdataModel, "SensorLabel", MyOffice);
-
 dataModel_addAttributeTEXT32(newdataModel, "Building", KZH);
-
 dataModel_addAttributeTEXT32(newdataModel, "Floor", 2);
-
 dataModel_addAttributeTEXT32(newdataModel, "Room", 273);
-
 ```
 
 ---
 
 ### 2. Creating some corresponding filters
 
-At this stage our datamodel is basically finished. Now its time to create some corresponding filters.
+At this stage our data model is basically finished. Now its time to create some corresponding filters.
 
 Each filter consists of an arbitrary number of subfilters in our tool. A subfilter contains a predicate which the user wants to be filtered as well as an operator and a value.
 
-The procedure is quite similar to the creation of a datamodel. First we declare and allocate memory for our filter by calling `Filter_create()`, then we add some subfilters to it. Lets say for instance we want to initialise a filter with these properties:
+The procedure is quite similar to the creation of a data model. First we declare and allocate memory for our filter by calling `Filter_create()`, then we add some subfilters to it. Let's say for instance we want to initialize a filter with these properties:
 
 ```math
 Building = KZH \wedge Floor = 3 \wedge Temperature \geq 18 \wedge Temperature < 22
@@ -89,14 +79,9 @@ This is how we would express our logical formula with our tool interface:
 ```c
 Filter *newFilter =  Filter_create();
 
-
-
 Filter_addSubFilterTEXT32(newFilter, "Building", EQUALS, KZH);
-
 Filter_addSubFilterTEXT32(newFilter, "Floor", EQUALS, 3);
-
 Filter_addSubFilterTEXT32(newFilter, "Temperature", GREATER_EQUAL, 18);
-
 Filter_addSubFilterTEXT32(newFilter, "Temperature", SMALLER_THAN, 22);
 ```
 
@@ -105,18 +90,16 @@ However, In most cases we aren't interested in whether or not just one particula
 For that purpose our tool provides an easy-to-use filter list interface.
 
 ```c
-
 FilterList *newFilterList =  FilterList_create();
 
 FilterList_addFilter(newFilterList, newFilter);
-
 ```
 
 ---
 
 ### 3. Utilizing the matching algorithms (not yet implemented)
 
-Now we have created all the necassary componenents, which are needed as an input for our matching algorithms.
+Now we have created all the necessary components, which are needed as an input for our matching algorithms.
 
 To be continued...
 
@@ -126,7 +109,7 @@ Even though our tool claims to be created as a low level library in C, we didn't
 
 Furthermore, pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change. Please make sure to update tests as appropriate. A Doxygen documentation will be available, when the project is ready for an early alpha release.
 
-An extensive documentation for the APIS can be found inside the **core folder**.
+An extensive documentation for the APIs can be found inside the **core folder**.
 
 ## License
 
