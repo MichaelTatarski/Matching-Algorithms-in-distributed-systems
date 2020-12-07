@@ -8,35 +8,35 @@ Filter *createSubFilter(char name[32], Operator constraintOperator)
     return newSubFilter;
 }
 
-Filter *Filter_create(void)
+Filter *filter_create(void)
 {
     Filter *newFilter = malloc(sizeof(Filter));
     newFilter = NULL;
     return newFilter;
 }
 
-void Filter_addSubFilterINT64(Filter *filter, char name[32], Operator constraintOperator, int64_t constraintValue)
+void filter_addSubFilterINT64(Filter *filter, char name[32], Operator constraintOperator, int64_t constraintValue)
 {
     Filter *newSubFilter = createSubFilter(name, constraintOperator);
     newSubFilter->constraintValue.INTEGER64 = constraintValue;
     LL_APPEND(filter, newSubFilter);
 }
 
-void Filter_addSubFilterINT32(Filter *filter, char name[32], Operator constraintOperator, int32_t constraintValue)
+void filter_addSubFilterINT32(Filter *filter, char name[32], Operator constraintOperator, int32_t constraintValue)
 {
     Filter *newSubFilter = createSubFilter(name, constraintOperator);
     newSubFilter->constraintValue.INTEGER32 = constraintValue;
     LL_APPEND(filter, newSubFilter);
 }
 
-void Filter_addSubFilterDOUBLE(Filter *filter, char name[32], Operator constraintOperator, double constraintValue)
+void filter_addSubFilterDOUBLE(Filter *filter, char name[32], Operator constraintOperator, double constraintValue)
 {
     Filter *newSubFilter = createSubFilter(name, constraintOperator);
     newSubFilter->constraintValue.DOUBLE = constraintValue;
     LL_APPEND(filter, newSubFilter);
 }
 
-void Filter_addSubFilterTEXT32(Filter *filter, char name[32], Operator constraintOperator, char constraintValue[32])
+void filter_addSubFilterTEXT32(Filter *filter, char name[32], Operator constraintOperator, char constraintValue[32])
 {
     Filter *newSubFilter = createSubFilter(name, constraintOperator);
     strcpy(newSubFilter->constraintValue.TEXT, constraintValue);

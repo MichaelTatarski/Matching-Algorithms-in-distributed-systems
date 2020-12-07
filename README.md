@@ -10,11 +10,11 @@ Even though we are developing with multiple files, we aim for a single-header fo
 
 Simply follow the steps listed below to integrate the tool into your own project:
 
-1.  copy the **libMADS.a** and the **libMADS.h** file from the release build/release path into your project directory
+1.  Copy the **libMADS.a** and the **libMADS.h** file from the release build/release path into your project directory
 
-2.  include the header file into your source code
+2.  Include the header file into your source code
 
-3.  compile your program into an object file and link it against the archive file
+3.  Compile your program into an object file and link it against the archive file
 
 ## Getting Started
 
@@ -66,7 +66,7 @@ At this stage our data model is basically finished. Now its time to create some 
 
 Each filter consists of an arbitrary number of subfilters in our tool. A subfilter contains a predicate which the user wants to be filtered as well as an operator and a value.
 
-The procedure is quite similar to the creation of a data model. First we declare and allocate memory for our filter by calling `Filter_create()`, then we add some subfilters to it. Let's say for instance we want to initialize a filter with these properties:
+The procedure is quite similar to the creation of a data model. First we declare and allocate memory for our filter by calling `filter_create()`, then we add some subfilters to it. Let's say for instance we want to initialize a filter with these properties:
 
 ```math
 Building = KZH \wedge Floor = 3 \wedge Temperature \geq 18 \wedge Temperature < 22
@@ -75,15 +75,15 @@ Building = KZH \wedge Floor = 3 \wedge Temperature \geq 18 \wedge Temperature < 
 This is how we would express our logical formula with our tool interface:
 
 ```c
-Filter *newFilter =  Filter_create();
+Filter *newFilter =  filter_create();
 
-Filter_addSubFilterTEXT32(newFilter, "Building", EQUALS, "KZH");
-Filter_addSubFilterTEXT32(newFilter, "Floor", EQUALS, "3");
-Filter_addSubFilterDOUBLE(newFilter, "Temperature", GREATER_EQUAL, 18);
-Filter_addSubFilterDOUBLE(newFilter, "Temperature", SMALLER_THAN, 22);
+filter_addSubFilterTEXT32(newFilter, "Building", EQUALS, "KZH");
+filter_addSubFilterTEXT32(newFilter, "Floor", EQUALS, "3");
+filter_addSubFilterDOUBLE(newFilter, "Temperature", GREATER_EQUAL, 18);
+filter_addSubFilterDOUBLE(newFilter, "Temperature", SMALLER_THAN, 22);
 ```
 
-However, In most cases we aren't interested in whether or not just one particular filter is matching a data model, but rather if an entire filter list containing multiple filters matches a data model. For that purpose our tool provides an easy-to-use filter list interface:
+However, in most cases we aren't interested in whether or not just one particular filter is matching a data model, but rather if an entire filter list containing multiple filters matches a data model. For that purpose our tool provides an easy-to-use filter list interface:
 
 ```c
 FilterList *newFilterList =  FilterList_create();

@@ -24,11 +24,11 @@ typedef struct FilterList
 
 } FilterList;
 
-Filter *Filter_create(void);
-void Filter_addSubFilterINT64(Filter *filter, char name[32], Operator constraintOperator, int64_t constraintValue);
-void Filter_addSubFilterINT32(Filter *filter, char name[32], Operator constraintOperator, int32_t constraintValue);
-void Filter_addSubFilterDOUBLE(Filter *filter, char name[32], Operator constraintOperator, double constraintValue);
-void Filter_addSubFilterTEXT32(Filter *filter, char name[32], Operator constraintOperator, char constraintValue[32]);
+Filter *filter_create(void);
+void filter_addSubFilterINT64(Filter *filter, char name[32], Operator constraintOperator, int64_t constraintValue);
+void filter_addSubFilterINT32(Filter *filter, char name[32], Operator constraintOperator, int32_t constraintValue);
+void filter_addSubFilterDOUBLE(Filter *filter, char name[32], Operator constraintOperator, double constraintValue);
+void filter_addSubFilterTEXT32(Filter *filter, char name[32], Operator constraintOperator, char constraintValue[32]);
 
 FilterList *FilterList_create(void);
 void FilterList_addFilter(FilterList *filterList, Filter *filter);
