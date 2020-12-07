@@ -101,6 +101,11 @@ Furthermore, pull requests are welcome. For major changes, please open an issue 
 
 A simple documentation for the APIs can be found inside the **core folder**.
 
+```bash
+├── src
+│   ├── core #core folder containing essential functionality
+```
+
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
