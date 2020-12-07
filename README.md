@@ -10,9 +10,9 @@ Even though we are developing with multiple files, we aim for a single-header fo
 
 Simply follow the steps listed below to integrate the tool into your own project:
 
-1.  copy the **libMADS.a** and the **libMADS.h** file from the release build/release path into your directionary
+1.  copy the **libMADS.a** and the **libMADS.h** file from the release build/release path into your project directory
 
-2.  include the header file in your source code where you wish to use the interface of our tool
+2.  include the header file into your source code
 
 3.  compile your program into an object file and link it against the archive file
 
@@ -83,9 +83,7 @@ Filter_addSubFilterDOUBLE(newFilter, "Temperature", GREATER_EQUAL, 18);
 Filter_addSubFilterDOUBLE(newFilter, "Temperature", SMALLER_THAN, 22);
 ```
 
-However, In most cases we aren't interested in whether or not just one particular filter is matching a data model, but rather if an entire filter list containing multiple filters matches a data model.
-
-For that purpose our tool provides an easy-to-use filter list interface.
+However, In most cases we aren't interested in whether or not just one particular filter is matching a data model, but rather if an entire filter list containing multiple filters matches a data model. For that purpose our tool provides an easy-to-use filter list interface:
 
 ```c
 FilterList *newFilterList =  FilterList_create();
