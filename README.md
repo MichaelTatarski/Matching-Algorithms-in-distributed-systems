@@ -54,10 +54,10 @@ dataModel_addAttributeINT64(newdataModel, "SensorID", 471108151337);
 dataModel_addAttributeDOUBLE(newdataModel, "Temperature", 20.45);
 dataModel_addAttributeINT32(newdataModel, "Unit", 1);
 dataModel_addAttributeINT64(newdataModel, "Timestamp", 1606841111);
-dataModel_addAttributeTEXT32(newdataModel, "SensorLabel", MyOffice);
-dataModel_addAttributeTEXT32(newdataModel, "Building", KZH);
-dataModel_addAttributeTEXT32(newdataModel, "Floor", 2);
-dataModel_addAttributeTEXT32(newdataModel, "Room", 273);
+dataModel_addAttributeTEXT32(newdataModel, "SensorLabel", "MyOffice");
+dataModel_addAttributeTEXT32(newdataModel, "Building", "KZH");
+dataModel_addAttributeTEXT32(newdataModel, "Floor", "2");
+dataModel_addAttributeTEXT32(newdataModel, "Room", "273");
 ```
 
 ### 2. Creating some corresponding filters
