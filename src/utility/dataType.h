@@ -3,8 +3,7 @@
 
 #include <stdint.h>
 
-#define TEXT32 4
-#define TEXT256 32
+#define TEXT32 32
 
 typedef union Data
 {

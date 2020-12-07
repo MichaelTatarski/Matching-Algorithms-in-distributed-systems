@@ -83,7 +83,6 @@ However, in most cases we aren't interested in whether or not just one particula
 
 ```c
 FilterList *newFilterList =  filterList_create();
-
 filterList_addFilter(newFilterList, newFilter);
 ```
 
