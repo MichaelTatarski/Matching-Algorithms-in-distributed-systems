@@ -10,7 +10,7 @@ Even though we are developing with multiple files, we aim for a single-header fo
 
 Simply follow the steps listed below to integrate the tool into your own project:
 
-1.  Copy the **libMADS.a** and the **libMADS.h** file from the release build/release path into your project directory
+1.  Copy the **libMADS.a** and the **libMADS.h** file from the release _build/release_ path into your project directory
 
 2.  Include the header file into your source code
 
