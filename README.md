@@ -10,7 +10,7 @@ Even though we are developing with multiple files, we aim for a single-header fo
 
 Simply follow the steps listed below to integrate the tool into your own project:
 
-1.  Copy the **libMADS.a** ([Link](https://git.informatik.uni-rostock.de/mt382/neidi-ava-matching-algorithms-in-pubsub-systems/-/raw/master/build/release/libMADS.a?inline=false)) and the **libMADS.h** ([Link](https://git.informatik.uni-rostock.de/mt382/neidi-ava-matching-algorithms-in-pubsub-systems/-/raw/master/build/release/libMADS.h?inline=false)) file from the release _build/release_ path into your project directory
+1.  Copy the **libMADS.a** and the **libMADS.h** file from the release _build/release_ path into your project directory
 
 2.  Include the header file into your source code
 
