@@ -1,0 +1,34 @@
+---
+:source:
+  :path: test/core/dataModel
+  :file: test_dataModel.c
+:successes:
+- :test: test_getValueINT64
+  :line: 12
+  :message: ''
+  :unity_test_time: 0
+- :test: test_getValueINT32
+  :line: 23
+  :message: ''
+  :unity_test_time: 0
+- :test: test_getValueDOUBLE
+  :line: 34
+  :message: ''
+  :unity_test_time: 0
+- :test: test_getTEXT32
+  :line: 45
+  :message: ''
+  :unity_test_time: 0
+- :test: test_dataModel_getDataType
+  :line: 55
+  :message: ''
+  :unity_test_time: 0
+:failures: []
+:ignores: []
+:counts:
+  :total: 5
+  :passed: 5
+  :failed: 0
+  :ignored: 0
+:stdout: []
+:time: 0.0007940000000417058

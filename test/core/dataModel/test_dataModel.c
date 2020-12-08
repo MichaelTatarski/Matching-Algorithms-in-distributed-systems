@@ -16,7 +16,7 @@ void test_getValueINT64(void)
     int64_t testInt64 = 2020;
     dataModel_addAttributeINT64(testDataModel, testName, testInt64);
     int64_t returnValue;
-    returnValue = attribute_getValueINT64(testDataModel, testName);
+    returnValue = dataModel_getValueINT64(testDataModel, testName);
     TEST_ASSERT_EQUAL_INT64(testInt64, returnValue);
 }
 
@@ -27,7 +27,7 @@ void test_getValueINT32(void)
     int32_t testInt32 = 2020;
     dataModel_addAttributeINT32(testDataModel, testName, testInt32);
     int32_t returnValue;
-    returnValue = attribute_getValueINT32(testDataModel, testName);
+    returnValue = dataModel_getValueINT32(testDataModel, testName);
     TEST_ASSERT_EQUAL_INT64(testInt32, returnValue);
 }
 
@@ -38,7 +38,7 @@ void test_getValueDOUBLE(void)
     double testDouble = 2020;
     dataModel_addAttributeDOUBLE(testDataModel, testName, testDouble);
     int32_t returnValue;
-    returnValue = attribute_getValueDOUBLE(testDataModel, testName);
+    returnValue = dataModel_getValueDOUBLE(testDataModel, testName);
     TEST_ASSERT_EQUAL_DOUBLE(testDouble, returnValue);
 }
 
@@ -49,7 +49,7 @@ void test_getTEXT32(void)
     char testString[TEXT32] = "KZH";
     dataModel_addAttributeTEXT32(testDataModel, testName, testString);
     char returnString[TEXT32];
-    attribute_getValueTEXT32(testDataModel, testName, returnString);
+    dataModel_getValueTEXT32(testDataModel, testName, returnString);
     TEST_ASSERT_EQUAL_STRING(testString, returnString);
 }
 void test_dataModel_getDataType(void)
@@ -59,5 +59,5 @@ void test_dataModel_getDataType(void)
     double testDouble = 2020;
     dataModel_addAttributeDOUBLE(testDataModel, testName, testDouble);
     DataType expected = DOUBLE;
-    TEST_ASSERT_EQUAL_INT(expected, attribute_getDataType(testDataModel, testName));
+    TEST_ASSERT_EQUAL_INT(expected, dataModel_getDataType(testDataModel, testName));
 }

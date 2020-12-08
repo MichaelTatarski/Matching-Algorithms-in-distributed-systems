@@ -1,2 +1,3 @@
-build/release/out/c/bruteForceAlgorithm.o: src/core/bruteForceAlgorithm.c \
- src/core/bruteForceAlgorithm.h
+build/release/out/c/bruteForceAlgorithm.o: \
+ src/core/matchingAlgorithms/bruteForceAlgorithm.c \
+ src/core/matchingAlgorithms/bruteForceAlgorithm.h

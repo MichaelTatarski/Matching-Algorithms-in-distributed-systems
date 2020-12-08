@@ -1,5 +1,14 @@
 #include "filterModel.h"
 
+typedef struct Filter
+{
+    char name[32];
+    Operator Operator;
+    Data constraintValue;
+    struct Filter *next;
+
+} Filter;
+
 Filter *createSubFilter(char name[TEXT32], Operator constraintOperator)
 {
     Filter *newSubFilter = malloc(sizeof(Filter));
@@ -41,18 +50,4 @@ void filter_addSubFilterTEXT32(Filter *filter, char name[TEXT32], Operator const
     Filter *newSubFilter = createSubFilter(name, constraintOperator);
     strcpy(newSubFilter->constraintValue.TEXT, constraintValue);
     LL_APPEND(filter, newSubFilter);
-}
-
-FilterList *filterList_create(void)
-{
-    FilterList *newFilterList = malloc(sizeof(FilterList));
-    newFilterList = NULL;
-    return newFilterList;
-}
-
-void filterList_addFilter(FilterList *filterList, Filter *filter)
-{
-    FilterList *newFilterListNode = malloc(sizeof(FilterList));
-    newFilterListNode->FilterHead = filter;
-    LL_APPEND(filterList, newFilterListNode);
 }
