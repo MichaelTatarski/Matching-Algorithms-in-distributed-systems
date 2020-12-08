@@ -1,6 +1,5 @@
 #include "unity.h"
 #include "dataModel.h"
-#include "../utility/uthash.h"
 
 void setUp(void)
 {

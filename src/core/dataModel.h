@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-#include "../utility/uthash.h"
+#include "../lib/uthash.h"
 #include "../utility/dataType.h"
 
 // necessary to make struct hashable (please read https://troydhanson.github.io/uthash/ for reference)
