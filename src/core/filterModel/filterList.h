@@ -3,7 +3,6 @@
 
 #include <stdlib.h>
 
-#include "../lib/uthash.h"
 #include "filterModel.h"
 
 typedef struct FilterList FilterList;

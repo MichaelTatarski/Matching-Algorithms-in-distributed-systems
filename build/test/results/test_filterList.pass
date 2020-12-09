@@ -1,0 +1,18 @@
+---
+:source:
+  :path: test/core/filterModel
+  :file: test_filterList.c
+:successes:
+- :test: test_FilterList_addFilter
+  :line: 14
+  :message: ''
+  :unity_test_time: 0
+:failures: []
+:ignores: []
+:counts:
+  :total: 1
+  :passed: 1
+  :failed: 0
+  :ignored: 0
+:stdout: []
+:time: 0.0007341999999965765
