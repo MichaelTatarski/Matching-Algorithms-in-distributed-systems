@@ -98,7 +98,7 @@ To be continued...
 
 ## Notes for developers
 
-Even though our tool claims to be created as a low level library in C, we didn't want to reinvent the wheel for every little knickknack. The filter list and data model APIs implement the _utList_ and _UThash_ library created by Troy D. Hanson (_[Link to the User Guide](https://troydhanson.github.io/uthash/userguide.html)_). These libraries are used for native package repositories for a number of Unix-y distros and have been incorporated into commercial software, academic research, and into other open-source software.
+Even though our tool is supposed to be created as a low level library in C, we didn't want to reinvent the wheel for every little knickknack. The filter list and data model APIs implement the _utList_ and _UThash_ library created by Troy D. Hanson (_[Link to the User Guide](https://troydhanson.github.io/uthash/userguide.html)_). These libraries are used for native package repositories for a number of Unix-y distros and have been incorporated into commercial software, academic research, and into other open-source software.
 
 Furthermore, pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change. Please make sure to update tests as appropriate. A Doxygen documentation will be available, when the project is ready for an early alpha release.
 
