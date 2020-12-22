@@ -1,2 +1,0 @@
-#!/bin/bash
-cat utility/dataType.h utility/logicalExpressions.h core/dataModel/dataModel.h core/filterModel/filterModel.h core/filterModel/filterList.h > libMADS.h

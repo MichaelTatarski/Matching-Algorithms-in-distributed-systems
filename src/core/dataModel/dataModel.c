@@ -1,15 +1,5 @@
 #include "dataModel.h"
 
-typedef struct Attribute
-{
-
-    char Name[TEXT32];
-    Data data;
-    DataType type;
-    UT_hash_handle hh;
-
-} Attribute;
-
 typedef struct DataModel
 {
     Attribute *DataModelHead;

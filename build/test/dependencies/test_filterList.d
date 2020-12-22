@@ -5,4 +5,5 @@ build/test/out/c/test_filterList.o: \
  src/core/filterModel/filterList.h src/core/filterModel/filterModel.h \
  src/utility/../utility/dataType.h \
  src/utility/../utility/logicalExpressions.h src/utility/../lib/utlist.h \
+ src/utility/../core/dataModel/dataModel.h src/utility/../lib/uthash.h \
  src/core/filterModel/filterModel.h

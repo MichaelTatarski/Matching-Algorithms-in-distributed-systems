@@ -3,9 +3,15 @@
 #include "/home/michael/.rbenv/versions/2.7.2/lib/ruby/gems/2.7.0/gems/ceedling-0.30.0/vendor/unity/src/unity.h"
 
 
+DataModel *testDataModel;
+
+
+
 void setUp(void)
 
 {
+
+    testDataModel = dataModel_create();
 
 }
 
@@ -23,23 +29,19 @@ void test_getValueINT64(void)
 
 {
 
-    DataModel *testDataModel = dataModel_create();
-
     char testName[] = "TestInt64";
 
     int64_t testInt64 = 2020;
 
     dataModel_addAttributeINT64(testDataModel, testName, testInt64);
 
-    int64_t returnValue;
-
-    returnValue = dataModel_getValueINT64(testDataModel, testName);
+    int64_t returnValue = dataModel_getValueINT64(testDataModel, testName);
 
     UnityAssertEqualNumber((UNITY_INT)((testInt64)), (UNITY_INT)((returnValue)), (
 
    ((void *)0)
 
-   ), (UNITY_UINT)(20), UNITY_DISPLAY_STYLE_INT64);
+   ), (UNITY_UINT)(21), UNITY_DISPLAY_STYLE_INT64);
 
 }
 
@@ -48,8 +50,6 @@ void test_getValueINT64(void)
 void test_getValueINT32(void)
 
 {
-
-    DataModel *testDataModel = dataModel_create();
 
     char testName[] = "TestInt32";
 
@@ -75,8 +75,6 @@ void test_getValueDOUBLE(void)
 
 {
 
-    DataModel *testDataModel = dataModel_create();
-
     char testName[] = "TestDouble";
 
     double testDouble = 2020;
@@ -91,7 +89,7 @@ void test_getValueDOUBLE(void)
 
    ((void *)0)
 
-   )), (UNITY_UINT)((UNITY_UINT)(42)));
+   )), (UNITY_UINT)((UNITY_UINT)(41)));
 
 }
 
@@ -100,8 +98,6 @@ void test_getValueDOUBLE(void)
 void test_getTEXT32(void)
 
 {
-
-    DataModel *testDataModel = dataModel_create();
 
     char testName[] = "TestString";
 
@@ -117,15 +113,13 @@ void test_getTEXT32(void)
 
    ((void *)0)
 
-   ), (UNITY_UINT)(53));
+   ), (UNITY_UINT)(51));
 
 }
 
 void test_dataModel_getDataType(void)
 
 {
-
-    DataModel *testDataModel = dataModel_create();
 
     char testName[] = "TestDouble";
 
@@ -139,6 +133,6 @@ void test_dataModel_getDataType(void)
 
    ((void *)0)
 
-   ), (UNITY_UINT)(62), UNITY_DISPLAY_STYLE_INT);
+   ), (UNITY_UINT)(59), UNITY_DISPLAY_STYLE_INT);
 
 }

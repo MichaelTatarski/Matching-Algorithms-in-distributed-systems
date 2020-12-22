@@ -4,11 +4,11 @@
   :file: test_dataModel.c
 :successes:
 - :test: test_getValueINT64
-  :line: 12
+  :line: 15
   :message: ''
   :unity_test_time: 0
 - :test: test_getValueINT32
-  :line: 23
+  :line: 24
   :message: ''
   :unity_test_time: 0
 - :test: test_getValueDOUBLE
@@ -16,11 +16,11 @@
   :message: ''
   :unity_test_time: 0
 - :test: test_getTEXT32
-  :line: 45
+  :line: 44
   :message: ''
   :unity_test_time: 0
 - :test: test_dataModel_getDataType
-  :line: 55
+  :line: 53
   :message: ''
   :unity_test_time: 0
 :failures: []
@@ -31,4 +31,4 @@
   :failed: 0
   :ignored: 0
 :stdout: []
-:time: 0.001447500000004709
+:time: 0.0008921000000441381

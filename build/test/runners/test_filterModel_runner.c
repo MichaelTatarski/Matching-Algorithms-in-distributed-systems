@@ -81,10 +81,10 @@ static void run_test(UnityTestFunction func, const char* name, int line_num)
 int main(void)
 {
   UnityBegin("test_filterModel.c");
-  run_test(test_addSubFilterINT64, "test_addSubFilterINT64", 12);
-  run_test(test_addSubFilterINT32, "test_addSubFilterINT32", 22);
-  run_test(test_addSubFilterDouble, "test_addSubFilterDouble", 32);
-  run_test(test_addSubFilterText, "test_addSubFilterText", 42);
+  run_test(test_addSubFilterINT64, "test_addSubFilterINT64", 15);
+  run_test(test_addSubFilterINT32, "test_addSubFilterINT32", 21);
+  run_test(test_addSubFilterDouble, "test_addSubFilterDouble", 27);
+  run_test(test_addSubFilterText, "test_addSubFilterText", 33);
 
   return UnityEnd();
 }

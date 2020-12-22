@@ -3,24 +3,21 @@
 	<FailedTests/>
 	<SuccessfulTests>
 		<Test id="1">
-			<Name>test/core/dataModel/test_dataModel.c::test_getValueINT64</Name>
+			<Name>test/core/matchingAlgorithms/test_predicateCountingAlgorithm.c::test_doesValueReferenceExist</Name>
 		</Test>
 		<Test id="2">
-			<Name>test/core/dataModel/test_dataModel.c::test_getValueINT32</Name>
+			<Name>test/core/matchingAlgorithms/test_predicateCountingAlgorithm.c::test_getReferenceForPredicate</Name>
 		</Test>
 		<Test id="3">
-			<Name>test/core/dataModel/test_dataModel.c::test_getValueDOUBLE</Name>
+			<Name>test/core/matchingAlgorithms/test_predicateCountingAlgorithm.c::test_insertPredicate</Name>
 		</Test>
 		<Test id="4">
-			<Name>test/core/dataModel/test_dataModel.c::test_getTEXT32</Name>
-		</Test>
-		<Test id="5">
-			<Name>test/core/dataModel/test_dataModel.c::test_dataModel_getDataType</Name>
+			<Name>test/core/matchingAlgorithms/test_predicateCountingAlgorithm.c::test_lookForPredicate</Name>
 		</Test>
 	</SuccessfulTests>
 	<IgnoredTests/>
 	<Statistics>
-		<Tests>5</Tests>
+		<Tests>4</Tests>
 		<Ignores>0</Ignores>
 		<FailuresTotal>0</FailuresTotal>
 		<Errors>0</Errors>

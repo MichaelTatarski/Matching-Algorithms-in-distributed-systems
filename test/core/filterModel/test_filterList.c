@@ -3,8 +3,11 @@
 #include "filterList.h"
 #include "filterModel.h"
 
+FilterList *testFilterList;
+
 void setUp(void)
 {
+    testFilterList = filterList_create();
 }
 
 void tearDown(void)

@@ -4,19 +4,19 @@
   :file: test_filterModel.c
 :successes:
 - :test: test_addSubFilterINT64
-  :line: 12
+  :line: 15
   :message: ''
   :unity_test_time: 0
 - :test: test_addSubFilterINT32
-  :line: 22
+  :line: 21
   :message: ''
   :unity_test_time: 0
 - :test: test_addSubFilterDouble
-  :line: 32
+  :line: 27
   :message: ''
   :unity_test_time: 0
 - :test: test_addSubFilterText
-  :line: 42
+  :line: 33
   :message: ''
   :unity_test_time: 0
 :failures: []
@@ -27,4 +27,4 @@
   :failed: 0
   :ignored: 0
 :stdout: []
-:time: 0.0017250999999980365
+:time: 0.0008712000000059561

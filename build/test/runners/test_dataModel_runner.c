@@ -82,11 +82,11 @@ static void run_test(UnityTestFunction func, const char* name, int line_num)
 int main(void)
 {
   UnityBegin("test_dataModel.c");
-  run_test(test_getValueINT64, "test_getValueINT64", 12);
-  run_test(test_getValueINT32, "test_getValueINT32", 23);
+  run_test(test_getValueINT64, "test_getValueINT64", 15);
+  run_test(test_getValueINT32, "test_getValueINT32", 24);
   run_test(test_getValueDOUBLE, "test_getValueDOUBLE", 34);
-  run_test(test_getTEXT32, "test_getTEXT32", 45);
-  run_test(test_dataModel_getDataType, "test_dataModel_getDataType", 55);
+  run_test(test_getTEXT32, "test_getTEXT32", 44);
+  run_test(test_dataModel_getDataType, "test_dataModel_getDataType", 53);
 
   return UnityEnd();
 }

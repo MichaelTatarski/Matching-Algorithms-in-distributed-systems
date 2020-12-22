@@ -6,9 +6,15 @@
 
 
 
+FilterList *testFilterList;
+
+
+
 void setUp(void)
 
 {
+
+    testFilterList = filterList_create();
 
 }
 
