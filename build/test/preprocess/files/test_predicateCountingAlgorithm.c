@@ -1,7 +1,10 @@
 #include "build/temp/_test_predicateCountingAlgorithm.c"
-#include "src/core/matchingAlgorithms/../../core/filterModel/filterModel.h"
+#include "src/utility/../core/dataModel/dataModel.h"
+#include "src/utility/../core/filterModel/filterModel.h"
 #include "src/core/matchingAlgorithms/predicateCountingAlgorithm.h"
 #include "/home/michael/.rbenv/versions/2.7.2/lib/ruby/gems/2.7.0/gems/ceedling-0.30.0/vendor/unity/src/unity.h"
+
+
 
 
 
@@ -74,7 +77,7 @@ void setUp(void)
 
     OperatorList *OperatorElement2 = createOperatorListElement(EQUALS);
 
-    OperatorList *OperatorElement3 = createOperatorListElement(SMALLER_THAN);
+    OperatorList *OperatorElement3 = createOperatorListElement(LESSER_THAN);
 
 
 
@@ -112,6 +115,12 @@ void setUp(void)
 
 
 
+    ValueList *ValueElement3 = createValueListElement(data1, INTEGER32);
+
+    ValueList *ValueElement4 = createValueListElement(data2, DOUBLE);
+
+
+
     OperatorElement1->valueListHead = 
 
                                      ((void *)0)
@@ -129,6 +138,28 @@ void setUp(void)
    ((void *)0)
 
    ; if (OperatorElement1->valueListHead) { _tmp = (OperatorElement1->valueListHead); while (_tmp->next) { _tmp = _tmp->next; } _tmp->next=(ValueElement2); } else { (OperatorElement1->valueListHead)=(ValueElement2); } } while (0);
+
+
+
+    OperatorElement2->valueListHead = 
+
+                                     ((void *)0)
+
+                                         ;
+
+    do { __typeof(OperatorElement2->valueListHead) _tmp; (ValueElement3)->next=
+
+   ((void *)0)
+
+   ; if (OperatorElement2->valueListHead) { _tmp = (OperatorElement2->valueListHead); while (_tmp->next) { _tmp = _tmp->next; } _tmp->next=(ValueElement3); } else { (OperatorElement2->valueListHead)=(ValueElement3); } } while (0);
+
+    do { __typeof(OperatorElement2->valueListHead) _tmp; (ValueElement4)->next=
+
+   ((void *)0)
+
+   ; if (OperatorElement2->valueListHead) { _tmp = (OperatorElement2->valueListHead); while (_tmp->next) { _tmp = _tmp->next; } _tmp->next=(ValueElement4); } else { (OperatorElement2->valueListHead)=(ValueElement4); } } while (0);
+
+
 
     firstValueElement = firstOperatorElement->valueListHead;
 
@@ -152,7 +183,7 @@ void test_doesValueReferenceExist(void)
 
    ((void *)0)
 
-   )) {} else {UnityFail( (((" Expected Non-NULL"))), (UNITY_UINT)((UNITY_UINT)((UNITY_UINT)(53))));}} while(0);
+   )) {} else {UnityFail( (((" Expected Non-NULL"))), (UNITY_UINT)((UNITY_UINT)((UNITY_UINT)(62))));}} while(0);
 
 }
 
@@ -184,7 +215,7 @@ void test_getReferenceForPredicate(void)
 
    ((void *)0)
 
-   ), (UNITY_UINT)(67), UNITY_DISPLAY_STYLE_HEX64);
+   ), (UNITY_UINT)(76), UNITY_DISPLAY_STYLE_HEX64);
 
 }
 
@@ -212,7 +243,7 @@ void test_insertPredicate(void)
 
    ((void *)0)
 
-   )) {} else {UnityFail( (((" Expected Non-NULL"))), (UNITY_UINT)((UNITY_UINT)((UNITY_UINT)(79))));}} while(0);
+   )) {} else {UnityFail( (((" Expected Non-NULL"))), (UNITY_UINT)((UNITY_UINT)((UNITY_UINT)(88))));}} while(0);
 
 }
 
@@ -230,7 +261,7 @@ void test_lookForPredicate(void)
 
     strcpy(testFilter->attribute.Name, "keks");
 
-    testFilter->Operator = SMALLER_EQUAL;
+    testFilter->Operator = LESSER_THAN_EQUAL;
 
 
 
@@ -240,18 +271,56 @@ void test_lookForPredicate(void)
 
    ((void *)0)
 
-   ), (UNITY_UINT)(91), UNITY_DISPLAY_STYLE_INT);
+   ), (UNITY_UINT)(100), UNITY_DISPLAY_STYLE_INT);
 
     UnityAssertEqualString((const char*)((headNameElement->next->next->next->next->Name)), (const char*)(("keks")), (
 
    ((void *)0)
 
-   ), (UNITY_UINT)(92));
+   ), (UNITY_UINT)(101));
 
-    UnityAssertEqualNumber((UNITY_INT)((headNameElement->next->next->next->next->operatorListHead->operator)), (UNITY_INT)((SMALLER_EQUAL)), (
+    UnityAssertEqualNumber((UNITY_INT)((headNameElement->next->next->next->next->operatorListHead->operator)), (UNITY_INT)((LESSER_THAN_EQUAL)), (
 
    ((void *)0)
 
-   ), (UNITY_UINT)(93), UNITY_DISPLAY_STYLE_INT);
+   ), (UNITY_UINT)(102), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+
+
+void test_matchingOfEqual(void)
+
+{
+
+
+
+    DataModel *notification = dataModel_create();
+
+    dataModel_addAttributeDOUBLE(notification, "bazz", 16.0);
+
+
+
+    startMatching(notification, headNameElement);
+
+    do {if ((headNameElement->operatorListHead->next->valueListHead->next->isMatching)) {} else {UnityFail( ((" Expected TRUE Was FALSE")), (UNITY_UINT)((UNITY_UINT)(112)));}} while(0);
+
+}
+
+
+
+void test_matchingOfGreaterThan(void)
+
+{
+
+    DataModel *notification = dataModel_create();
+
+    dataModel_addAttributeDOUBLE(notification, "bazz", 5.0);
+
+
+
+    startMatching(notification, headNameElement);
+
+    do {if ((headNameElement->operatorListHead->valueListHead->next->isMatching)) {} else {UnityFail( ((" Expected TRUE Was FALSE")), (UNITY_UINT)((UNITY_UINT)(121)));}} while(0);
 
 }

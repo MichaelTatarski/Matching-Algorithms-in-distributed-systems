@@ -2,6 +2,7 @@
 
 #include "predicateCountingAlgorithm.h"
 #include "../core/filterModel/filterModel.h"
+#include "../core/dataModel/dataModel.h"
 
 NameList *headNameElement;
 OperatorList *firstOperatorElement;
@@ -27,7 +28,7 @@ void setUp(void)
 
     OperatorList *OperatorElement1 = createOperatorListElement(GREATER_THAN);
     OperatorList *OperatorElement2 = createOperatorListElement(EQUALS);
-    OperatorList *OperatorElement3 = createOperatorListElement(SMALLER_THAN);
+    OperatorList *OperatorElement3 = createOperatorListElement(LESSER_THAN);
 
     NameElement1->operatorListHead = NULL;
     LL_APPEND(NameElement1->operatorListHead, OperatorElement1);
@@ -38,9 +39,17 @@ void setUp(void)
     ValueList *ValueElement1 = createValueListElement(data1, INTEGER32);
     ValueList *ValueElement2 = createValueListElement(data2, DOUBLE);
 
+    ValueList *ValueElement3 = createValueListElement(data1, INTEGER32);
+    ValueList *ValueElement4 = createValueListElement(data2, DOUBLE);
+
     OperatorElement1->valueListHead = NULL;
     LL_APPEND(OperatorElement1->valueListHead, ValueElement1);
     LL_APPEND(OperatorElement1->valueListHead, ValueElement2);
+
+    OperatorElement2->valueListHead = NULL;
+    LL_APPEND(OperatorElement2->valueListHead, ValueElement3);
+    LL_APPEND(OperatorElement2->valueListHead, ValueElement4);
+
     firstValueElement = firstOperatorElement->valueListHead;
 }
 
@@ -85,10 +94,29 @@ void test_lookForPredicate(void)
     testFilter->attribute.data.INTEGER64 = 53;
     testFilter->attribute.type = INTEGER64;
     strcpy(testFilter->attribute.Name, "keks");
-    testFilter->Operator = SMALLER_EQUAL;
+    testFilter->Operator = LESSER_THAN_EQUAL;
 
     ValueList *testValue = lookForPredicate(testFilter, headNameElement);
     TEST_ASSERT_EQUAL(testValue->value.INTEGER64, 53);
     TEST_ASSERT_EQUAL_STRING(headNameElement->next->next->next->next->Name, "keks");
-    TEST_ASSERT_EQUAL_INT(headNameElement->next->next->next->next->operatorListHead->operator, SMALLER_EQUAL);
+    TEST_ASSERT_EQUAL_INT(headNameElement->next->next->next->next->operatorListHead->operator, LESSER_THAN_EQUAL);
+}
+
+void test_matchingOfEqual(void)
+{
+
+    DataModel *notification = dataModel_create();
+    dataModel_addAttributeDOUBLE(notification, "bazz", 16.0);
+
+    startMatching(notification, headNameElement);
+    TEST_ASSERT_TRUE(headNameElement->operatorListHead->next->valueListHead->next->isMatching);
+}
+
+void test_matchingOfGreaterThan(void)
+{
+    DataModel *notification = dataModel_create();
+    dataModel_addAttributeDOUBLE(notification, "bazz", 42.0);
+
+    startMatching(notification, headNameElement);
+    TEST_ASSERT_TRUE(headNameElement->operatorListHead->valueListHead->next->isMatching);
 }

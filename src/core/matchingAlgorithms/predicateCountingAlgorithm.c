@@ -149,71 +149,144 @@ ValueList *insertPredicate(Filter *filter, NameList *nameList)
 
     nameExist = doesNameReferenceExist(name, nameList);
     if (!nameExist)
-    {
         return insertNameAndOperatorAndValue(name, operator, value, type, nameList);
-    }
-    operatorExist = doesOperatorReferenceExist(*operator, nameExist->operatorListHead);
 
+    operatorExist = doesOperatorReferenceExist(*operator, nameExist->operatorListHead);
     if (!operatorExist)
-    {
         return insertOperatorAndValue(nameExist, operator, value, type, nameList);
-    }
 
     newValueListNode = createValueListElement(value, *type);
     LL_APPEND(operatorExist->valueListHead, newValueListNode);
     return NULL;
-
-    /*
-    nameExist = doesNameReferenceExist(name, nameList);
-
-    if (nameExist)
-    {
-        operatorExist = doesOperatorReferenceExist(*operator, nameExist->operatorListHead);
-
-        if (operatorExist)
-        {
-            newValueListNode = createValueListElement(value, *type);
-            LL_APPEND(operatorExist->valueListHead, newValueListNode);
-        }
-        else
-        {
-            OperatorList *newOperatorListNode = createOperatorListElement(*operator);
-            newValueListNode = createValueListElement(value, *type);
-
-            newOperatorListNode->valueListHead = NULL;
-
-            LL_APPEND(nameExist->operatorListHead, newOperatorListNode);
-            LL_APPEND(newOperatorListNode->valueListHead, newValueListNode);
-        }
-    }
-    else
-    {
-        NameList *newNameListNode = createNameListElement(name);
-        OperatorList *newOperatorListNode = createOperatorListElement(*operator);
-        newValueListNode = createValueListElement(value, *type);
-        newNameListNode->operatorListHead = NULL;
-        newOperatorListNode->valueListHead = NULL;
-
-        LL_APPEND(nameList, newNameListNode);
-        LL_APPEND(newNameListNode->operatorListHead, newOperatorListNode);
-        LL_APPEND(newOperatorListNode->valueListHead, newValueListNode);
-    }
-
-    return newValueListNode;
-    */
 }
 
 ValueList *lookForPredicate(Filter *filter, NameList *nameList)
 {
     ValueList *predicateReference = getReferenceForPredicate(filter, nameList);
-    bool doesPredicateAlreadyExist;
-    predicateReference == NULL ? doesPredicateAlreadyExist = false : true;
-    if (!doesPredicateAlreadyExist)
+    if (predicateReference == NULL)
         predicateReference = insertPredicate(filter, nameList);
     return predicateReference;
 }
 
+bool isGreaterThan(DataType type, Data filterValue, Data notificationValue)
+{
+    if (type == INTEGER64)
+        return notificationValue.INTEGER64 > filterValue.INTEGER64;
+    if (type == INTEGER32)
+        return notificationValue.INTEGER32 > filterValue.INTEGER32;
+    if (type == DOUBLE)
+        return notificationValue.DOUBLE > filterValue.DOUBLE;
+    if (type == TEXT)
+        return false;
+}
+
+bool isGreaterThanEqual(DataType type, Data filterValue, Data notificationValue)
+{
+    if (type == INTEGER64)
+        return notificationValue.INTEGER64 >= filterValue.INTEGER64;
+    if (type == INTEGER32)
+        return notificationValue.INTEGER32 >= filterValue.INTEGER32;
+    if (type == DOUBLE)
+        return notificationValue.DOUBLE >= filterValue.DOUBLE;
+    if (type == TEXT)
+        return false;
+}
+
+bool isLesserThan(DataType type, Data filterValue, Data notificationValue)
+{
+    if (type == INTEGER64)
+        return notificationValue.INTEGER64 < filterValue.INTEGER64;
+    if (type == INTEGER32)
+        return notificationValue.INTEGER32 < filterValue.INTEGER32;
+    if (type == DOUBLE)
+        return notificationValue.DOUBLE < filterValue.DOUBLE;
+    if (type == TEXT)
+        return false;
+}
+
+bool isLesserThanEqual(DataType type, Data filterValue, Data notificationValue)
+{
+    if (type == INTEGER64)
+        return notificationValue.INTEGER64 <= filterValue.INTEGER64;
+    if (type == INTEGER32)
+        return notificationValue.INTEGER32 <= filterValue.INTEGER32;
+    if (type == DOUBLE)
+        return notificationValue.DOUBLE <= filterValue.DOUBLE;
+    if (type == TEXT)
+        return false;
+}
+
 void startMatching(DataModel *dataModel, NameList *nameList)
 {
-    // to be continued
+    NameList *nameListElement;
+    ValueList *newValueListNode, *currentValue;
+    char *name = dataModel->DataModelHead->Name;
+    DataType *type = &(dataModel->DataModelHead->type);
+    OperatorList *operatorList, *currentOperator;
+
+    Data *value = malloc(sizeof(Data));
+
+    if (*type == INTEGER64)
+        value->INTEGER64 = dataModel->DataModelHead->data.INTEGER64;
+    if (*type == INTEGER32)
+        value->INTEGER32 = dataModel->DataModelHead->data.INTEGER32;
+    if (*type == DOUBLE)
+        value->DOUBLE = dataModel->DataModelHead->data.DOUBLE;
+    if (*type == TEXT)
+        strcpy(value->TEXT, name);
+
+    nameListElement = doesNameReferenceExist(name, nameList);
+    if (nameListElement)
+    {
+        currentOperator = nameListElement->operatorListHead;
+        while (currentOperator != NULL)
+        {
+            if (currentOperator->operator== EQUALS)
+            {
+                newValueListNode = doesValueReferenceExist(*value, currentOperator->valueListHead, *type);
+                if (newValueListNode)
+                    newValueListNode->isMatching = true;
+            }
+
+            if (currentOperator->operator== GREATER_THAN)
+            {
+                currentValue = currentOperator->valueListHead;
+                while (currentValue != NULL)
+                {
+                    currentValue->isMatching = isGreaterThan(*type, currentValue->value, *value);
+                    currentValue = currentValue->next;
+                }
+            }
+            if (currentOperator->operator== GREATER_THAN_EQUAL)
+            {
+                currentValue = currentOperator->valueListHead;
+                while (currentValue != NULL)
+                {
+                    currentValue->isMatching = isGreaterThanEqual(*type, currentValue->value, *value);
+                    currentValue = currentValue->next;
+                }
+            }
+            if (currentOperator->operator== LESSER_THAN)
+            {
+                currentValue = currentOperator->valueListHead;
+                while (currentValue != NULL)
+                {
+                    currentValue->isMatching = isLesserThan(*type, currentValue->value, *value);
+                    currentValue = currentValue->next;
+                }
+            }
+
+            if (currentOperator->operator== LESSER_THAN_EQUAL)
+            {
+                currentValue = currentOperator->valueListHead;
+                while (currentValue != NULL)
+                {
+                    currentValue->isMatching = isLesserThanEqual(*type, currentValue->value, *value);
+                    currentValue = currentValue->next;
+                }
+            }
+
+            currentOperator = currentOperator->next;
+        }
+    }
 }

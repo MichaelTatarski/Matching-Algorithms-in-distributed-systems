@@ -17,6 +17,8 @@ extern void test_doesValueReferenceExist(void);
 extern void test_getReferenceForPredicate(void);
 extern void test_insertPredicate(void);
 extern void test_lookForPredicate(void);
+extern void test_matchingOfEqual(void);
+extern void test_matchingOfGreaterThan(void);
 
 
 /*=======Mock Management=====*/
@@ -81,10 +83,12 @@ static void run_test(UnityTestFunction func, const char* name, int line_num)
 int main(void)
 {
   UnityBegin("test_predicateCountingAlgorithm.c");
-  run_test(test_doesValueReferenceExist, "test_doesValueReferenceExist", 51);
-  run_test(test_getReferenceForPredicate, "test_getReferenceForPredicate", 56);
-  run_test(test_insertPredicate, "test_insertPredicate", 70);
-  run_test(test_lookForPredicate, "test_lookForPredicate", 82);
+  run_test(test_doesValueReferenceExist, "test_doesValueReferenceExist", 60);
+  run_test(test_getReferenceForPredicate, "test_getReferenceForPredicate", 65);
+  run_test(test_insertPredicate, "test_insertPredicate", 79);
+  run_test(test_lookForPredicate, "test_lookForPredicate", 91);
+  run_test(test_matchingOfEqual, "test_matchingOfEqual", 105);
+  run_test(test_matchingOfGreaterThan, "test_matchingOfGreaterThan", 115);
 
   return UnityEnd();
 }

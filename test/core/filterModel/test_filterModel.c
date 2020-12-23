@@ -15,7 +15,7 @@ void tearDown(void)
 void test_addSubFilterINT64(void)
 {
     filter_addSubFilterINT64(testFilter, "testString", GREATER_THAN, 2020);
-    filter_addSubFilterINT64(testFilter, "2ndtestName", SMALLER_THAN, 30);
+    filter_addSubFilterINT64(testFilter, "2ndtestName", LESSER_THAN, 30);
 }
 
 void test_addSubFilterINT32(void)

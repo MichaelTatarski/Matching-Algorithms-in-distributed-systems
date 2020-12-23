@@ -6,9 +6,9 @@
 
 #include "../utility/dataType.h"
 #include "../utility/logicalExpressions.h"
+#include "../utility/predicateCountingDataStructure.h"
 #include "../lib/utlist.h"
 #include "../core/dataModel/dataModel.h"
-#include "../matchingAlgorithms/predicateCountingAlgorithm.h"
 
 typedef struct Filter
 {

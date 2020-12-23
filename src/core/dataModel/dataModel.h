@@ -16,7 +16,11 @@ typedef struct Attribute
 
 } Attribute;
 
-typedef struct DataModel DataModel;
+typedef struct DataModel
+{
+    Attribute *DataModelHead;
+
+} DataModel;
 
 DataModel *dataModel_create(void);
 void dataModel_addAttributeTEXT32(DataModel *dataModel, char name[TEXT32], char text[TEXT32]);

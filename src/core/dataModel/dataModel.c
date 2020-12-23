@@ -1,11 +1,5 @@
 #include "dataModel.h"
 
-typedef struct DataModel
-{
-    Attribute *DataModelHead;
-
-} DataModel;
-
 Attribute *makeAttribute(char name[TEXT32])
 {
     Attribute *newAttribute = malloc(sizeof(Attribute));

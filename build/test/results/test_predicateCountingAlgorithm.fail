@@ -4,27 +4,35 @@
   :file: test_predicateCountingAlgorithm.c
 :successes:
 - :test: test_doesValueReferenceExist
-  :line: 51
+  :line: 60
   :message: ''
   :unity_test_time: 0
 - :test: test_getReferenceForPredicate
-  :line: 56
+  :line: 65
   :message: ''
   :unity_test_time: 0
 - :test: test_insertPredicate
-  :line: 70
+  :line: 79
   :message: ''
   :unity_test_time: 0
 - :test: test_lookForPredicate
-  :line: 82
+  :line: 91
   :message: ''
   :unity_test_time: 0
-:failures: []
+- :test: test_matchingOfEqual
+  :line: 105
+  :message: ''
+  :unity_test_time: 0
+:failures:
+- :test: test_matchingOfGreaterThan
+  :line: 121
+  :message: Expected TRUE Was FALSE
+  :unity_test_time: 0
 :ignores: []
 :counts:
-  :total: 4
-  :passed: 4
-  :failed: 0
+  :total: 6
+  :passed: 5
+  :failed: 1
   :ignored: 0
 :stdout: []
-:time: 0.0009645000009186333
+:time: 0.0007740999999441556
