@@ -1,39 +1,32 @@
 <?xml version='1.0' encoding='utf-8' ?>
 <TestRun>
-	<FailedTests>
-		<Test id="1">
-			<Name>test/core/matchingAlgorithms/test_predicateCountingAlgorithm.c::test_matchingOfGreaterThan</Name>
-			<FailureType>Assertion</FailureType>
-			<Location>
-				<File>test/core/matchingAlgorithms/test_predicateCountingAlgorithm.c</File>
-				<Line>121</Line>
-			</Location>
-			<Message>Expected TRUE Was FALSE</Message>
-		</Test>
-	</FailedTests>
+	<FailedTests/>
 	<SuccessfulTests>
-		<Test id="2">
+		<Test id="1">
 			<Name>test/core/matchingAlgorithms/test_predicateCountingAlgorithm.c::test_doesValueReferenceExist</Name>
 		</Test>
-		<Test id="3">
+		<Test id="2">
 			<Name>test/core/matchingAlgorithms/test_predicateCountingAlgorithm.c::test_getReferenceForPredicate</Name>
 		</Test>
-		<Test id="4">
+		<Test id="3">
 			<Name>test/core/matchingAlgorithms/test_predicateCountingAlgorithm.c::test_insertPredicate</Name>
 		</Test>
-		<Test id="5">
+		<Test id="4">
 			<Name>test/core/matchingAlgorithms/test_predicateCountingAlgorithm.c::test_lookForPredicate</Name>
 		</Test>
-		<Test id="6">
+		<Test id="5">
 			<Name>test/core/matchingAlgorithms/test_predicateCountingAlgorithm.c::test_matchingOfEqual</Name>
+		</Test>
+		<Test id="6">
+			<Name>test/core/matchingAlgorithms/test_predicateCountingAlgorithm.c::test_matchingOfGreaterThan</Name>
 		</Test>
 	</SuccessfulTests>
 	<IgnoredTests/>
 	<Statistics>
 		<Tests>6</Tests>
 		<Ignores>0</Ignores>
-		<FailuresTotal>1</FailuresTotal>
+		<FailuresTotal>0</FailuresTotal>
 		<Errors>0</Errors>
-		<Failures>1</Failures>
+		<Failures>0</Failures>
 	</Statistics>
 </TestRun>

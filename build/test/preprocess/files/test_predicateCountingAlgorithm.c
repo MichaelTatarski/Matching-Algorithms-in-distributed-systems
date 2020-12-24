@@ -1,10 +1,8 @@
 #include "build/temp/_test_predicateCountingAlgorithm.c"
 #include "src/utility/../core/dataModel/dataModel.h"
 #include "src/utility/../core/filterModel/filterModel.h"
-#include "src/core/matchingAlgorithms/predicateCountingAlgorithm.h"
+#include "src/core/dataModel/../../core/matchingAlgorithms/predicateCountingAlgorithm.h"
 #include "/home/michael/.rbenv/versions/2.7.2/lib/ruby/gems/2.7.0/gems/ceedling-0.30.0/vendor/unity/src/unity.h"
-
-
 
 
 
@@ -315,7 +313,7 @@ void test_matchingOfGreaterThan(void)
 
     DataModel *notification = dataModel_create();
 
-    dataModel_addAttributeDOUBLE(notification, "bazz", 5.0);
+    dataModel_addAttributeDOUBLE(notification, "bazz", 42.0);
 
 
 

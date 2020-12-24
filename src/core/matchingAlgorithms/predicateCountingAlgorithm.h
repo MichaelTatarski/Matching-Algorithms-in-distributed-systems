@@ -1,14 +1,13 @@
 #ifndef PREDICATECOUNTINGALGORITHM_H
 #define PREDICATECOUNTINGALGORITHM_H
 
-#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "../../lib/utlist.h"
 #include "../../utility/dataType.h"
 #include "../../utility/logicalExpressions.h"
-#include "../../utility/predicateCountingDataStructure.h"
+#include "predicateCountingDataStructure.h"
 #include "../filterModel/filterModel.h"
 #include "../dataModel/dataModel.h"
 

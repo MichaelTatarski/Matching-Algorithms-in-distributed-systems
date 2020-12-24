@@ -1,6 +1,6 @@
 #include "unity.h"
 
-#include "predicateCountingAlgorithm.h"
+#include "../../core/matchingAlgorithms/predicateCountingAlgorithm.h"
 #include "../core/filterModel/filterModel.h"
 #include "../core/dataModel/dataModel.h"
 

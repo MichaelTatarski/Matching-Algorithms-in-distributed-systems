@@ -3,8 +3,8 @@
 
 #include <stdlib.h>
 
-#include "../lib/uthash.h"
-#include "../utility/dataType.h"
+#include "../../lib/uthash.h"
+#include "../../utility/dataType.h"
 
 typedef struct Attribute
 {

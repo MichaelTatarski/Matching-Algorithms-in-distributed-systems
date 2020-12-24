@@ -3,8 +3,8 @@
 
 #include <stdbool.h>
 
-#include "logicalExpressions.h"
-#include "dataType.h"
+#include "../../utility/dataType.h"
+#include "../../utility/logicalExpressions.h"
 
 typedef struct ValueList
 {

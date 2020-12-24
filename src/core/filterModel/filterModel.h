@@ -4,17 +4,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../utility/dataType.h"
-#include "../utility/logicalExpressions.h"
-#include "../utility/predicateCountingDataStructure.h"
-#include "../lib/utlist.h"
-#include "../core/dataModel/dataModel.h"
+#include "../../utility/dataType.h"
+#include "../../utility/logicalExpressions.h"
+#include "../matchingAlgorithms/predicateCountingDataStructure.h"
+#include "../../lib/utlist.h"
+#include "../dataModel/dataModel.h"
 
 typedef struct Filter
 {
     Attribute attribute;
     Operator Operator;
-    struct ValueList *values; //name work in progress
+    struct ValueList *predicateCountingReference;
     struct Filter *next;
 
 } Filter;

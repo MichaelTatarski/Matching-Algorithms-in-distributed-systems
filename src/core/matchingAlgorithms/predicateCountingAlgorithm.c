@@ -7,35 +7,35 @@ int nameCompare(NameList *a, NameList *b)
 
 NameList *doesNameReferenceExist(char name[TEXT32], NameList *nameList)
 {
-    NameList *elt = NULL;
-    NameList *like;
-    like = malloc(sizeof(NameList));
-    strcpy(like->Name, name);
-    LL_SEARCH(nameList, elt, like, nameCompare);
-    return elt;
+    NameList *searchPointer = NULL;
+    NameList *likeElement;
+    likeElement = malloc(sizeof(NameList));
+    strcpy(likeElement->Name, name);
+    LL_SEARCH(nameList, searchPointer, likeElement, nameCompare);
+    return searchPointer;
 };
 
 OperatorList *doesOperatorReferenceExist(Operator usedOperator, OperatorList *operatorList)
 {
-    OperatorList *elt = NULL;
-    LL_SEARCH_SCALAR(operatorList, elt, operator, usedOperator);
-    return elt;
+    OperatorList *searchPointer = NULL;
+    LL_SEARCH_SCALAR(operatorList, searchPointer, operator, usedOperator);
+    return searchPointer;
 };
 
 ValueList *doesValueReferenceExist(Data usedValue, ValueList *valueList, DataType type)
 {
-    ValueList *elt = NULL;
+    ValueList *searchPointer = NULL;
 
     if (type == INTEGER64)
-        LL_SEARCH_SCALAR(valueList, elt, value.INTEGER64, usedValue.INTEGER64);
+        LL_SEARCH_SCALAR(valueList, searchPointer, value.INTEGER64, usedValue.INTEGER64);
     if (type == INTEGER32)
-        LL_SEARCH_SCALAR(valueList, elt, value.INTEGER32, usedValue.INTEGER32);
+        LL_SEARCH_SCALAR(valueList, searchPointer, value.INTEGER32, usedValue.INTEGER32);
     if (type == DOUBLE)
-        LL_SEARCH_SCALAR(valueList, elt, value.DOUBLE, usedValue.DOUBLE);
+        LL_SEARCH_SCALAR(valueList, searchPointer, value.DOUBLE, usedValue.DOUBLE);
     if (type == TEXT)
-        LL_SEARCH_SCALAR(valueList, elt, value.TEXT, usedValue.TEXT);
+        LL_SEARCH_SCALAR(valueList, searchPointer, value.TEXT, usedValue.TEXT);
 
-    return elt;
+    return searchPointer;
 };
 
 NameList *createNameListElement(char name[TEXT32])
@@ -136,7 +136,6 @@ ValueList *insertPredicate(Filter *filter, NameList *nameList)
 
     NameList *nameExist;
     OperatorList *operatorExist;
-    ValueList *valueExist;
 
     if (*type == INTEGER64)
         value.INTEGER64 = filter->attribute.data.INTEGER64;
@@ -168,61 +167,13 @@ ValueList *lookForPredicate(Filter *filter, NameList *nameList)
     return predicateReference;
 }
 
-bool isGreaterThan(DataType type, Data filterValue, Data notificationValue)
-{
-    if (type == INTEGER64)
-        return notificationValue.INTEGER64 > filterValue.INTEGER64;
-    if (type == INTEGER32)
-        return notificationValue.INTEGER32 > filterValue.INTEGER32;
-    if (type == DOUBLE)
-        return notificationValue.DOUBLE > filterValue.DOUBLE;
-    if (type == TEXT)
-        return false;
-}
-
-bool isGreaterThanEqual(DataType type, Data filterValue, Data notificationValue)
-{
-    if (type == INTEGER64)
-        return notificationValue.INTEGER64 >= filterValue.INTEGER64;
-    if (type == INTEGER32)
-        return notificationValue.INTEGER32 >= filterValue.INTEGER32;
-    if (type == DOUBLE)
-        return notificationValue.DOUBLE >= filterValue.DOUBLE;
-    if (type == TEXT)
-        return false;
-}
-
-bool isLesserThan(DataType type, Data filterValue, Data notificationValue)
-{
-    if (type == INTEGER64)
-        return notificationValue.INTEGER64 < filterValue.INTEGER64;
-    if (type == INTEGER32)
-        return notificationValue.INTEGER32 < filterValue.INTEGER32;
-    if (type == DOUBLE)
-        return notificationValue.DOUBLE < filterValue.DOUBLE;
-    if (type == TEXT)
-        return false;
-}
-
-bool isLesserThanEqual(DataType type, Data filterValue, Data notificationValue)
-{
-    if (type == INTEGER64)
-        return notificationValue.INTEGER64 <= filterValue.INTEGER64;
-    if (type == INTEGER32)
-        return notificationValue.INTEGER32 <= filterValue.INTEGER32;
-    if (type == DOUBLE)
-        return notificationValue.DOUBLE <= filterValue.DOUBLE;
-    if (type == TEXT)
-        return false;
-}
-
 void startMatching(DataModel *dataModel, NameList *nameList)
 {
     NameList *nameListElement;
     ValueList *newValueListNode, *currentValue;
     char *name = dataModel->DataModelHead->Name;
     DataType *type = &(dataModel->DataModelHead->type);
-    OperatorList *operatorList, *currentOperator;
+    OperatorList *currentOperator;
 
     Data *value = malloc(sizeof(Data));
 
