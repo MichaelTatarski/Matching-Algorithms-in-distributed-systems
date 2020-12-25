@@ -23,8 +23,6 @@ static bool isGreaterThan(DataType type, Data filterValue, Data notificationValu
         return notificationValue.INTEGER32 > filterValue.INTEGER32;
     if (type == DOUBLE)
         return notificationValue.DOUBLE > filterValue.DOUBLE;
-    if (type == TEXT)
-        return false;
     else
         return false;
 }
@@ -37,8 +35,6 @@ static bool isGreaterThanEqual(DataType type, Data filterValue, Data notificatio
         return notificationValue.INTEGER32 >= filterValue.INTEGER32;
     if (type == DOUBLE)
         return notificationValue.DOUBLE >= filterValue.DOUBLE;
-    if (type == TEXT)
-        return false;
     else
         return false;
 }
@@ -51,8 +47,6 @@ static bool isLesserThan(DataType type, Data filterValue, Data notificationValue
         return notificationValue.INTEGER32 < filterValue.INTEGER32;
     if (type == DOUBLE)
         return notificationValue.DOUBLE < filterValue.DOUBLE;
-    if (type == TEXT)
-        return false;
     else
         return false;
 }
@@ -65,8 +59,6 @@ static bool isLesserThanEqual(DataType type, Data filterValue, Data notification
         return notificationValue.INTEGER32 <= filterValue.INTEGER32;
     if (type == DOUBLE)
         return notificationValue.DOUBLE <= filterValue.DOUBLE;
-    if (type == TEXT)
-        return false;
     else
         return false;
 }

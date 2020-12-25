@@ -1,0 +1,2155 @@
+
+<html>
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII" />
+  <title>unity.c</title>
+
+  <link rel="stylesheet" href="../style.css"/>
+  <script src="../jquery-3.5.1.min.js"></script>
+</head>
+<body>
+
+<pre><code class = "cpp">
+<a name="ln1">/* =========================================================================</a>
+<a name="ln2">    Unity Project - A Test Framework for C</a>
+<a name="ln3">    Copyright (c) 2007-19 Mike Karlesky, Mark VanderVoord, Greg Williams</a>
+<a name="ln4">    [Released under MIT License. Please refer to license.txt for details]</a>
+<a name="ln5">============================================================================ */</a>
+<a name="ln6"> </a>
+<a name="ln7">#include &quot;unity.h&quot;</a>
+<a name="ln8">#include &lt;stddef.h&gt;</a>
+<a name="ln9"> </a>
+<a name="ln10">#ifdef AVR</a>
+<a name="ln11">#include &lt;avr/pgmspace.h&gt;</a>
+<a name="ln12">#else</a>
+<a name="ln13">#define PROGMEM</a>
+<a name="ln14">#endif</a>
+<a name="ln15"> </a>
+<a name="ln16">/* If omitted from header, declare overrideable prototypes here so they're ready for use */</a>
+<a name="ln17">#ifdef UNITY_OMIT_OUTPUT_CHAR_HEADER_DECLARATION</a>
+<a name="ln18">void UNITY_OUTPUT_CHAR(int);</a>
+<a name="ln19">#endif</a>
+<a name="ln20"> </a>
+<a name="ln21">/* Helpful macros for us to use here in Assert functions */</a>
+<a name="ln22">#define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; UNITY_OUTPUT_FLUSH(); TEST_ABORT(); }</a>
+<a name="ln23">#define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; UNITY_OUTPUT_FLUSH(); TEST_ABORT(); }</a>
+<a name="ln24">#define RETURN_IF_FAIL_OR_IGNORE if (Unity.CurrentTestFailed || Unity.CurrentTestIgnored) TEST_ABORT()</a>
+<a name="ln25"> </a>
+<a name="ln26">struct UNITY_STORAGE_T Unity;</a>
+<a name="ln27"> </a>
+<a name="ln28">#ifdef UNITY_OUTPUT_COLOR</a>
+<a name="ln29">const char PROGMEM UnityStrOk[]                            = &quot;\033[42mOK\033[00m&quot;;</a>
+<a name="ln30">const char PROGMEM UnityStrPass[]                          = &quot;\033[42mPASS\033[00m&quot;;</a>
+<a name="ln31">const char PROGMEM UnityStrFail[]                          = &quot;\033[41mFAIL\033[00m&quot;;</a>
+<a name="ln32">const char PROGMEM UnityStrIgnore[]                        = &quot;\033[43mIGNORE\033[00m&quot;;</a>
+<a name="ln33">#else</a>
+<a name="ln34">const char PROGMEM UnityStrOk[]                            = &quot;OK&quot;;</a>
+<a name="ln35">const char PROGMEM UnityStrPass[]                          = &quot;PASS&quot;;</a>
+<a name="ln36">const char PROGMEM UnityStrFail[]                          = &quot;FAIL&quot;;</a>
+<a name="ln37">const char PROGMEM UnityStrIgnore[]                        = &quot;IGNORE&quot;;</a>
+<a name="ln38">#endif</a>
+<a name="ln39">static const char PROGMEM UnityStrNull[]                   = &quot;NULL&quot;;</a>
+<a name="ln40">static const char PROGMEM UnityStrSpacer[]                 = &quot;. &quot;;</a>
+<a name="ln41">static const char PROGMEM UnityStrExpected[]               = &quot; Expected &quot;;</a>
+<a name="ln42">static const char PROGMEM UnityStrWas[]                    = &quot; Was &quot;;</a>
+<a name="ln43">static const char PROGMEM UnityStrGt[]                     = &quot; to be greater than &quot;;</a>
+<a name="ln44">static const char PROGMEM UnityStrLt[]                     = &quot; to be less than &quot;;</a>
+<a name="ln45">static const char PROGMEM UnityStrOrEqual[]                = &quot;or equal to &quot;;</a>
+<a name="ln46">static const char PROGMEM UnityStrNotEqual[]               = &quot; to be not equal to &quot;;</a>
+<a name="ln47">static const char PROGMEM UnityStrElement[]                = &quot; Element &quot;;</a>
+<a name="ln48">static const char PROGMEM UnityStrByte[]                   = &quot; Byte &quot;;</a>
+<a name="ln49">static const char PROGMEM UnityStrMemory[]                 = &quot; Memory Mismatch.&quot;;</a>
+<a name="ln50">static const char PROGMEM UnityStrDelta[]                  = &quot; Values Not Within Delta &quot;;</a>
+<a name="ln51">static const char PROGMEM UnityStrPointless[]              = &quot; You Asked Me To Compare Nothing, Which Was Pointless.&quot;;</a>
+<a name="ln52">static const char PROGMEM UnityStrNullPointerForExpected[] = &quot; Expected pointer to be NULL&quot;;</a>
+<a name="ln53">static const char PROGMEM UnityStrNullPointerForActual[]   = &quot; Actual pointer was NULL&quot;;</a>
+<a name="ln54">#ifndef UNITY_EXCLUDE_FLOAT</a>
+<a name="ln55">static const char PROGMEM UnityStrNot[]                    = &quot;Not &quot;;</a>
+<a name="ln56">static const char PROGMEM UnityStrInf[]                    = &quot;Infinity&quot;;</a>
+<a name="ln57">static const char PROGMEM UnityStrNegInf[]                 = &quot;Negative Infinity&quot;;</a>
+<a name="ln58">static const char PROGMEM UnityStrNaN[]                    = &quot;NaN&quot;;</a>
+<a name="ln59">static const char PROGMEM UnityStrDet[]                    = &quot;Determinate&quot;;</a>
+<a name="ln60">static const char PROGMEM UnityStrInvalidFloatTrait[]      = &quot;Invalid Float Trait&quot;;</a>
+<a name="ln61">#endif</a>
+<a name="ln62">const char PROGMEM UnityStrErrShorthand[]                  = &quot;Unity Shorthand Support Disabled&quot;;</a>
+<a name="ln63">const char PROGMEM UnityStrErrFloat[]                      = &quot;Unity Floating Point Disabled&quot;;</a>
+<a name="ln64">const char PROGMEM UnityStrErrDouble[]                     = &quot;Unity Double Precision Disabled&quot;;</a>
+<a name="ln65">const char PROGMEM UnityStrErr64[]                         = &quot;Unity 64-bit Support Disabled&quot;;</a>
+<a name="ln66">static const char PROGMEM UnityStrBreaker[]                = &quot;-----------------------&quot;;</a>
+<a name="ln67">static const char PROGMEM UnityStrResultsTests[]           = &quot; Tests &quot;;</a>
+<a name="ln68">static const char PROGMEM UnityStrResultsFailures[]        = &quot; Failures &quot;;</a>
+<a name="ln69">static const char PROGMEM UnityStrResultsIgnored[]         = &quot; Ignored &quot;;</a>
+<a name="ln70">static const char PROGMEM UnityStrDetail1Name[]            = UNITY_DETAIL1_NAME &quot; &quot;;</a>
+<a name="ln71">static const char PROGMEM UnityStrDetail2Name[]            = &quot; &quot; UNITY_DETAIL2_NAME &quot; &quot;;</a>
+<a name="ln72"> </a>
+<a name="ln73">/*-----------------------------------------------</a>
+<a name="ln74"> * Pretty Printers &amp; Test Result Output Handlers</a>
+<a name="ln75"> *-----------------------------------------------*/</a>
+<a name="ln76"> </a>
+<a name="ln77">/*-----------------------------------------------*/</a>
+<a name="ln78">/* Local helper function to print characters. */</a>
+<a name="ln79">static void UnityPrintChar(const char* pch)</a>
+<a name="ln80">{</a>
+<a name="ln81">    /* printable characters plus CR &amp; LF are printed */</a>
+<a name="ln82">    if ((*pch &lt;= 126) &amp;&amp; (*pch &gt;= 32))</a>
+<a name="ln83">    {</a>
+<a name="ln84">        UNITY_OUTPUT_CHAR(*pch);</a>
+<a name="ln85">    }</a>
+<a name="ln86">    /* write escaped carriage returns */</a>
+<a name="ln87">    else if (*pch == 13)</a>
+<a name="ln88">    {</a>
+<a name="ln89">        UNITY_OUTPUT_CHAR('\\');</a>
+<a name="ln90">        UNITY_OUTPUT_CHAR('r');</a>
+<a name="ln91">    }</a>
+<a name="ln92">    /* write escaped line feeds */</a>
+<a name="ln93">    else if (*pch == 10)</a>
+<a name="ln94">    {</a>
+<a name="ln95">        UNITY_OUTPUT_CHAR('\\');</a>
+<a name="ln96">        UNITY_OUTPUT_CHAR('n');</a>
+<a name="ln97">    }</a>
+<a name="ln98">    /* unprintable characters are shown as codes */</a>
+<a name="ln99">    else</a>
+<a name="ln100">    {</a>
+<a name="ln101">        UNITY_OUTPUT_CHAR('\\');</a>
+<a name="ln102">        UNITY_OUTPUT_CHAR('x');</a>
+<a name="ln103">        UnityPrintNumberHex((UNITY_UINT)*pch, 2);</a>
+<a name="ln104">    }</a>
+<a name="ln105">}</a>
+<a name="ln106"> </a>
+<a name="ln107">/*-----------------------------------------------*/</a>
+<a name="ln108">/* Local helper function to print ANSI escape strings e.g. &quot;\033[42m&quot;. */</a>
+<a name="ln109">#ifdef UNITY_OUTPUT_COLOR</a>
+<a name="ln110">static UNITY_UINT UnityPrintAnsiEscapeString(const char* string)</a>
+<a name="ln111">{</a>
+<a name="ln112">    const char* pch = string;</a>
+<a name="ln113">    UNITY_UINT count = 0;</a>
+<a name="ln114"> </a>
+<a name="ln115">    while (*pch &amp;&amp; (*pch != 'm'))</a>
+<a name="ln116">    {</a>
+<a name="ln117">        UNITY_OUTPUT_CHAR(*pch);</a>
+<a name="ln118">        pch++;</a>
+<a name="ln119">        count++;</a>
+<a name="ln120">    }</a>
+<a name="ln121">    UNITY_OUTPUT_CHAR('m');</a>
+<a name="ln122">    count++;</a>
+<a name="ln123"> </a>
+<a name="ln124">    return count;</a>
+<a name="ln125">}</a>
+<a name="ln126">#endif</a>
+<a name="ln127"> </a>
+<a name="ln128">/*-----------------------------------------------*/</a>
+<a name="ln129">void UnityPrint(const char* string)</a>
+<a name="ln130">{</a>
+<a name="ln131">    const char* pch = string;</a>
+<a name="ln132"> </a>
+<a name="ln133">    if (pch != NULL)</a>
+<a name="ln134">    {</a>
+<a name="ln135">        while (*pch)</a>
+<a name="ln136">        {</a>
+<a name="ln137">#ifdef UNITY_OUTPUT_COLOR</a>
+<a name="ln138">            /* print ANSI escape code */</a>
+<a name="ln139">            if ((*pch == 27) &amp;&amp; (*(pch + 1) == '['))</a>
+<a name="ln140">            {</a>
+<a name="ln141">                pch += UnityPrintAnsiEscapeString(pch);</a>
+<a name="ln142">                continue;</a>
+<a name="ln143">            }</a>
+<a name="ln144">#endif</a>
+<a name="ln145">            UnityPrintChar(pch);</a>
+<a name="ln146">            pch++;</a>
+<a name="ln147">        }</a>
+<a name="ln148">    }</a>
+<a name="ln149">}</a>
+<a name="ln150">/*-----------------------------------------------*/</a>
+<a name="ln151">void UnityPrintLen(const char* string, const UNITY_UINT32 length)</a>
+<a name="ln152">{</a>
+<a name="ln153">    const char* pch = string;</a>
+<a name="ln154"> </a>
+<a name="ln155">    if (pch != NULL)</a>
+<a name="ln156">    {</a>
+<a name="ln157">        while (*pch &amp;&amp; ((UNITY_UINT32)(pch - string) &lt; length))</a>
+<a name="ln158">        {</a>
+<a name="ln159">            /* printable characters plus CR &amp; LF are printed */</a>
+<a name="ln160">            if ((*pch &lt;= 126) &amp;&amp; (*pch &gt;= 32))</a>
+<a name="ln161">            {</a>
+<a name="ln162">                UNITY_OUTPUT_CHAR(*pch);</a>
+<a name="ln163">            }</a>
+<a name="ln164">            /* write escaped carriage returns */</a>
+<a name="ln165">            else if (*pch == 13)</a>
+<a name="ln166">            {</a>
+<a name="ln167">                UNITY_OUTPUT_CHAR('\\');</a>
+<a name="ln168">                UNITY_OUTPUT_CHAR('r');</a>
+<a name="ln169">            }</a>
+<a name="ln170">            /* write escaped line feeds */</a>
+<a name="ln171">            else if (*pch == 10)</a>
+<a name="ln172">            {</a>
+<a name="ln173">                UNITY_OUTPUT_CHAR('\\');</a>
+<a name="ln174">                UNITY_OUTPUT_CHAR('n');</a>
+<a name="ln175">            }</a>
+<a name="ln176">            /* unprintable characters are shown as codes */</a>
+<a name="ln177">            else</a>
+<a name="ln178">            {</a>
+<a name="ln179">                UNITY_OUTPUT_CHAR('\\');</a>
+<a name="ln180">                UNITY_OUTPUT_CHAR('x');</a>
+<a name="ln181">                UnityPrintNumberHex((UNITY_UINT)*pch, 2);</a>
+<a name="ln182">            }</a>
+<a name="ln183">            pch++;</a>
+<a name="ln184">        }</a>
+<a name="ln185">    }</a>
+<a name="ln186">}</a>
+<a name="ln187"> </a>
+<a name="ln188">/*-----------------------------------------------*/</a>
+<a name="ln189">void UnityPrintNumberByStyle(const UNITY_INT number, const UNITY_DISPLAY_STYLE_T style)</a>
+<a name="ln190">{</a>
+<a name="ln191">    if ((style &amp; UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)</a>
+<a name="ln192">    {</a>
+<a name="ln193">        if (style == UNITY_DISPLAY_STYLE_CHAR)</a>
+<a name="ln194">        {</a>
+<a name="ln195">            /* printable characters plus CR &amp; LF are printed */</a>
+<a name="ln196">            UNITY_OUTPUT_CHAR('\'');</a>
+<a name="ln197">            if ((number &lt;= 126) &amp;&amp; (number &gt;= 32))</a>
+<a name="ln198">            {</a>
+<a name="ln199">                UNITY_OUTPUT_CHAR((int)number);</a>
+<a name="ln200">            }</a>
+<a name="ln201">            /* write escaped carriage returns */</a>
+<a name="ln202">            else if (number == 13)</a>
+<a name="ln203">            {</a>
+<a name="ln204">                UNITY_OUTPUT_CHAR('\\');</a>
+<a name="ln205">                UNITY_OUTPUT_CHAR('r');</a>
+<a name="ln206">            }</a>
+<a name="ln207">            /* write escaped line feeds */</a>
+<a name="ln208">            else if (number == 10)</a>
+<a name="ln209">            {</a>
+<a name="ln210">                UNITY_OUTPUT_CHAR('\\');</a>
+<a name="ln211">                UNITY_OUTPUT_CHAR('n');</a>
+<a name="ln212">            }</a>
+<a name="ln213">            /* unprintable characters are shown as codes */</a>
+<a name="ln214">            else</a>
+<a name="ln215">            {</a>
+<a name="ln216">                UNITY_OUTPUT_CHAR('\\');</a>
+<a name="ln217">                UNITY_OUTPUT_CHAR('x');</a>
+<a name="ln218">                UnityPrintNumberHex((UNITY_UINT)number, 2);</a>
+<a name="ln219">            }</a>
+<a name="ln220">            UNITY_OUTPUT_CHAR('\'');</a>
+<a name="ln221">        }</a>
+<a name="ln222">        else</a>
+<a name="ln223">        {</a>
+<a name="ln224">            UnityPrintNumber(number);</a>
+<a name="ln225">        }</a>
+<a name="ln226">    }</a>
+<a name="ln227">    else if ((style &amp; UNITY_DISPLAY_RANGE_UINT) == UNITY_DISPLAY_RANGE_UINT)</a>
+<a name="ln228">    {</a>
+<a name="ln229">        UnityPrintNumberUnsigned((UNITY_UINT)number);</a>
+<a name="ln230">    }</a>
+<a name="ln231">    else</a>
+<a name="ln232">    {</a>
+<a name="ln233">        UNITY_OUTPUT_CHAR('0');</a>
+<a name="ln234">        UNITY_OUTPUT_CHAR('x');</a>
+<a name="ln235">        UnityPrintNumberHex((UNITY_UINT)number, (char)((style &amp; 0xF) * 2));</a>
+<a name="ln236">    }</a>
+<a name="ln237">}</a>
+<a name="ln238"> </a>
+<a name="ln239">/*-----------------------------------------------*/</a>
+<a name="ln240">void UnityPrintNumber(const UNITY_INT number_to_print)</a>
+<a name="ln241">{</a>
+<a name="ln242">    UNITY_UINT number = (UNITY_UINT)number_to_print;</a>
+<a name="ln243"> </a>
+<a name="ln244">    if (number_to_print &lt; 0)</a>
+<a name="ln245">    {</a>
+<a name="ln246">        /* A negative number, including MIN negative */</a>
+<a name="ln247">        UNITY_OUTPUT_CHAR('-');</a>
+<a name="ln248">        number = (~number) + 1;</a>
+<a name="ln249">    }</a>
+<a name="ln250">    UnityPrintNumberUnsigned(number);</a>
+<a name="ln251">}</a>
+<a name="ln252"> </a>
+<a name="ln253">/*-----------------------------------------------</a>
+<a name="ln254"> * basically do an itoa using as little ram as possible */</a>
+<a name="ln255">void UnityPrintNumberUnsigned(const UNITY_UINT number)</a>
+<a name="ln256">{</a>
+<a name="ln257">    UNITY_UINT divisor = 1;</a>
+<a name="ln258"> </a>
+<a name="ln259">    /* figure out initial divisor */</a>
+<a name="ln260">    while (number / divisor &gt; 9)</a>
+<a name="ln261">    {</a>
+<a name="ln262">        divisor *= 10;</a>
+<a name="ln263">    }</a>
+<a name="ln264"> </a>
+<a name="ln265">    /* now mod and print, then divide divisor */</a>
+<a name="ln266">    do</a>
+<a name="ln267">    {</a>
+<a name="ln268">        UNITY_OUTPUT_CHAR((char)('0' + (number / divisor % 10)));</a>
+<a name="ln269">        divisor /= 10;</a>
+<a name="ln270">    } while (divisor &gt; 0);</a>
+<a name="ln271">}</a>
+<a name="ln272"> </a>
+<a name="ln273">/*-----------------------------------------------*/</a>
+<a name="ln274">void UnityPrintNumberHex(const UNITY_UINT number, const char nibbles_to_print)</a>
+<a name="ln275">{</a>
+<a name="ln276">    int nibble;</a>
+<a name="ln277">    char nibbles = nibbles_to_print;</a>
+<a name="ln278"> </a>
+<a name="ln279">    if ((unsigned)nibbles &gt; UNITY_MAX_NIBBLES)</a>
+<a name="ln280">    {</a>
+<a name="ln281">        nibbles = UNITY_MAX_NIBBLES;</a>
+<a name="ln282">    }</a>
+<a name="ln283"> </a>
+<a name="ln284">    while (nibbles &gt; 0)</a>
+<a name="ln285">    {</a>
+<a name="ln286">        nibbles--;</a>
+<a name="ln287">        nibble = (int)(number &gt;&gt; (nibbles * 4)) &amp; 0x0F;</a>
+<a name="ln288">        if (nibble &lt;= 9)</a>
+<a name="ln289">        {</a>
+<a name="ln290">            UNITY_OUTPUT_CHAR((char)('0' + nibble));</a>
+<a name="ln291">        }</a>
+<a name="ln292">        else</a>
+<a name="ln293">        {</a>
+<a name="ln294">            UNITY_OUTPUT_CHAR((char)('A' - 10 + nibble));</a>
+<a name="ln295">        }</a>
+<a name="ln296">    }</a>
+<a name="ln297">}</a>
+<a name="ln298"> </a>
+<a name="ln299">/*-----------------------------------------------*/</a>
+<a name="ln300">void UnityPrintMask(const UNITY_UINT mask, const UNITY_UINT number)</a>
+<a name="ln301">{</a>
+<a name="ln302">    UNITY_UINT current_bit = (UNITY_UINT)1 &lt;&lt; (UNITY_INT_WIDTH - 1);</a>
+<a name="ln303">    UNITY_INT32 i;</a>
+<a name="ln304"> </a>
+<a name="ln305">    for (i = 0; i &lt; UNITY_INT_WIDTH; i++)</a>
+<a name="ln306">    {</a>
+<a name="ln307">        if (current_bit &amp; mask)</a>
+<a name="ln308">        {</a>
+<a name="ln309">            if (current_bit &amp; number)</a>
+<a name="ln310">            {</a>
+<a name="ln311">                UNITY_OUTPUT_CHAR('1');</a>
+<a name="ln312">            }</a>
+<a name="ln313">            else</a>
+<a name="ln314">            {</a>
+<a name="ln315">                UNITY_OUTPUT_CHAR('0');</a>
+<a name="ln316">            }</a>
+<a name="ln317">        }</a>
+<a name="ln318">        else</a>
+<a name="ln319">        {</a>
+<a name="ln320">            UNITY_OUTPUT_CHAR('X');</a>
+<a name="ln321">        }</a>
+<a name="ln322">        current_bit = current_bit &gt;&gt; 1;</a>
+<a name="ln323">    }</a>
+<a name="ln324">}</a>
+<a name="ln325"> </a>
+<a name="ln326">/*-----------------------------------------------*/</a>
+<a name="ln327">#ifndef UNITY_EXCLUDE_FLOAT_PRINT</a>
+<a name="ln328">/*</a>
+<a name="ln329"> * This function prints a floating-point value in a format similar to</a>
+<a name="ln330"> * printf(&quot;%.7g&quot;) on a single-precision machine or printf(&quot;%.9g&quot;) on a</a>
+<a name="ln331"> * double-precision machine.  The 7th digit won't always be totally correct</a>
+<a name="ln332"> * in single-precision operation (for that level of accuracy, a more</a>
+<a name="ln333"> * complicated algorithm would be needed).</a>
+<a name="ln334"> */</a>
+<a name="ln335">void UnityPrintFloat(const UNITY_DOUBLE input_number)</a>
+<a name="ln336">{</a>
+<a name="ln337">#ifdef UNITY_INCLUDE_DOUBLE</a>
+<a name="ln338">    static const int sig_digits = 9;</a>
+<a name="ln339">    static const UNITY_INT32 min_scaled = 100000000;</a>
+<a name="ln340">    static const UNITY_INT32 max_scaled = 1000000000;</a>
+<a name="ln341">#else</a>
+<a name="ln342">    static const int sig_digits = 7;</a>
+<a name="ln343">    static const UNITY_INT32 min_scaled = 1000000;</a>
+<a name="ln344">    static const UNITY_INT32 max_scaled = 10000000;</a>
+<a name="ln345">#endif</a>
+<a name="ln346"> </a>
+<a name="ln347">    UNITY_DOUBLE number = input_number;</a>
+<a name="ln348"> </a>
+<a name="ln349">    /* print minus sign (does not handle negative zero) */</a>
+<a name="ln350">    if (number &lt; 0.0f)</a>
+<a name="ln351">    {</a>
+<a name="ln352">        UNITY_OUTPUT_CHAR('-');</a>
+<a name="ln353">        number = -number;</a>
+<a name="ln354">    }</a>
+<a name="ln355"> </a>
+<a name="ln356">    /* handle zero, NaN, and +/- infinity */</a>
+<a name="ln357">    if (number == 0.0f)</a>
+<a name="ln358">    {</a>
+<a name="ln359">        UnityPrint(&quot;0&quot;);</a>
+<a name="ln360">    }</a>
+<a name="ln361">    else if (isnan(number))</a>
+<a name="ln362">    {</a>
+<a name="ln363">        UnityPrint(&quot;nan&quot;);</a>
+<a name="ln364">    }</a>
+<a name="ln365">    else if (isinf(number))</a>
+<a name="ln366">    {</a>
+<a name="ln367">        UnityPrint(&quot;inf&quot;);</a>
+<a name="ln368">    }</a>
+<a name="ln369">    else</a>
+<a name="ln370">    {</a>
+<a name="ln371">        UNITY_INT32 n_int = 0, n;</a>
+<a name="ln372">        int exponent = 0;</a>
+<a name="ln373">        int decimals, digits;</a>
+<a name="ln374">        char buf[16] = {0};</a>
+<a name="ln375"> </a>
+<a name="ln376">        /*</a>
+<a name="ln377">         * Scale up or down by powers of 10.  To minimize rounding error,</a>
+<a name="ln378">         * start with a factor/divisor of 10^10, which is the largest</a>
+<a name="ln379">         * power of 10 that can be represented exactly.  Finally, compute</a>
+<a name="ln380">         * (exactly) the remaining power of 10 and perform one more</a>
+<a name="ln381">         * multiplication or division.</a>
+<a name="ln382">         */</a>
+<a name="ln383">        if (number &lt; 1.0f)</a>
+<a name="ln384">        {</a>
+<a name="ln385">            UNITY_DOUBLE factor = 1.0f;</a>
+<a name="ln386"> </a>
+<a name="ln387">            while (number &lt; (UNITY_DOUBLE)max_scaled / 1e10f)  { number *= 1e10f; exponent -= 10; }</a>
+<a name="ln388">            while (number * factor &lt; (UNITY_DOUBLE)min_scaled) { factor *= 10.0f; exponent--; }</a>
+<a name="ln389"> </a>
+<a name="ln390">            number *= factor;</a>
+<a name="ln391">        }</a>
+<a name="ln392">        else if (number &gt; (UNITY_DOUBLE)max_scaled)</a>
+<a name="ln393">        {</a>
+<a name="ln394">            UNITY_DOUBLE divisor = 1.0f;</a>
+<a name="ln395"> </a>
+<a name="ln396">            while (number &gt; (UNITY_DOUBLE)min_scaled * 1e10f)   { number  /= 1e10f; exponent += 10; }</a>
+<a name="ln397">            while (number / divisor &gt; (UNITY_DOUBLE)max_scaled) { divisor *= 10.0f; exponent++; }</a>
+<a name="ln398"> </a>
+<a name="ln399">            number /= divisor;</a>
+<a name="ln400">        }</a>
+<a name="ln401">        else</a>
+<a name="ln402">        {</a>
+<a name="ln403">            /*</a>
+<a name="ln404">             * In this range, we can split off the integer part before</a>
+<a name="ln405">             * doing any multiplications.  This reduces rounding error by</a>
+<a name="ln406">             * freeing up significant bits in the fractional part.</a>
+<a name="ln407">             */</a>
+<a name="ln408">            UNITY_DOUBLE factor = 1.0f;</a>
+<a name="ln409">            n_int = (UNITY_INT32)number;</a>
+<a name="ln410">            number -= (UNITY_DOUBLE)n_int;</a>
+<a name="ln411"> </a>
+<a name="ln412">            while (n_int &lt; min_scaled) { n_int *= 10; factor *= 10.0f; exponent--; }</a>
+<a name="ln413"> </a>
+<a name="ln414">            number *= factor;</a>
+<a name="ln415">        }</a>
+<a name="ln416"> </a>
+<a name="ln417">        /* round to nearest integer */</a>
+<a name="ln418">        n = ((UNITY_INT32)(number + number) + 1) / 2;</a>
+<a name="ln419"> </a>
+<a name="ln420">#ifndef UNITY_ROUND_TIES_AWAY_FROM_ZERO</a>
+<a name="ln421">        /* round to even if exactly between two integers */</a>
+<a name="ln422">        if ((n &amp; 1) &amp;&amp; (((UNITY_DOUBLE)n - number) == 0.5f))</a>
+<a name="ln423">            n--;</a>
+<a name="ln424">#endif</a>
+<a name="ln425"> </a>
+<a name="ln426">        n += n_int;</a>
+<a name="ln427"> </a>
+<a name="ln428">        if (n &gt;= max_scaled)</a>
+<a name="ln429">        {</a>
+<a name="ln430">            n = min_scaled;</a>
+<a name="ln431">            exponent++;</a>
+<a name="ln432">        }</a>
+<a name="ln433"> </a>
+<a name="ln434">        /* determine where to place decimal point */</a>
+<a name="ln435">        decimals = ((exponent &lt;= 0) &amp;&amp; (exponent &gt;= -(sig_digits + 3))) ? (-exponent) : (sig_digits - 1);</a>
+<a name="ln436">        exponent += decimals;</a>
+<a name="ln437"> </a>
+<a name="ln438">        /* truncate trailing zeroes after decimal point */</a>
+<a name="ln439">        while ((decimals &gt; 0) &amp;&amp; ((n % 10) == 0))</a>
+<a name="ln440">        {</a>
+<a name="ln441">            n /= 10;</a>
+<a name="ln442">            decimals--;</a>
+<a name="ln443">        }</a>
+<a name="ln444"> </a>
+<a name="ln445">        /* build up buffer in reverse order */</a>
+<a name="ln446">        digits = 0;</a>
+<a name="ln447">        while ((n != 0) || (digits &lt; (decimals + 1)))</a>
+<a name="ln448">        {</a>
+<a name="ln449">            buf[digits++] = (char)('0' + n % 10);</a>
+<a name="ln450">            n /= 10;</a>
+<a name="ln451">        }</a>
+<a name="ln452">        while (digits &gt; 0)</a>
+<a name="ln453">        {</a>
+<a name="ln454">            if (digits == decimals) { UNITY_OUTPUT_CHAR('.'); }</a>
+<a name="ln455">            UNITY_OUTPUT_CHAR(buf[--digits]);</a>
+<a name="ln456">        }</a>
+<a name="ln457"> </a>
+<a name="ln458">        /* print exponent if needed */</a>
+<a name="ln459">        if (exponent != 0)</a>
+<a name="ln460">        {</a>
+<a name="ln461">            UNITY_OUTPUT_CHAR('e');</a>
+<a name="ln462"> </a>
+<a name="ln463">            if (exponent &lt; 0)</a>
+<a name="ln464">            {</a>
+<a name="ln465">                UNITY_OUTPUT_CHAR('-');</a>
+<a name="ln466">                exponent = -exponent;</a>
+<a name="ln467">            }</a>
+<a name="ln468">            else</a>
+<a name="ln469">            {</a>
+<a name="ln470">                UNITY_OUTPUT_CHAR('+');</a>
+<a name="ln471">            }</a>
+<a name="ln472"> </a>
+<a name="ln473">            digits = 0;</a>
+<a name="ln474">            while ((exponent != 0) || (digits &lt; 2))</a>
+<a name="ln475">            {</a>
+<a name="ln476">                buf[digits++] = (char)('0' + exponent % 10);</a>
+<a name="ln477">                exponent /= 10;</a>
+<a name="ln478">            }</a>
+<a name="ln479">            while (digits &gt; 0)</a>
+<a name="ln480">            {</a>
+<a name="ln481">                UNITY_OUTPUT_CHAR(buf[--digits]);</a>
+<a name="ln482">            }</a>
+<a name="ln483">        }</a>
+<a name="ln484">    }</a>
+<a name="ln485">}</a>
+<a name="ln486">#endif /* ! UNITY_EXCLUDE_FLOAT_PRINT */</a>
+<a name="ln487"> </a>
+<a name="ln488">/*-----------------------------------------------*/</a>
+<a name="ln489">static void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)</a>
+<a name="ln490">{</a>
+<a name="ln491">#ifdef UNITY_OUTPUT_FOR_ECLIPSE</a>
+<a name="ln492">    UNITY_OUTPUT_CHAR('(');</a>
+<a name="ln493">    UnityPrint(file);</a>
+<a name="ln494">    UNITY_OUTPUT_CHAR(':');</a>
+<a name="ln495">    UnityPrintNumber((UNITY_INT)line);</a>
+<a name="ln496">    UNITY_OUTPUT_CHAR(')');</a>
+<a name="ln497">    UNITY_OUTPUT_CHAR(' ');</a>
+<a name="ln498">    UnityPrint(Unity.CurrentTestName);</a>
+<a name="ln499">    UNITY_OUTPUT_CHAR(':');</a>
+<a name="ln500">#else</a>
+<a name="ln501">#ifdef UNITY_OUTPUT_FOR_IAR_WORKBENCH</a>
+<a name="ln502">    UnityPrint(&quot;&lt;SRCREF line=&quot;);</a>
+<a name="ln503">    UnityPrintNumber((UNITY_INT)line);</a>
+<a name="ln504">    UnityPrint(&quot; file=\&quot;&quot;);</a>
+<a name="ln505">    UnityPrint(file);</a>
+<a name="ln506">    UNITY_OUTPUT_CHAR('&quot;');</a>
+<a name="ln507">    UNITY_OUTPUT_CHAR('&gt;');</a>
+<a name="ln508">    UnityPrint(Unity.CurrentTestName);</a>
+<a name="ln509">    UnityPrint(&quot;&lt;/SRCREF&gt; &quot;);</a>
+<a name="ln510">#else</a>
+<a name="ln511">#ifdef UNITY_OUTPUT_FOR_QT_CREATOR</a>
+<a name="ln512">    UnityPrint(&quot;file://&quot;);</a>
+<a name="ln513">    UnityPrint(file);</a>
+<a name="ln514">    UNITY_OUTPUT_CHAR(':');</a>
+<a name="ln515">    UnityPrintNumber((UNITY_INT)line);</a>
+<a name="ln516">    UNITY_OUTPUT_CHAR(' ');</a>
+<a name="ln517">    UnityPrint(Unity.CurrentTestName);</a>
+<a name="ln518">    UNITY_OUTPUT_CHAR(':');</a>
+<a name="ln519">#else</a>
+<a name="ln520">    UnityPrint(file);</a>
+<a name="ln521">    UNITY_OUTPUT_CHAR(':');</a>
+<a name="ln522">    UnityPrintNumber((UNITY_INT)line);</a>
+<a name="ln523">    UNITY_OUTPUT_CHAR(':');</a>
+<a name="ln524">    UnityPrint(Unity.CurrentTestName);</a>
+<a name="ln525">    UNITY_OUTPUT_CHAR(':');</a>
+<a name="ln526">#endif</a>
+<a name="ln527">#endif</a>
+<a name="ln528">#endif</a>
+<a name="ln529">}</a>
+<a name="ln530"> </a>
+<a name="ln531">/*-----------------------------------------------*/</a>
+<a name="ln532">static void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line)</a>
+<a name="ln533">{</a>
+<a name="ln534">    UnityTestResultsBegin(Unity.TestFile, line);</a>
+<a name="ln535">    UnityPrint(UnityStrFail);</a>
+<a name="ln536">    UNITY_OUTPUT_CHAR(':');</a>
+<a name="ln537">}</a>
+<a name="ln538"> </a>
+<a name="ln539">/*-----------------------------------------------*/</a>
+<a name="ln540">void UnityConcludeTest(void)</a>
+<a name="ln541">{</a>
+<a name="ln542">    if (Unity.CurrentTestIgnored)</a>
+<a name="ln543">    {</a>
+<a name="ln544">        Unity.TestIgnores++;</a>
+<a name="ln545">    }</a>
+<a name="ln546">    else if (!Unity.CurrentTestFailed)</a>
+<a name="ln547">    {</a>
+<a name="ln548">        UnityTestResultsBegin(Unity.TestFile, Unity.CurrentTestLineNumber);</a>
+<a name="ln549">        UnityPrint(UnityStrPass);</a>
+<a name="ln550">    }</a>
+<a name="ln551">    else</a>
+<a name="ln552">    {</a>
+<a name="ln553">        Unity.TestFailures++;</a>
+<a name="ln554">    }</a>
+<a name="ln555"> </a>
+<a name="ln556">    Unity.CurrentTestFailed = 0;</a>
+<a name="ln557">    Unity.CurrentTestIgnored = 0;</a>
+<a name="ln558">    UNITY_PRINT_EXEC_TIME();</a>
+<a name="ln559">    UNITY_PRINT_EOL();</a>
+<a name="ln560">    UNITY_FLUSH_CALL();</a>
+<a name="ln561">}</a>
+<a name="ln562"> </a>
+<a name="ln563">/*-----------------------------------------------*/</a>
+<a name="ln564">static void UnityAddMsgIfSpecified(const char* msg)</a>
+<a name="ln565">{</a>
+<a name="ln566">    if (msg)</a>
+<a name="ln567">    {</a>
+<a name="ln568">        UnityPrint(UnityStrSpacer);</a>
+<a name="ln569"> </a>
+<a name="ln570">#ifdef UNITY_PRINT_TEST_CONTEXT</a>
+<a name="ln571">        UNITY_PRINT_TEST_CONTEXT();</a>
+<a name="ln572">#endif</a>
+<a name="ln573">#ifndef UNITY_EXCLUDE_DETAILS</a>
+<a name="ln574">        if (Unity.CurrentDetail1)</a>
+<a name="ln575">        {</a>
+<a name="ln576">            UnityPrint(UnityStrDetail1Name);</a>
+<a name="ln577">            UnityPrint(Unity.CurrentDetail1);</a>
+<a name="ln578">            if (Unity.CurrentDetail2)</a>
+<a name="ln579">            {</a>
+<a name="ln580">                UnityPrint(UnityStrDetail2Name);</a>
+<a name="ln581">                UnityPrint(Unity.CurrentDetail2);</a>
+<a name="ln582">            }</a>
+<a name="ln583">            UnityPrint(UnityStrSpacer);</a>
+<a name="ln584">        }</a>
+<a name="ln585">#endif</a>
+<a name="ln586">        UnityPrint(msg);</a>
+<a name="ln587">    }</a>
+<a name="ln588">}</a>
+<a name="ln589"> </a>
+<a name="ln590">/*-----------------------------------------------*/</a>
+<a name="ln591">static void UnityPrintExpectedAndActualStrings(const char* expected, const char* actual)</a>
+<a name="ln592">{</a>
+<a name="ln593">    UnityPrint(UnityStrExpected);</a>
+<a name="ln594">    if (expected != NULL)</a>
+<a name="ln595">    {</a>
+<a name="ln596">        UNITY_OUTPUT_CHAR('\'');</a>
+<a name="ln597">        UnityPrint(expected);</a>
+<a name="ln598">        UNITY_OUTPUT_CHAR('\'');</a>
+<a name="ln599">    }</a>
+<a name="ln600">    else</a>
+<a name="ln601">    {</a>
+<a name="ln602">        UnityPrint(UnityStrNull);</a>
+<a name="ln603">    }</a>
+<a name="ln604">    UnityPrint(UnityStrWas);</a>
+<a name="ln605">    if (actual != NULL)</a>
+<a name="ln606">    {</a>
+<a name="ln607">        UNITY_OUTPUT_CHAR('\'');</a>
+<a name="ln608">        UnityPrint(actual);</a>
+<a name="ln609">        UNITY_OUTPUT_CHAR('\'');</a>
+<a name="ln610">    }</a>
+<a name="ln611">    else</a>
+<a name="ln612">    {</a>
+<a name="ln613">        UnityPrint(UnityStrNull);</a>
+<a name="ln614">    }</a>
+<a name="ln615">}</a>
+<a name="ln616"> </a>
+<a name="ln617">/*-----------------------------------------------*/</a>
+<a name="ln618">static void UnityPrintExpectedAndActualStringsLen(const char* expected,</a>
+<a name="ln619">                                                  const char* actual,</a>
+<a name="ln620">                                                  const UNITY_UINT32 length)</a>
+<a name="ln621">{</a>
+<a name="ln622">    UnityPrint(UnityStrExpected);</a>
+<a name="ln623">    if (expected != NULL)</a>
+<a name="ln624">    {</a>
+<a name="ln625">        UNITY_OUTPUT_CHAR('\'');</a>
+<a name="ln626">        UnityPrintLen(expected, length);</a>
+<a name="ln627">        UNITY_OUTPUT_CHAR('\'');</a>
+<a name="ln628">    }</a>
+<a name="ln629">    else</a>
+<a name="ln630">    {</a>
+<a name="ln631">        UnityPrint(UnityStrNull);</a>
+<a name="ln632">    }</a>
+<a name="ln633">    UnityPrint(UnityStrWas);</a>
+<a name="ln634">    if (actual != NULL)</a>
+<a name="ln635">    {</a>
+<a name="ln636">        UNITY_OUTPUT_CHAR('\'');</a>
+<a name="ln637">        UnityPrintLen(actual, length);</a>
+<a name="ln638">        UNITY_OUTPUT_CHAR('\'');</a>
+<a name="ln639">    }</a>
+<a name="ln640">    else</a>
+<a name="ln641">    {</a>
+<a name="ln642">        UnityPrint(UnityStrNull);</a>
+<a name="ln643">    }</a>
+<a name="ln644">}</a>
+<a name="ln645"> </a>
+<a name="ln646">/*-----------------------------------------------</a>
+<a name="ln647"> * Assertion &amp; Control Helpers</a>
+<a name="ln648"> *-----------------------------------------------*/</a>
+<a name="ln649"> </a>
+<a name="ln650">/*-----------------------------------------------*/</a>
+<a name="ln651">static int UnityIsOneArrayNull(UNITY_INTERNAL_PTR expected,</a>
+<a name="ln652">                               UNITY_INTERNAL_PTR actual,</a>
+<a name="ln653">                               const UNITY_LINE_TYPE lineNumber,</a>
+<a name="ln654">                               const char* msg)</a>
+<a name="ln655">{</a>
+<a name="ln656">    /* Both are NULL or same pointer */</a>
+<a name="ln657">    if (expected == actual) { return 0; }</a>
+<a name="ln658"> </a>
+<a name="ln659">    /* print and return true if just expected is NULL */</a>
+<a name="ln660">    if (expected == NULL)</a>
+<a name="ln661">    {</a>
+<a name="ln662">        UnityTestResultsFailBegin(lineNumber);</a>
+<a name="ln663">        UnityPrint(UnityStrNullPointerForExpected);</a>
+<a name="ln664">        UnityAddMsgIfSpecified(msg);</a>
+<a name="ln665">        return 1;</a>
+<a name="ln666">    }</a>
+<a name="ln667"> </a>
+<a name="ln668">    /* print and return true if just actual is NULL */</a>
+<a name="ln669">    if (actual == NULL)</a>
+<a name="ln670">    {</a>
+<a name="ln671">        UnityTestResultsFailBegin(lineNumber);</a>
+<a name="ln672">        UnityPrint(UnityStrNullPointerForActual);</a>
+<a name="ln673">        UnityAddMsgIfSpecified(msg);</a>
+<a name="ln674">        return 1;</a>
+<a name="ln675">    }</a>
+<a name="ln676"> </a>
+<a name="ln677">    return 0; /* return false if neither is NULL */</a>
+<a name="ln678">}</a>
+<a name="ln679"> </a>
+<a name="ln680">/*-----------------------------------------------</a>
+<a name="ln681"> * Assertion Functions</a>
+<a name="ln682"> *-----------------------------------------------*/</a>
+<a name="ln683"> </a>
+<a name="ln684">/*-----------------------------------------------*/</a>
+<a name="ln685">void UnityAssertBits(const UNITY_INT mask,</a>
+<a name="ln686">                     const UNITY_INT expected,</a>
+<a name="ln687">                     const UNITY_INT actual,</a>
+<a name="ln688">                     const char* msg,</a>
+<a name="ln689">                     const UNITY_LINE_TYPE lineNumber)</a>
+<a name="ln690">{</a>
+<a name="ln691">    RETURN_IF_FAIL_OR_IGNORE;</a>
+<a name="ln692"> </a>
+<a name="ln693">    if ((mask &amp; expected) != (mask &amp; actual))</a>
+<a name="ln694">    {</a>
+<a name="ln695">        UnityTestResultsFailBegin(lineNumber);</a>
+<a name="ln696">        UnityPrint(UnityStrExpected);</a>
+<a name="ln697">        UnityPrintMask((UNITY_UINT)mask, (UNITY_UINT)expected);</a>
+<a name="ln698">        UnityPrint(UnityStrWas);</a>
+<a name="ln699">        UnityPrintMask((UNITY_UINT)mask, (UNITY_UINT)actual);</a>
+<a name="ln700">        UnityAddMsgIfSpecified(msg);</a>
+<a name="ln701">        UNITY_FAIL_AND_BAIL;</a>
+<a name="ln702">    }</a>
+<a name="ln703">}</a>
+<a name="ln704"> </a>
+<a name="ln705">/*-----------------------------------------------*/</a>
+<a name="ln706">void UnityAssertEqualNumber(const UNITY_INT expected,</a>
+<a name="ln707">                            const UNITY_INT actual,</a>
+<a name="ln708">                            const char* msg,</a>
+<a name="ln709">                            const UNITY_LINE_TYPE lineNumber,</a>
+<a name="ln710">                            const UNITY_DISPLAY_STYLE_T style)</a>
+<a name="ln711">{</a>
+<a name="ln712">    RETURN_IF_FAIL_OR_IGNORE;</a>
+<a name="ln713"> </a>
+<a name="ln714">    if (expected != actual)</a>
+<a name="ln715">    {</a>
+<a name="ln716">        UnityTestResultsFailBegin(lineNumber);</a>
+<a name="ln717">        UnityPrint(UnityStrExpected);</a>
+<a name="ln718">        UnityPrintNumberByStyle(expected, style);</a>
+<a name="ln719">        UnityPrint(UnityStrWas);</a>
+<a name="ln720">        UnityPrintNumberByStyle(actual, style);</a>
+<a name="ln721">        UnityAddMsgIfSpecified(msg);</a>
+<a name="ln722">        UNITY_FAIL_AND_BAIL;</a>
+<a name="ln723">    }</a>
+<a name="ln724">}</a>
+<a name="ln725"> </a>
+<a name="ln726">/*-----------------------------------------------*/</a>
+<a name="ln727">void UnityAssertGreaterOrLessOrEqualNumber(const UNITY_INT threshold,</a>
+<a name="ln728">                                           const UNITY_INT actual,</a>
+<a name="ln729">                                           const UNITY_COMPARISON_T compare,</a>
+<a name="ln730">                                           const char *msg,</a>
+<a name="ln731">                                           const UNITY_LINE_TYPE lineNumber,</a>
+<a name="ln732">                                           const UNITY_DISPLAY_STYLE_T style)</a>
+<a name="ln733">{</a>
+<a name="ln734">    int failed = 0;</a>
+<a name="ln735">    RETURN_IF_FAIL_OR_IGNORE;</a>
+<a name="ln736"> </a>
+<a name="ln737">    if ((threshold == actual) &amp;&amp; (compare &amp; UNITY_EQUAL_TO)) { return; }</a>
+<a name="ln738">    if ((threshold == actual))                               { failed = 1; }</a>
+<a name="ln739"> </a>
+<a name="ln740">    if ((style &amp; UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)</a>
+<a name="ln741">    {</a>
+<a name="ln742">        if ((actual &gt; threshold) &amp;&amp; (compare &amp; UNITY_SMALLER_THAN)) { failed = 1; }</a>
+<a name="ln743">        if ((actual &lt; threshold) &amp;&amp; (compare &amp; UNITY_GREATER_THAN)) { failed = 1; }</a>
+<a name="ln744">    }</a>
+<a name="ln745">    else /* UINT or HEX */</a>
+<a name="ln746">    {</a>
+<a name="ln747">        if (((UNITY_UINT)actual &gt; (UNITY_UINT)threshold) &amp;&amp; (compare &amp; UNITY_SMALLER_THAN)) { failed = 1; }</a>
+<a name="ln748">        if (((UNITY_UINT)actual &lt; (UNITY_UINT)threshold) &amp;&amp; (compare &amp; UNITY_GREATER_THAN)) { failed = 1; }</a>
+<a name="ln749">    }</a>
+<a name="ln750"> </a>
+<a name="ln751">    if (failed)</a>
+<a name="ln752">    {</a>
+<a name="ln753">        UnityTestResultsFailBegin(lineNumber);</a>
+<a name="ln754">        UnityPrint(UnityStrExpected);</a>
+<a name="ln755">        UnityPrintNumberByStyle(actual, style);</a>
+<a name="ln756">        if (compare &amp; UNITY_GREATER_THAN) { UnityPrint(UnityStrGt);       }</a>
+<a name="ln757">        if (compare &amp; UNITY_SMALLER_THAN) { UnityPrint(UnityStrLt);       }</a>
+<a name="ln758">        if (compare &amp; UNITY_EQUAL_TO)     { UnityPrint(UnityStrOrEqual);  }</a>
+<a name="ln759">        if (compare == UNITY_NOT_EQUAL)   { UnityPrint(UnityStrNotEqual); }</a>
+<a name="ln760">        UnityPrintNumberByStyle(threshold, style);</a>
+<a name="ln761">        UnityAddMsgIfSpecified(msg);</a>
+<a name="ln762">        UNITY_FAIL_AND_BAIL;</a>
+<a name="ln763">    }</a>
+<a name="ln764">}</a>
+<a name="ln765"> </a>
+<a name="ln766">#define UnityPrintPointlessAndBail()       \</a>
+<a name="ln767">{                                          \</a>
+<a name="ln768">    UnityTestResultsFailBegin(lineNumber); \</a>
+<a name="ln769">    UnityPrint(UnityStrPointless);         \</a>
+<a name="ln770">    UnityAddMsgIfSpecified(msg);           \</a>
+<a name="ln771">    UNITY_FAIL_AND_BAIL; }</a>
+<a name="ln772"> </a>
+<a name="ln773">/*-----------------------------------------------*/</a>
+<a name="ln774">void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,</a>
+<a name="ln775">                              UNITY_INTERNAL_PTR actual,</a>
+<a name="ln776">                              const UNITY_UINT32 num_elements,</a>
+<a name="ln777">                              const char* msg,</a>
+<a name="ln778">                              const UNITY_LINE_TYPE lineNumber,</a>
+<a name="ln779">                              const UNITY_DISPLAY_STYLE_T style,</a>
+<a name="ln780">                              const UNITY_FLAGS_T flags)</a>
+<a name="ln781">{</a>
+<a name="ln782">    UNITY_UINT32 elements  = num_elements;</a>
+<a name="ln783">    unsigned int length    = style &amp; 0xF;</a>
+<a name="ln784">    unsigned int increment = 0;</a>
+<a name="ln785"> </a>
+<a name="ln786">    RETURN_IF_FAIL_OR_IGNORE;</a>
+<a name="ln787"> </a>
+<a name="ln788">    if (num_elements == 0)</a>
+<a name="ln789">    {</a>
+<a name="ln790">        UnityPrintPointlessAndBail();</a>
+<a name="ln791">    }</a>
+<a name="ln792"> </a>
+<a name="ln793">    if (expected == actual)</a>
+<a name="ln794">    {</a>
+<a name="ln795">        return; /* Both are NULL or same pointer */</a>
+<a name="ln796">    }</a>
+<a name="ln797"> </a>
+<a name="ln798">    if (UnityIsOneArrayNull(expected, actual, lineNumber, msg))</a>
+<a name="ln799">    {</a>
+<a name="ln800">        UNITY_FAIL_AND_BAIL;</a>
+<a name="ln801">    }</a>
+<a name="ln802"> </a>
+<a name="ln803">    while ((elements &gt; 0) &amp;&amp; (elements--))</a>
+<a name="ln804">    {</a>
+<a name="ln805">        UNITY_INT expect_val;</a>
+<a name="ln806">        UNITY_INT actual_val;</a>
+<a name="ln807"> </a>
+<a name="ln808">        switch (length)</a>
+<a name="ln809">        {</a>
+<a name="ln810">            case 1:</a>
+<a name="ln811">                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)expected;</a>
+<a name="ln812">                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)actual;</a>
+<a name="ln813">                increment  = sizeof(UNITY_INT8);</a>
+<a name="ln814">                break;</a>
+<a name="ln815"> </a>
+<a name="ln816">            case 2:</a>
+<a name="ln817">                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)expected;</a>
+<a name="ln818">                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)actual;</a>
+<a name="ln819">                increment  = sizeof(UNITY_INT16);</a>
+<a name="ln820">                break;</a>
+<a name="ln821"> </a>
+<a name="ln822">#ifdef UNITY_SUPPORT_64</a>
+<a name="ln823">            case 8:</a>
+<a name="ln824">                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)expected;</a>
+<a name="ln825">                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)actual;</a>
+<a name="ln826">                increment  = sizeof(UNITY_INT64);</a>
+<a name="ln827">                break;</a>
+<a name="ln828">#endif</a>
+<a name="ln829"> </a>
+<a name="ln830">            default: /* default is length 4 bytes */</a>
+<a name="ln831">            case 4:</a>
+<a name="ln832">                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)expected;</a>
+<a name="ln833">                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)actual;</a>
+<a name="ln834">                increment  = sizeof(UNITY_INT32);</a>
+<a name="ln835">                length = 4;</a>
+<a name="ln836">                break;</a>
+<a name="ln837">        }</a>
+<a name="ln838"> </a>
+<a name="ln839">        if (expect_val != actual_val)</a>
+<a name="ln840">        {</a>
+<a name="ln841">            if ((style &amp; UNITY_DISPLAY_RANGE_UINT) &amp;&amp; (length &lt; (UNITY_INT_WIDTH / 8)))</a>
+<a name="ln842">            {   /* For UINT, remove sign extension (padding 1's) from signed type casts above */</a>
+<a name="ln843">                UNITY_INT mask = 1;</a>
+<a name="ln844">                mask = (mask &lt;&lt; 8 * length) - 1;</a>
+<a name="ln845">                expect_val &amp;= mask;</a>
+<a name="ln846">                actual_val &amp;= mask;</a>
+<a name="ln847">            }</a>
+<a name="ln848">            UnityTestResultsFailBegin(lineNumber);</a>
+<a name="ln849">            UnityPrint(UnityStrElement);</a>
+<a name="ln850">            UnityPrintNumberUnsigned(num_elements - elements - 1);</a>
+<a name="ln851">            UnityPrint(UnityStrExpected);</a>
+<a name="ln852">            UnityPrintNumberByStyle(expect_val, style);</a>
+<a name="ln853">            UnityPrint(UnityStrWas);</a>
+<a name="ln854">            UnityPrintNumberByStyle(actual_val, style);</a>
+<a name="ln855">            UnityAddMsgIfSpecified(msg);</a>
+<a name="ln856">            UNITY_FAIL_AND_BAIL;</a>
+<a name="ln857">        }</a>
+<a name="ln858">        /* Walk through array by incrementing the pointers */</a>
+<a name="ln859">        if (flags == UNITY_ARRAY_TO_ARRAY)</a>
+<a name="ln860">        {</a>
+<a name="ln861">            expected = (UNITY_INTERNAL_PTR)((const char*)expected + increment);</a>
+<a name="ln862">        }</a>
+<a name="ln863">        actual = (UNITY_INTERNAL_PTR)((const char*)actual + increment);</a>
+<a name="ln864">    }</a>
+<a name="ln865">}</a>
+<a name="ln866"> </a>
+<a name="ln867">/*-----------------------------------------------*/</a>
+<a name="ln868">#ifndef UNITY_EXCLUDE_FLOAT</a>
+<a name="ln869">/* Wrap this define in a function with variable types as float or double */</a>
+<a name="ln870">#define UNITY_FLOAT_OR_DOUBLE_WITHIN(delta, expected, actual, diff)                           \</a>
+<a name="ln871">    if (isinf(expected) &amp;&amp; isinf(actual) &amp;&amp; (((expected) &lt; 0) == ((actual) &lt; 0))) return 1;   \</a>
+<a name="ln872">    if (UNITY_NAN_CHECK) return 1;                                                            \</a>
+<a name="ln873">    (diff) = (actual) - (expected);                                                           \</a>
+<a name="ln874">    if ((diff) &lt; 0) (diff) = -(diff);                                                         \</a>
+<a name="ln875">    if ((delta) &lt; 0) (delta) = -(delta);                                                      \</a>
+<a name="ln876">    return !(isnan(diff) || isinf(diff) || ((diff) &gt; (delta)))</a>
+<a name="ln877">    /* This first part of this condition will catch any NaN or Infinite values */</a>
+<a name="ln878">#ifndef UNITY_NAN_NOT_EQUAL_NAN</a>
+<a name="ln879">  #define UNITY_NAN_CHECK isnan(expected) &amp;&amp; isnan(actual)</a>
+<a name="ln880">#else</a>
+<a name="ln881">  #define UNITY_NAN_CHECK 0</a>
+<a name="ln882">#endif</a>
+<a name="ln883"> </a>
+<a name="ln884">#ifndef UNITY_EXCLUDE_FLOAT_PRINT</a>
+<a name="ln885">  #define UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual) \</a>
+<a name="ln886">  {                                                               \</a>
+<a name="ln887">    UnityPrint(UnityStrExpected);                                 \</a>
+<a name="ln888">    UnityPrintFloat(expected);                                    \</a>
+<a name="ln889">    UnityPrint(UnityStrWas);                                      \</a>
+<a name="ln890">    UnityPrintFloat(actual); }</a>
+<a name="ln891">#else</a>
+<a name="ln892">  #define UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual) \</a>
+<a name="ln893">    UnityPrint(UnityStrDelta)</a>
+<a name="ln894">#endif /* UNITY_EXCLUDE_FLOAT_PRINT */</a>
+<a name="ln895"> </a>
+<a name="ln896">/*-----------------------------------------------*/</a>
+<a name="ln897">static int UnityFloatsWithin(UNITY_FLOAT delta, UNITY_FLOAT expected, UNITY_FLOAT actual)</a>
+<a name="ln898">{</a>
+<a name="ln899">    UNITY_FLOAT diff;</a>
+<a name="ln900">    UNITY_FLOAT_OR_DOUBLE_WITHIN(delta, expected, actual, diff);</a>
+<a name="ln901">}</a>
+<a name="ln902"> </a>
+<a name="ln903">/*-----------------------------------------------*/</a>
+<a name="ln904">void UnityAssertEqualFloatArray(UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* expected,</a>
+<a name="ln905">                                UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* actual,</a>
+<a name="ln906">                                const UNITY_UINT32 num_elements,</a>
+<a name="ln907">                                const char* msg,</a>
+<a name="ln908">                                const UNITY_LINE_TYPE lineNumber,</a>
+<a name="ln909">                                const UNITY_FLAGS_T flags)</a>
+<a name="ln910">{</a>
+<a name="ln911">    UNITY_UINT32 elements = num_elements;</a>
+<a name="ln912">    UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* ptr_expected = expected;</a>
+<a name="ln913">    UNITY_PTR_ATTRIBUTE const UNITY_FLOAT* ptr_actual = actual;</a>
+<a name="ln914"> </a>
+<a name="ln915">    RETURN_IF_FAIL_OR_IGNORE;</a>
+<a name="ln916"> </a>
+<a name="ln917">    if (elements == 0)</a>
+<a name="ln918">    {</a>
+<a name="ln919">        UnityPrintPointlessAndBail();</a>
+<a name="ln920">    }</a>
+<a name="ln921"> </a>
+<a name="ln922">    if (expected == actual)</a>
+<a name="ln923">    {</a>
+<a name="ln924">        return; /* Both are NULL or same pointer */</a>
+<a name="ln925">    }</a>
+<a name="ln926"> </a>
+<a name="ln927">    if (UnityIsOneArrayNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg))</a>
+<a name="ln928">    {</a>
+<a name="ln929">        UNITY_FAIL_AND_BAIL;</a>
+<a name="ln930">    }</a>
+<a name="ln931"> </a>
+<a name="ln932">    while (elements--)</a>
+<a name="ln933">    {</a>
+<a name="ln934">        if (!UnityFloatsWithin(*ptr_expected * UNITY_FLOAT_PRECISION, *ptr_expected, *ptr_actual))</a>
+<a name="ln935">        {</a>
+<a name="ln936">            UnityTestResultsFailBegin(lineNumber);</a>
+<a name="ln937">            UnityPrint(UnityStrElement);</a>
+<a name="ln938">            UnityPrintNumberUnsigned(num_elements - elements - 1);</a>
+<a name="ln939">            UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT((UNITY_DOUBLE)*ptr_expected, (UNITY_DOUBLE)*ptr_actual);</a>
+<a name="ln940">            UnityAddMsgIfSpecified(msg);</a>
+<a name="ln941">            UNITY_FAIL_AND_BAIL;</a>
+<a name="ln942">        }</a>
+<a name="ln943">        if (flags == UNITY_ARRAY_TO_ARRAY)</a>
+<a name="ln944">        {</a>
+<a name="ln945">            ptr_expected++;</a>
+<a name="ln946">        }</a>
+<a name="ln947">        ptr_actual++;</a>
+<a name="ln948">    }</a>
+<a name="ln949">}</a>
+<a name="ln950"> </a>
+<a name="ln951">/*-----------------------------------------------*/</a>
+<a name="ln952">void UnityAssertFloatsWithin(const UNITY_FLOAT delta,</a>
+<a name="ln953">                             const UNITY_FLOAT expected,</a>
+<a name="ln954">                             const UNITY_FLOAT actual,</a>
+<a name="ln955">                             const char* msg,</a>
+<a name="ln956">                             const UNITY_LINE_TYPE lineNumber)</a>
+<a name="ln957">{</a>
+<a name="ln958">    RETURN_IF_FAIL_OR_IGNORE;</a>
+<a name="ln959"> </a>
+<a name="ln960"> </a>
+<a name="ln961">    if (!UnityFloatsWithin(delta, expected, actual))</a>
+<a name="ln962">    {</a>
+<a name="ln963">        UnityTestResultsFailBegin(lineNumber);</a>
+<a name="ln964">        UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT((UNITY_DOUBLE)expected, (UNITY_DOUBLE)actual);</a>
+<a name="ln965">        UnityAddMsgIfSpecified(msg);</a>
+<a name="ln966">        UNITY_FAIL_AND_BAIL;</a>
+<a name="ln967">    }</a>
+<a name="ln968">}</a>
+<a name="ln969"> </a>
+<a name="ln970">/*-----------------------------------------------*/</a>
+<a name="ln971">void UnityAssertFloatSpecial(const UNITY_FLOAT actual,</a>
+<a name="ln972">                             const char* msg,</a>
+<a name="ln973">                             const UNITY_LINE_TYPE lineNumber,</a>
+<a name="ln974">                             const UNITY_FLOAT_TRAIT_T style)</a>
+<a name="ln975">{</a>
+<a name="ln976">    const char* trait_names[] = {UnityStrInf, UnityStrNegInf, UnityStrNaN, UnityStrDet};</a>
+<a name="ln977">    UNITY_INT should_be_trait = ((UNITY_INT)style &amp; 1);</a>
+<a name="ln978">    UNITY_INT is_trait        = !should_be_trait;</a>
+<a name="ln979">    UNITY_INT trait_index     = (UNITY_INT)(style &gt;&gt; 1);</a>
+<a name="ln980"> </a>
+<a name="ln981">    RETURN_IF_FAIL_OR_IGNORE;</a>
+<a name="ln982"> </a>
+<a name="ln983">    switch (style)</a>
+<a name="ln984">    {</a>
+<a name="ln985">        case UNITY_FLOAT_IS_INF:</a>
+<a name="ln986">        case UNITY_FLOAT_IS_NOT_INF:</a>
+<a name="ln987">            is_trait = isinf(actual) &amp;&amp; (actual &gt; 0);</a>
+<a name="ln988">            break;</a>
+<a name="ln989">        case UNITY_FLOAT_IS_NEG_INF:</a>
+<a name="ln990">        case UNITY_FLOAT_IS_NOT_NEG_INF:</a>
+<a name="ln991">            is_trait = isinf(actual) &amp;&amp; (actual &lt; 0);</a>
+<a name="ln992">            break;</a>
+<a name="ln993"> </a>
+<a name="ln994">        case UNITY_FLOAT_IS_NAN:</a>
+<a name="ln995">        case UNITY_FLOAT_IS_NOT_NAN:</a>
+<a name="ln996">            is_trait = isnan(actual) ? 1 : 0;</a>
+<a name="ln997">            break;</a>
+<a name="ln998"> </a>
+<a name="ln999">        case UNITY_FLOAT_IS_DET: /* A determinate number is non infinite and not NaN. */</a>
+<a name="ln1000">        case UNITY_FLOAT_IS_NOT_DET:</a>
+<a name="ln1001">            is_trait = !isinf(actual) &amp;&amp; !isnan(actual);</a>
+<a name="ln1002">            break;</a>
+<a name="ln1003"> </a>
+<a name="ln1004">        default:</a>
+<a name="ln1005">            trait_index = 0;</a>
+<a name="ln1006">            trait_names[0] = UnityStrInvalidFloatTrait;</a>
+<a name="ln1007">            break;</a>
+<a name="ln1008">    }</a>
+<a name="ln1009"> </a>
+<a name="ln1010">    if (is_trait != should_be_trait)</a>
+<a name="ln1011">    {</a>
+<a name="ln1012">        UnityTestResultsFailBegin(lineNumber);</a>
+<a name="ln1013">        UnityPrint(UnityStrExpected);</a>
+<a name="ln1014">        if (!should_be_trait)</a>
+<a name="ln1015">        {</a>
+<a name="ln1016">            UnityPrint(UnityStrNot);</a>
+<a name="ln1017">        }</a>
+<a name="ln1018">        UnityPrint(trait_names[trait_index]);</a>
+<a name="ln1019">        UnityPrint(UnityStrWas);</a>
+<a name="ln1020">#ifndef UNITY_EXCLUDE_FLOAT_PRINT</a>
+<a name="ln1021">        UnityPrintFloat((UNITY_DOUBLE)actual);</a>
+<a name="ln1022">#else</a>
+<a name="ln1023">        if (should_be_trait)</a>
+<a name="ln1024">        {</a>
+<a name="ln1025">            UnityPrint(UnityStrNot);</a>
+<a name="ln1026">        }</a>
+<a name="ln1027">        UnityPrint(trait_names[trait_index]);</a>
+<a name="ln1028">#endif</a>
+<a name="ln1029">        UnityAddMsgIfSpecified(msg);</a>
+<a name="ln1030">        UNITY_FAIL_AND_BAIL;</a>
+<a name="ln1031">    }</a>
+<a name="ln1032">}</a>
+<a name="ln1033"> </a>
+<a name="ln1034">#endif /* not UNITY_EXCLUDE_FLOAT */</a>
+<a name="ln1035"> </a>
+<a name="ln1036">/*-----------------------------------------------*/</a>
+<a name="ln1037">#ifndef UNITY_EXCLUDE_DOUBLE</a>
+<a name="ln1038">static int UnityDoublesWithin(UNITY_DOUBLE delta, UNITY_DOUBLE expected, UNITY_DOUBLE actual)</a>
+<a name="ln1039">{</a>
+<a name="ln1040">    UNITY_DOUBLE diff;</a>
+<a name="ln1041">    UNITY_FLOAT_OR_DOUBLE_WITHIN(delta, expected, actual, diff);</a>
+<a name="ln1042">}</a>
+<a name="ln1043"> </a>
+<a name="ln1044">/*-----------------------------------------------*/</a>
+<a name="ln1045">void UnityAssertEqualDoubleArray(UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* expected,</a>
+<a name="ln1046">                                 UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* actual,</a>
+<a name="ln1047">                                 const UNITY_UINT32 num_elements,</a>
+<a name="ln1048">                                 const char* msg,</a>
+<a name="ln1049">                                 const UNITY_LINE_TYPE lineNumber,</a>
+<a name="ln1050">                                 const UNITY_FLAGS_T flags)</a>
+<a name="ln1051">{</a>
+<a name="ln1052">    UNITY_UINT32 elements = num_elements;</a>
+<a name="ln1053">    UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* ptr_expected = expected;</a>
+<a name="ln1054">    UNITY_PTR_ATTRIBUTE const UNITY_DOUBLE* ptr_actual = actual;</a>
+<a name="ln1055"> </a>
+<a name="ln1056">    RETURN_IF_FAIL_OR_IGNORE;</a>
+<a name="ln1057"> </a>
+<a name="ln1058">    if (elements == 0)</a>
+<a name="ln1059">    {</a>
+<a name="ln1060">        UnityPrintPointlessAndBail();</a>
+<a name="ln1061">    }</a>
+<a name="ln1062"> </a>
+<a name="ln1063">    if (expected == actual)</a>
+<a name="ln1064">    {</a>
+<a name="ln1065">        return; /* Both are NULL or same pointer */</a>
+<a name="ln1066">    }</a>
+<a name="ln1067"> </a>
+<a name="ln1068">    if (UnityIsOneArrayNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg))</a>
+<a name="ln1069">    {</a>
+<a name="ln1070">        UNITY_FAIL_AND_BAIL;</a>
+<a name="ln1071">    }</a>
+<a name="ln1072"> </a>
+<a name="ln1073">    while (elements--)</a>
+<a name="ln1074">    {</a>
+<a name="ln1075">        if (!UnityDoublesWithin(*ptr_expected * UNITY_DOUBLE_PRECISION, *ptr_expected, *ptr_actual))</a>
+<a name="ln1076">        {</a>
+<a name="ln1077">            UnityTestResultsFailBegin(lineNumber);</a>
+<a name="ln1078">            UnityPrint(UnityStrElement);</a>
+<a name="ln1079">            UnityPrintNumberUnsigned(num_elements - elements - 1);</a>
+<a name="ln1080">            UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(*ptr_expected, *ptr_actual);</a>
+<a name="ln1081">            UnityAddMsgIfSpecified(msg);</a>
+<a name="ln1082">            UNITY_FAIL_AND_BAIL;</a>
+<a name="ln1083">        }</a>
+<a name="ln1084">        if (flags == UNITY_ARRAY_TO_ARRAY)</a>
+<a name="ln1085">        {</a>
+<a name="ln1086">            ptr_expected++;</a>
+<a name="ln1087">        }</a>
+<a name="ln1088">        ptr_actual++;</a>
+<a name="ln1089">    }</a>
+<a name="ln1090">}</a>
+<a name="ln1091"> </a>
+<a name="ln1092">/*-----------------------------------------------*/</a>
+<a name="ln1093">void UnityAssertDoublesWithin(const UNITY_DOUBLE delta,</a>
+<a name="ln1094">                              const UNITY_DOUBLE expected,</a>
+<a name="ln1095">                              const UNITY_DOUBLE actual,</a>
+<a name="ln1096">                              const char* msg,</a>
+<a name="ln1097">                              const UNITY_LINE_TYPE lineNumber)</a>
+<a name="ln1098">{</a>
+<a name="ln1099">    RETURN_IF_FAIL_OR_IGNORE;</a>
+<a name="ln1100"> </a>
+<a name="ln1101">    if (!UnityDoublesWithin(delta, expected, actual))</a>
+<a name="ln1102">    {</a>
+<a name="ln1103">        UnityTestResultsFailBegin(lineNumber);</a>
+<a name="ln1104">        UNITY_PRINT_EXPECTED_AND_ACTUAL_FLOAT(expected, actual);</a>
+<a name="ln1105">        UnityAddMsgIfSpecified(msg);</a>
+<a name="ln1106">        UNITY_FAIL_AND_BAIL;</a>
+<a name="ln1107">    }</a>
+<a name="ln1108">}</a>
+<a name="ln1109"> </a>
+<a name="ln1110">/*-----------------------------------------------*/</a>
+<a name="ln1111">void UnityAssertDoubleSpecial(const UNITY_DOUBLE actual,</a>
+<a name="ln1112">                              const char* msg,</a>
+<a name="ln1113">                              const UNITY_LINE_TYPE lineNumber,</a>
+<a name="ln1114">                              const UNITY_FLOAT_TRAIT_T style)</a>
+<a name="ln1115">{</a>
+<a name="ln1116">    const char* trait_names[] = {UnityStrInf, UnityStrNegInf, UnityStrNaN, UnityStrDet};</a>
+<a name="ln1117">    UNITY_INT should_be_trait = ((UNITY_INT)style &amp; 1);</a>
+<a name="ln1118">    UNITY_INT is_trait        = !should_be_trait;</a>
+<a name="ln1119">    UNITY_INT trait_index     = (UNITY_INT)(style &gt;&gt; 1);</a>
+<a name="ln1120"> </a>
+<a name="ln1121">    RETURN_IF_FAIL_OR_IGNORE;</a>
+<a name="ln1122"> </a>
+<a name="ln1123">    switch (style)</a>
+<a name="ln1124">    {</a>
+<a name="ln1125">        case UNITY_FLOAT_IS_INF:</a>
+<a name="ln1126">        case UNITY_FLOAT_IS_NOT_INF:</a>
+<a name="ln1127">            is_trait = isinf(actual) &amp;&amp; (actual &gt; 0);</a>
+<a name="ln1128">            break;</a>
+<a name="ln1129">        case UNITY_FLOAT_IS_NEG_INF:</a>
+<a name="ln1130">        case UNITY_FLOAT_IS_NOT_NEG_INF:</a>
+<a name="ln1131">            is_trait = isinf(actual) &amp;&amp; (actual &lt; 0);</a>
+<a name="ln1132">            break;</a>
+<a name="ln1133"> </a>
+<a name="ln1134">        case UNITY_FLOAT_IS_NAN:</a>
+<a name="ln1135">        case UNITY_FLOAT_IS_NOT_NAN:</a>
+<a name="ln1136">            is_trait = isnan(actual) ? 1 : 0;</a>
+<a name="ln1137">            break;</a>
+<a name="ln1138"> </a>
+<a name="ln1139">        case UNITY_FLOAT_IS_DET: /* A determinate number is non infinite and not NaN. */</a>
+<a name="ln1140">        case UNITY_FLOAT_IS_NOT_DET:</a>
+<a name="ln1141">            is_trait = !isinf(actual) &amp;&amp; !isnan(actual);</a>
+<a name="ln1142">            break;</a>
+<a name="ln1143"> </a>
+<a name="ln1144">        default:</a>
+<a name="ln1145">            trait_index = 0;</a>
+<a name="ln1146">            trait_names[0] = UnityStrInvalidFloatTrait;</a>
+<a name="ln1147">            break;</a>
+<a name="ln1148">    }</a>
+<a name="ln1149"> </a>
+<a name="ln1150">    if (is_trait != should_be_trait)</a>
+<a name="ln1151">    {</a>
+<a name="ln1152">        UnityTestResultsFailBegin(lineNumber);</a>
+<a name="ln1153">        UnityPrint(UnityStrExpected);</a>
+<a name="ln1154">        if (!should_be_trait)</a>
+<a name="ln1155">        {</a>
+<a name="ln1156">            UnityPrint(UnityStrNot);</a>
+<a name="ln1157">        }</a>
+<a name="ln1158">        UnityPrint(trait_names[trait_index]);</a>
+<a name="ln1159">        UnityPrint(UnityStrWas);</a>
+<a name="ln1160">#ifndef UNITY_EXCLUDE_FLOAT_PRINT</a>
+<a name="ln1161">        UnityPrintFloat(actual);</a>
+<a name="ln1162">#else</a>
+<a name="ln1163">        if (should_be_trait)</a>
+<a name="ln1164">        {</a>
+<a name="ln1165">            UnityPrint(UnityStrNot);</a>
+<a name="ln1166">        }</a>
+<a name="ln1167">        UnityPrint(trait_names[trait_index]);</a>
+<a name="ln1168">#endif</a>
+<a name="ln1169">        UnityAddMsgIfSpecified(msg);</a>
+<a name="ln1170">        UNITY_FAIL_AND_BAIL;</a>
+<a name="ln1171">    }</a>
+<a name="ln1172">}</a>
+<a name="ln1173"> </a>
+<a name="ln1174">#endif /* not UNITY_EXCLUDE_DOUBLE */</a>
+<a name="ln1175"> </a>
+<a name="ln1176">/*-----------------------------------------------*/</a>
+<a name="ln1177">void UnityAssertNumbersWithin(const UNITY_UINT delta,</a>
+<a name="ln1178">                              const UNITY_INT expected,</a>
+<a name="ln1179">                              const UNITY_INT actual,</a>
+<a name="ln1180">                              const char* msg,</a>
+<a name="ln1181">                              const UNITY_LINE_TYPE lineNumber,</a>
+<a name="ln1182">                              const UNITY_DISPLAY_STYLE_T style)</a>
+<a name="ln1183">{</a>
+<a name="ln1184">    RETURN_IF_FAIL_OR_IGNORE;</a>
+<a name="ln1185"> </a>
+<a name="ln1186">    if ((style &amp; UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)</a>
+<a name="ln1187">    {</a>
+<a name="ln1188">        if (actual &gt; expected)</a>
+<a name="ln1189">        {</a>
+<a name="ln1190">            Unity.CurrentTestFailed = (((UNITY_UINT)actual - (UNITY_UINT)expected) &gt; delta);</a>
+<a name="ln1191">        }</a>
+<a name="ln1192">        else</a>
+<a name="ln1193">        {</a>
+<a name="ln1194">            Unity.CurrentTestFailed = (((UNITY_UINT)expected - (UNITY_UINT)actual) &gt; delta);</a>
+<a name="ln1195">        }</a>
+<a name="ln1196">    }</a>
+<a name="ln1197">    else</a>
+<a name="ln1198">    {</a>
+<a name="ln1199">        if ((UNITY_UINT)actual &gt; (UNITY_UINT)expected)</a>
+<a name="ln1200">        {</a>
+<a name="ln1201">            Unity.CurrentTestFailed = (((UNITY_UINT)actual - (UNITY_UINT)expected) &gt; delta);</a>
+<a name="ln1202">        }</a>
+<a name="ln1203">        else</a>
+<a name="ln1204">        {</a>
+<a name="ln1205">            Unity.CurrentTestFailed = (((UNITY_UINT)expected - (UNITY_UINT)actual) &gt; delta);</a>
+<a name="ln1206">        }</a>
+<a name="ln1207">    }</a>
+<a name="ln1208"> </a>
+<a name="ln1209">    if (Unity.CurrentTestFailed)</a>
+<a name="ln1210">    {</a>
+<a name="ln1211">        UnityTestResultsFailBegin(lineNumber);</a>
+<a name="ln1212">        UnityPrint(UnityStrDelta);</a>
+<a name="ln1213">        UnityPrintNumberByStyle((UNITY_INT)delta, style);</a>
+<a name="ln1214">        UnityPrint(UnityStrExpected);</a>
+<a name="ln1215">        UnityPrintNumberByStyle(expected, style);</a>
+<a name="ln1216">        UnityPrint(UnityStrWas);</a>
+<a name="ln1217">        UnityPrintNumberByStyle(actual, style);</a>
+<a name="ln1218">        UnityAddMsgIfSpecified(msg);</a>
+<a name="ln1219">        UNITY_FAIL_AND_BAIL;</a>
+<a name="ln1220">    }</a>
+<a name="ln1221">}</a>
+<a name="ln1222"> </a>
+<a name="ln1223">/*-----------------------------------------------*/</a>
+<a name="ln1224">void UnityAssertNumbersArrayWithin(const UNITY_UINT delta,</a>
+<a name="ln1225">                                   UNITY_INTERNAL_PTR expected,</a>
+<a name="ln1226">                                   UNITY_INTERNAL_PTR actual,</a>
+<a name="ln1227">                                   const UNITY_UINT32 num_elements,</a>
+<a name="ln1228">                                   const char* msg,</a>
+<a name="ln1229">                                   const UNITY_LINE_TYPE lineNumber,</a>
+<a name="ln1230">                                   const UNITY_DISPLAY_STYLE_T style,</a>
+<a name="ln1231">                                   const UNITY_FLAGS_T flags)</a>
+<a name="ln1232">{</a>
+<a name="ln1233">    UNITY_UINT32 elements = num_elements;</a>
+<a name="ln1234">    unsigned int length   = style &amp; 0xF;</a>
+<a name="ln1235">    unsigned int increment = 0;</a>
+<a name="ln1236"> </a>
+<a name="ln1237">    RETURN_IF_FAIL_OR_IGNORE;</a>
+<a name="ln1238"> </a>
+<a name="ln1239">    if (num_elements == 0)</a>
+<a name="ln1240">    {</a>
+<a name="ln1241">        UnityPrintPointlessAndBail();</a>
+<a name="ln1242">    }</a>
+<a name="ln1243"> </a>
+<a name="ln1244">    if (expected == actual)</a>
+<a name="ln1245">    {</a>
+<a name="ln1246">        return; /* Both are NULL or same pointer */</a>
+<a name="ln1247">    }</a>
+<a name="ln1248"> </a>
+<a name="ln1249">    if (UnityIsOneArrayNull(expected, actual, lineNumber, msg))</a>
+<a name="ln1250">    {</a>
+<a name="ln1251">        UNITY_FAIL_AND_BAIL;</a>
+<a name="ln1252">    }</a>
+<a name="ln1253"> </a>
+<a name="ln1254">    while ((elements &gt; 0) &amp;&amp; (elements--))</a>
+<a name="ln1255">    {</a>
+<a name="ln1256">        UNITY_INT expect_val;</a>
+<a name="ln1257">        UNITY_INT actual_val;</a>
+<a name="ln1258"> </a>
+<a name="ln1259">        switch (length)</a>
+<a name="ln1260">        {</a>
+<a name="ln1261">            case 1:</a>
+<a name="ln1262">                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)expected;</a>
+<a name="ln1263">                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT8*)actual;</a>
+<a name="ln1264">                increment  = sizeof(UNITY_INT8);</a>
+<a name="ln1265">                break;</a>
+<a name="ln1266"> </a>
+<a name="ln1267">            case 2:</a>
+<a name="ln1268">                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)expected;</a>
+<a name="ln1269">                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)actual;</a>
+<a name="ln1270">                increment  = sizeof(UNITY_INT16);</a>
+<a name="ln1271">                break;</a>
+<a name="ln1272"> </a>
+<a name="ln1273">#ifdef UNITY_SUPPORT_64</a>
+<a name="ln1274">            case 8:</a>
+<a name="ln1275">                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)expected;</a>
+<a name="ln1276">                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)actual;</a>
+<a name="ln1277">                increment  = sizeof(UNITY_INT64);</a>
+<a name="ln1278">                break;</a>
+<a name="ln1279">#endif</a>
+<a name="ln1280"> </a>
+<a name="ln1281">            default: /* default is length 4 bytes */</a>
+<a name="ln1282">            case 4:</a>
+<a name="ln1283">                expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)expected;</a>
+<a name="ln1284">                actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)actual;</a>
+<a name="ln1285">                increment  = sizeof(UNITY_INT32);</a>
+<a name="ln1286">                length = 4;</a>
+<a name="ln1287">                break;</a>
+<a name="ln1288">        }</a>
+<a name="ln1289"> </a>
+<a name="ln1290">        if ((style &amp; UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)</a>
+<a name="ln1291">        {</a>
+<a name="ln1292">            if (actual_val &gt; expect_val)</a>
+<a name="ln1293">            {</a>
+<a name="ln1294">                Unity.CurrentTestFailed = (((UNITY_UINT)actual_val - (UNITY_UINT)expect_val) &gt; delta);</a>
+<a name="ln1295">            }</a>
+<a name="ln1296">            else</a>
+<a name="ln1297">            {</a>
+<a name="ln1298">                Unity.CurrentTestFailed = (((UNITY_UINT)expect_val - (UNITY_UINT)actual_val) &gt; delta);</a>
+<a name="ln1299">            }</a>
+<a name="ln1300">        }</a>
+<a name="ln1301">        else</a>
+<a name="ln1302">        {</a>
+<a name="ln1303">            if ((UNITY_UINT)actual_val &gt; (UNITY_UINT)expect_val)</a>
+<a name="ln1304">            {</a>
+<a name="ln1305">                Unity.CurrentTestFailed = (((UNITY_UINT)actual_val - (UNITY_UINT)expect_val) &gt; delta);</a>
+<a name="ln1306">            }</a>
+<a name="ln1307">            else</a>
+<a name="ln1308">            {</a>
+<a name="ln1309">                Unity.CurrentTestFailed = (((UNITY_UINT)expect_val - (UNITY_UINT)actual_val) &gt; delta);</a>
+<a name="ln1310">            }</a>
+<a name="ln1311">        }</a>
+<a name="ln1312"> </a>
+<a name="ln1313">        if (Unity.CurrentTestFailed)</a>
+<a name="ln1314">        {</a>
+<a name="ln1315">            if ((style &amp; UNITY_DISPLAY_RANGE_UINT) &amp;&amp; (length &lt; (UNITY_INT_WIDTH / 8)))</a>
+<a name="ln1316">            {   /* For UINT, remove sign extension (padding 1's) from signed type casts above */</a>
+<a name="ln1317">                UNITY_INT mask = 1;</a>
+<a name="ln1318">                mask = (mask &lt;&lt; 8 * length) - 1;</a>
+<a name="ln1319">                expect_val &amp;= mask;</a>
+<a name="ln1320">                actual_val &amp;= mask;</a>
+<a name="ln1321">            }</a>
+<a name="ln1322">            UnityTestResultsFailBegin(lineNumber);</a>
+<a name="ln1323">            UnityPrint(UnityStrDelta);</a>
+<a name="ln1324">            UnityPrintNumberByStyle((UNITY_INT)delta, style);</a>
+<a name="ln1325">            UnityPrint(UnityStrElement);</a>
+<a name="ln1326">            UnityPrintNumberUnsigned(num_elements - elements - 1);</a>
+<a name="ln1327">            UnityPrint(UnityStrExpected);</a>
+<a name="ln1328">            UnityPrintNumberByStyle(expect_val, style);</a>
+<a name="ln1329">            UnityPrint(UnityStrWas);</a>
+<a name="ln1330">            UnityPrintNumberByStyle(actual_val, style);</a>
+<a name="ln1331">            UnityAddMsgIfSpecified(msg);</a>
+<a name="ln1332">            UNITY_FAIL_AND_BAIL;</a>
+<a name="ln1333">        }</a>
+<a name="ln1334">        /* Walk through array by incrementing the pointers */</a>
+<a name="ln1335">        if (flags == UNITY_ARRAY_TO_ARRAY)</a>
+<a name="ln1336">        {</a>
+<a name="ln1337">            expected = (UNITY_INTERNAL_PTR)((const char*)expected + increment);</a>
+<a name="ln1338">        }</a>
+<a name="ln1339">        actual = (UNITY_INTERNAL_PTR)((const char*)actual + increment);</a>
+<a name="ln1340">    }</a>
+<a name="ln1341">}</a>
+<a name="ln1342"> </a>
+<a name="ln1343">/*-----------------------------------------------*/</a>
+<a name="ln1344">void UnityAssertEqualString(const char* expected,</a>
+<a name="ln1345">                            const char* actual,</a>
+<a name="ln1346">                            const char* msg,</a>
+<a name="ln1347">                            const UNITY_LINE_TYPE lineNumber)</a>
+<a name="ln1348">{</a>
+<a name="ln1349">    UNITY_UINT32 i;</a>
+<a name="ln1350"> </a>
+<a name="ln1351">    RETURN_IF_FAIL_OR_IGNORE;</a>
+<a name="ln1352"> </a>
+<a name="ln1353">    /* if both pointers not null compare the strings */</a>
+<a name="ln1354">    if (expected &amp;&amp; actual)</a>
+<a name="ln1355">    {</a>
+<a name="ln1356">        for (i = 0; expected[i] || actual[i]; i++)</a>
+<a name="ln1357">        {</a>
+<a name="ln1358">            if (expected[i] != actual[i])</a>
+<a name="ln1359">            {</a>
+<a name="ln1360">                Unity.CurrentTestFailed = 1;</a>
+<a name="ln1361">                break;</a>
+<a name="ln1362">            }</a>
+<a name="ln1363">        }</a>
+<a name="ln1364">    }</a>
+<a name="ln1365">    else</a>
+<a name="ln1366">    { /* handle case of one pointers being null (if both null, test should pass) */</a>
+<a name="ln1367">        if (expected != actual)</a>
+<a name="ln1368">        {</a>
+<a name="ln1369">            Unity.CurrentTestFailed = 1;</a>
+<a name="ln1370">        }</a>
+<a name="ln1371">    }</a>
+<a name="ln1372"> </a>
+<a name="ln1373">    if (Unity.CurrentTestFailed)</a>
+<a name="ln1374">    {</a>
+<a name="ln1375">        UnityTestResultsFailBegin(lineNumber);</a>
+<a name="ln1376">        UnityPrintExpectedAndActualStrings(expected, actual);</a>
+<a name="ln1377">        UnityAddMsgIfSpecified(msg);</a>
+<a name="ln1378">        UNITY_FAIL_AND_BAIL;</a>
+<a name="ln1379">    }</a>
+<a name="ln1380">}</a>
+<a name="ln1381"> </a>
+<a name="ln1382">/*-----------------------------------------------*/</a>
+<a name="ln1383">void UnityAssertEqualStringLen(const char* expected,</a>
+<a name="ln1384">                               const char* actual,</a>
+<a name="ln1385">                               const UNITY_UINT32 length,</a>
+<a name="ln1386">                               const char* msg,</a>
+<a name="ln1387">                               const UNITY_LINE_TYPE lineNumber)</a>
+<a name="ln1388">{</a>
+<a name="ln1389">    UNITY_UINT32 i;</a>
+<a name="ln1390"> </a>
+<a name="ln1391">    RETURN_IF_FAIL_OR_IGNORE;</a>
+<a name="ln1392"> </a>
+<a name="ln1393">    /* if both pointers not null compare the strings */</a>
+<a name="ln1394">    if (expected &amp;&amp; actual)</a>
+<a name="ln1395">    {</a>
+<a name="ln1396">        for (i = 0; (i &lt; length) &amp;&amp; (expected[i] || actual[i]); i++)</a>
+<a name="ln1397">        {</a>
+<a name="ln1398">            if (expected[i] != actual[i])</a>
+<a name="ln1399">            {</a>
+<a name="ln1400">                Unity.CurrentTestFailed = 1;</a>
+<a name="ln1401">                break;</a>
+<a name="ln1402">            }</a>
+<a name="ln1403">        }</a>
+<a name="ln1404">    }</a>
+<a name="ln1405">    else</a>
+<a name="ln1406">    { /* handle case of one pointers being null (if both null, test should pass) */</a>
+<a name="ln1407">        if (expected != actual)</a>
+<a name="ln1408">        {</a>
+<a name="ln1409">            Unity.CurrentTestFailed = 1;</a>
+<a name="ln1410">        }</a>
+<a name="ln1411">    }</a>
+<a name="ln1412"> </a>
+<a name="ln1413">    if (Unity.CurrentTestFailed)</a>
+<a name="ln1414">    {</a>
+<a name="ln1415">        UnityTestResultsFailBegin(lineNumber);</a>
+<a name="ln1416">        UnityPrintExpectedAndActualStringsLen(expected, actual, length);</a>
+<a name="ln1417">        UnityAddMsgIfSpecified(msg);</a>
+<a name="ln1418">        UNITY_FAIL_AND_BAIL;</a>
+<a name="ln1419">    }</a>
+<a name="ln1420">}</a>
+<a name="ln1421"> </a>
+<a name="ln1422">/*-----------------------------------------------*/</a>
+<a name="ln1423">void UnityAssertEqualStringArray(UNITY_INTERNAL_PTR expected,</a>
+<a name="ln1424">                                 const char** actual,</a>
+<a name="ln1425">                                 const UNITY_UINT32 num_elements,</a>
+<a name="ln1426">                                 const char* msg,</a>
+<a name="ln1427">                                 const UNITY_LINE_TYPE lineNumber,</a>
+<a name="ln1428">                                 const UNITY_FLAGS_T flags)</a>
+<a name="ln1429">{</a>
+<a name="ln1430">    UNITY_UINT32 i = 0;</a>
+<a name="ln1431">    UNITY_UINT32 j = 0;</a>
+<a name="ln1432">    const char* expd = NULL;</a>
+<a name="ln1433">    const char* act = NULL;</a>
+<a name="ln1434"> </a>
+<a name="ln1435">    RETURN_IF_FAIL_OR_IGNORE;</a>
+<a name="ln1436"> </a>
+<a name="ln1437">    /* if no elements, it's an error */</a>
+<a name="ln1438">    if (num_elements == 0)</a>
+<a name="ln1439">    {</a>
+<a name="ln1440">        UnityPrintPointlessAndBail();</a>
+<a name="ln1441">    }</a>
+<a name="ln1442"> </a>
+<a name="ln1443">    if ((const void*)expected == (const void*)actual)</a>
+<a name="ln1444">    {</a>
+<a name="ln1445">        return; /* Both are NULL or same pointer */</a>
+<a name="ln1446">    }</a>
+<a name="ln1447"> </a>
+<a name="ln1448">    if (UnityIsOneArrayNull((UNITY_INTERNAL_PTR)expected, (UNITY_INTERNAL_PTR)actual, lineNumber, msg))</a>
+<a name="ln1449">    {</a>
+<a name="ln1450">        UNITY_FAIL_AND_BAIL;</a>
+<a name="ln1451">    }</a>
+<a name="ln1452"> </a>
+<a name="ln1453">    if (flags != UNITY_ARRAY_TO_ARRAY)</a>
+<a name="ln1454">    {</a>
+<a name="ln1455">        expd = (const char*)expected;</a>
+<a name="ln1456">    }</a>
+<a name="ln1457"> </a>
+<a name="ln1458">    do</a>
+<a name="ln1459">    {</a>
+<a name="ln1460">        act = actual[j];</a>
+<a name="ln1461">        if (flags == UNITY_ARRAY_TO_ARRAY)</a>
+<a name="ln1462">        {</a>
+<a name="ln1463">            expd = ((const char* const*)expected)[j];</a>
+<a name="ln1464">        }</a>
+<a name="ln1465"> </a>
+<a name="ln1466">        /* if both pointers not null compare the strings */</a>
+<a name="ln1467">        if (expd &amp;&amp; act)</a>
+<a name="ln1468">        {</a>
+<a name="ln1469">            for (i = 0; expd[i] || act[i]; i++)</a>
+<a name="ln1470">            {</a>
+<a name="ln1471">                if (expd[i] != act[i])</a>
+<a name="ln1472">                {</a>
+<a name="ln1473">                    Unity.CurrentTestFailed = 1;</a>
+<a name="ln1474">                    break;</a>
+<a name="ln1475">                }</a>
+<a name="ln1476">            }</a>
+<a name="ln1477">        }</a>
+<a name="ln1478">        else</a>
+<a name="ln1479">        { /* handle case of one pointers being null (if both null, test should pass) */</a>
+<a name="ln1480">            if (expd != act)</a>
+<a name="ln1481">            {</a>
+<a name="ln1482">                Unity.CurrentTestFailed = 1;</a>
+<a name="ln1483">            }</a>
+<a name="ln1484">        }</a>
+<a name="ln1485"> </a>
+<a name="ln1486">        if (Unity.CurrentTestFailed)</a>
+<a name="ln1487">        {</a>
+<a name="ln1488">            UnityTestResultsFailBegin(lineNumber);</a>
+<a name="ln1489">            if (num_elements &gt; 1)</a>
+<a name="ln1490">            {</a>
+<a name="ln1491">                UnityPrint(UnityStrElement);</a>
+<a name="ln1492">                UnityPrintNumberUnsigned(j);</a>
+<a name="ln1493">            }</a>
+<a name="ln1494">            UnityPrintExpectedAndActualStrings(expd, act);</a>
+<a name="ln1495">            UnityAddMsgIfSpecified(msg);</a>
+<a name="ln1496">            UNITY_FAIL_AND_BAIL;</a>
+<a name="ln1497">        }</a>
+<a name="ln1498">    } while (++j &lt; num_elements);</a>
+<a name="ln1499">}</a>
+<a name="ln1500"> </a>
+<a name="ln1501">/*-----------------------------------------------*/</a>
+<a name="ln1502">void UnityAssertEqualMemory(UNITY_INTERNAL_PTR expected,</a>
+<a name="ln1503">                            UNITY_INTERNAL_PTR actual,</a>
+<a name="ln1504">                            const UNITY_UINT32 length,</a>
+<a name="ln1505">                            const UNITY_UINT32 num_elements,</a>
+<a name="ln1506">                            const char* msg,</a>
+<a name="ln1507">                            const UNITY_LINE_TYPE lineNumber,</a>
+<a name="ln1508">                            const UNITY_FLAGS_T flags)</a>
+<a name="ln1509">{</a>
+<a name="ln1510">    UNITY_PTR_ATTRIBUTE const unsigned char* ptr_exp = (UNITY_PTR_ATTRIBUTE const unsigned char*)expected;</a>
+<a name="ln1511">    UNITY_PTR_ATTRIBUTE const unsigned char* ptr_act = (UNITY_PTR_ATTRIBUTE const unsigned char*)actual;</a>
+<a name="ln1512">    UNITY_UINT32 elements = num_elements;</a>
+<a name="ln1513">    UNITY_UINT32 bytes;</a>
+<a name="ln1514"> </a>
+<a name="ln1515">    RETURN_IF_FAIL_OR_IGNORE;</a>
+<a name="ln1516"> </a>
+<a name="ln1517">    if ((elements == 0) || (length == 0))</a>
+<a name="ln1518">    {</a>
+<a name="ln1519">        UnityPrintPointlessAndBail();</a>
+<a name="ln1520">    }</a>
+<a name="ln1521"> </a>
+<a name="ln1522">    if (expected == actual)</a>
+<a name="ln1523">    {</a>
+<a name="ln1524">        return; /* Both are NULL or same pointer */</a>
+<a name="ln1525">    }</a>
+<a name="ln1526"> </a>
+<a name="ln1527">    if (UnityIsOneArrayNull(expected, actual, lineNumber, msg))</a>
+<a name="ln1528">    {</a>
+<a name="ln1529">        UNITY_FAIL_AND_BAIL;</a>
+<a name="ln1530">    }</a>
+<a name="ln1531"> </a>
+<a name="ln1532">    while (elements--)</a>
+<a name="ln1533">    {</a>
+<a name="ln1534">        bytes = length;</a>
+<a name="ln1535">        while (bytes--)</a>
+<a name="ln1536">        {</a>
+<a name="ln1537">            if (*ptr_exp != *ptr_act)</a>
+<a name="ln1538">            {</a>
+<a name="ln1539">                UnityTestResultsFailBegin(lineNumber);</a>
+<a name="ln1540">                UnityPrint(UnityStrMemory);</a>
+<a name="ln1541">                if (num_elements &gt; 1)</a>
+<a name="ln1542">                {</a>
+<a name="ln1543">                    UnityPrint(UnityStrElement);</a>
+<a name="ln1544">                    UnityPrintNumberUnsigned(num_elements - elements - 1);</a>
+<a name="ln1545">                }</a>
+<a name="ln1546">                UnityPrint(UnityStrByte);</a>
+<a name="ln1547">                UnityPrintNumberUnsigned(length - bytes - 1);</a>
+<a name="ln1548">                UnityPrint(UnityStrExpected);</a>
+<a name="ln1549">                UnityPrintNumberByStyle(*ptr_exp, UNITY_DISPLAY_STYLE_HEX8);</a>
+<a name="ln1550">                UnityPrint(UnityStrWas);</a>
+<a name="ln1551">                UnityPrintNumberByStyle(*ptr_act, UNITY_DISPLAY_STYLE_HEX8);</a>
+<a name="ln1552">                UnityAddMsgIfSpecified(msg);</a>
+<a name="ln1553">                UNITY_FAIL_AND_BAIL;</a>
+<a name="ln1554">            }</a>
+<a name="ln1555">            ptr_exp++;</a>
+<a name="ln1556">            ptr_act++;</a>
+<a name="ln1557">        }</a>
+<a name="ln1558">        if (flags == UNITY_ARRAY_TO_VAL)</a>
+<a name="ln1559">        {</a>
+<a name="ln1560">            ptr_exp = (UNITY_PTR_ATTRIBUTE const unsigned char*)expected;</a>
+<a name="ln1561">        }</a>
+<a name="ln1562">    }</a>
+<a name="ln1563">}</a>
+<a name="ln1564"> </a>
+<a name="ln1565">/*-----------------------------------------------*/</a>
+<a name="ln1566"> </a>
+<a name="ln1567">static union</a>
+<a name="ln1568">{</a>
+<a name="ln1569">    UNITY_INT8 i8;</a>
+<a name="ln1570">    UNITY_INT16 i16;</a>
+<a name="ln1571">    UNITY_INT32 i32;</a>
+<a name="ln1572">#ifdef UNITY_SUPPORT_64</a>
+<a name="ln1573">    UNITY_INT64 i64;</a>
+<a name="ln1574">#endif</a>
+<a name="ln1575">#ifndef UNITY_EXCLUDE_FLOAT</a>
+<a name="ln1576">    float f;</a>
+<a name="ln1577">#endif</a>
+<a name="ln1578">#ifndef UNITY_EXCLUDE_DOUBLE</a>
+<a name="ln1579">    double d;</a>
+<a name="ln1580">#endif</a>
+<a name="ln1581">} UnityQuickCompare;</a>
+<a name="ln1582"> </a>
+<a name="ln1583">UNITY_INTERNAL_PTR UnityNumToPtr(const UNITY_INT num, const UNITY_UINT8 size)</a>
+<a name="ln1584">{</a>
+<a name="ln1585">    switch(size)</a>
+<a name="ln1586">    {</a>
+<a name="ln1587">        case 1:</a>
+<a name="ln1588">            UnityQuickCompare.i8 = (UNITY_INT8)num;</a>
+<a name="ln1589">            return (UNITY_INTERNAL_PTR)(&amp;UnityQuickCompare.i8);</a>
+<a name="ln1590"> </a>
+<a name="ln1591">        case 2:</a>
+<a name="ln1592">            UnityQuickCompare.i16 = (UNITY_INT16)num;</a>
+<a name="ln1593">            return (UNITY_INTERNAL_PTR)(&amp;UnityQuickCompare.i16);</a>
+<a name="ln1594"> </a>
+<a name="ln1595">#ifdef UNITY_SUPPORT_64</a>
+<a name="ln1596">        case 8:</a>
+<a name="ln1597">            UnityQuickCompare.i64 = (UNITY_INT64)num;</a>
+<a name="ln1598">            return (UNITY_INTERNAL_PTR)(&amp;UnityQuickCompare.i64);</a>
+<a name="ln1599">#endif</a>
+<a name="ln1600"> </a>
+<a name="ln1601">        default: /* 4 bytes */</a>
+<a name="ln1602">            UnityQuickCompare.i32 = (UNITY_INT32)num;</a>
+<a name="ln1603">            return (UNITY_INTERNAL_PTR)(&amp;UnityQuickCompare.i32);</a>
+<a name="ln1604">    }</a>
+<a name="ln1605">}</a>
+<a name="ln1606"> </a>
+<a name="ln1607">#ifndef UNITY_EXCLUDE_FLOAT</a>
+<a name="ln1608">/*-----------------------------------------------*/</a>
+<a name="ln1609">UNITY_INTERNAL_PTR UnityFloatToPtr(const float num)</a>
+<a name="ln1610">{</a>
+<a name="ln1611">    UnityQuickCompare.f = num;</a>
+<a name="ln1612">    return (UNITY_INTERNAL_PTR)(&amp;UnityQuickCompare.f);</a>
+<a name="ln1613">}</a>
+<a name="ln1614">#endif</a>
+<a name="ln1615"> </a>
+<a name="ln1616">#ifndef UNITY_EXCLUDE_DOUBLE</a>
+<a name="ln1617">/*-----------------------------------------------*/</a>
+<a name="ln1618">UNITY_INTERNAL_PTR UnityDoubleToPtr(const double num)</a>
+<a name="ln1619">{</a>
+<a name="ln1620">    UnityQuickCompare.d = num;</a>
+<a name="ln1621">    return (UNITY_INTERNAL_PTR)(&amp;UnityQuickCompare.d);</a>
+<a name="ln1622">}</a>
+<a name="ln1623">#endif</a>
+<a name="ln1624"> </a>
+<a name="ln1625">/*-----------------------------------------------</a>
+<a name="ln1626"> * printf helper function</a>
+<a name="ln1627"> *-----------------------------------------------*/</a>
+<a name="ln1628">#ifdef UNITY_INCLUDE_PRINT_FORMATTED</a>
+<a name="ln1629">static void UnityPrintFVA(const char* format, va_list va)</a>
+<a name="ln1630">{</a>
+<a name="ln1631">    const char* pch = format;</a>
+<a name="ln1632">    if (pch != NULL)</a>
+<a name="ln1633">    {</a>
+<a name="ln1634">        while (*pch)</a>
+<a name="ln1635">        {</a>
+<a name="ln1636">            /* format identification character */</a>
+<a name="ln1637">            if (*pch == '%')</a>
+<a name="ln1638">            {</a>
+<a name="ln1639">                pch++;</a>
+<a name="ln1640"> </a>
+<a name="ln1641">                if (pch != NULL)</a>
+<a name="ln1642">                {</a>
+<a name="ln1643">                    switch (*pch)</a>
+<a name="ln1644">                    {</a>
+<a name="ln1645">                        case 'd':</a>
+<a name="ln1646">                        case 'i':</a>
+<a name="ln1647">                            {</a>
+<a name="ln1648">                                const int number = va_arg(va, int);</a>
+<a name="ln1649">                                UnityPrintNumber((UNITY_INT)number);</a>
+<a name="ln1650">                                break;</a>
+<a name="ln1651">                            }</a>
+<a name="ln1652">#ifndef UNITY_EXCLUDE_FLOAT_PRINT</a>
+<a name="ln1653">                        case 'f':</a>
+<a name="ln1654">                        case 'g':</a>
+<a name="ln1655">                            {</a>
+<a name="ln1656">                                const double number = va_arg(va, double);</a>
+<a name="ln1657">                                UnityPrintFloat((UNITY_DOUBLE)number);</a>
+<a name="ln1658">                                break;</a>
+<a name="ln1659">                            }</a>
+<a name="ln1660">#endif</a>
+<a name="ln1661">                        case 'u':</a>
+<a name="ln1662">                            {</a>
+<a name="ln1663">                                const unsigned int number = va_arg(va, unsigned int);</a>
+<a name="ln1664">                                UnityPrintNumberUnsigned((UNITY_UINT)number);</a>
+<a name="ln1665">                                break;</a>
+<a name="ln1666">                            }</a>
+<a name="ln1667">                        case 'b':</a>
+<a name="ln1668">                            {</a>
+<a name="ln1669">                                const unsigned int number = va_arg(va, unsigned int);</a>
+<a name="ln1670">                                const UNITY_UINT mask = (UNITY_UINT)0 - (UNITY_UINT)1;</a>
+<a name="ln1671">                                UNITY_OUTPUT_CHAR('0');</a>
+<a name="ln1672">                                UNITY_OUTPUT_CHAR('b');</a>
+<a name="ln1673">                                UnityPrintMask(mask, (UNITY_UINT)number);</a>
+<a name="ln1674">                                break;</a>
+<a name="ln1675">                            }</a>
+<a name="ln1676">                        case 'x':</a>
+<a name="ln1677">                        case 'X':</a>
+<a name="ln1678">                        case 'p':</a>
+<a name="ln1679">                            {</a>
+<a name="ln1680">                                const unsigned int number = va_arg(va, unsigned int);</a>
+<a name="ln1681">                                UNITY_OUTPUT_CHAR('0');</a>
+<a name="ln1682">                                UNITY_OUTPUT_CHAR('x');</a>
+<a name="ln1683">                                UnityPrintNumberHex((UNITY_UINT)number, 8);</a>
+<a name="ln1684">                                break;</a>
+<a name="ln1685">                            }</a>
+<a name="ln1686">                        case 'c':</a>
+<a name="ln1687">                            {</a>
+<a name="ln1688">                                const int ch = va_arg(va, int);</a>
+<a name="ln1689">                                UnityPrintChar((const char *)&amp;ch);</a>
+<a name="ln1690">                                break;</a>
+<a name="ln1691">                            }</a>
+<a name="ln1692">                        case 's':</a>
+<a name="ln1693">                            {</a>
+<a name="ln1694">                                const char * string = va_arg(va, const char *);</a>
+<a name="ln1695">                                UnityPrint(string);</a>
+<a name="ln1696">                                break;</a>
+<a name="ln1697">                            }</a>
+<a name="ln1698">                        case '%':</a>
+<a name="ln1699">                            {</a>
+<a name="ln1700">                                UnityPrintChar(pch);</a>
+<a name="ln1701">                                break;</a>
+<a name="ln1702">                            }</a>
+<a name="ln1703">                        default:</a>
+<a name="ln1704">                            {</a>
+<a name="ln1705">                                /* print the unknown format character */</a>
+<a name="ln1706">                                UNITY_OUTPUT_CHAR('%');</a>
+<a name="ln1707">                                UnityPrintChar(pch);</a>
+<a name="ln1708">                                break;</a>
+<a name="ln1709">                            }</a>
+<a name="ln1710">                    }</a>
+<a name="ln1711">                }</a>
+<a name="ln1712">            }</a>
+<a name="ln1713">#ifdef UNITY_OUTPUT_COLOR</a>
+<a name="ln1714">            /* print ANSI escape code */</a>
+<a name="ln1715">            else if ((*pch == 27) &amp;&amp; (*(pch + 1) == '['))</a>
+<a name="ln1716">            {</a>
+<a name="ln1717">                pch += UnityPrintAnsiEscapeString(pch);</a>
+<a name="ln1718">                continue;</a>
+<a name="ln1719">            }</a>
+<a name="ln1720">#endif</a>
+<a name="ln1721">            else if (*pch == '\n')</a>
+<a name="ln1722">            {</a>
+<a name="ln1723">                UNITY_PRINT_EOL();</a>
+<a name="ln1724">            }</a>
+<a name="ln1725">            else</a>
+<a name="ln1726">            {</a>
+<a name="ln1727">                UnityPrintChar(pch);</a>
+<a name="ln1728">            }</a>
+<a name="ln1729"> </a>
+<a name="ln1730">            pch++;</a>
+<a name="ln1731">        }</a>
+<a name="ln1732">    }</a>
+<a name="ln1733">}</a>
+<a name="ln1734"> </a>
+<a name="ln1735">void UnityPrintF(const UNITY_LINE_TYPE line, const char* format, ...)</a>
+<a name="ln1736">{</a>
+<a name="ln1737">    UnityTestResultsBegin(Unity.TestFile, line);</a>
+<a name="ln1738">    UnityPrint(&quot;INFO&quot;);</a>
+<a name="ln1739">    if(format != NULL)</a>
+<a name="ln1740">    {</a>
+<a name="ln1741">        UnityPrint(&quot;: &quot;);</a>
+<a name="ln1742">        va_list va;</a>
+<a name="ln1743">        va_start(va, format);</a>
+<a name="ln1744">        UnityPrintFVA(format, va);</a>
+<a name="ln1745">        va_end(va);</a>
+<a name="ln1746">    }</a>
+<a name="ln1747">    UNITY_PRINT_EOL();</a>
+<a name="ln1748">}</a>
+<a name="ln1749">#endif /* ! UNITY_INCLUDE_PRINT_FORMATTED */</a>
+<a name="ln1750"> </a>
+<a name="ln1751"> </a>
+<a name="ln1752">/*-----------------------------------------------</a>
+<a name="ln1753"> * Control Functions</a>
+<a name="ln1754"> *-----------------------------------------------*/</a>
+<a name="ln1755"> </a>
+<a name="ln1756">/*-----------------------------------------------*/</a>
+<a name="ln1757">void UnityFail(const char* msg, const UNITY_LINE_TYPE line)</a>
+<a name="ln1758">{</a>
+<a name="ln1759">    RETURN_IF_FAIL_OR_IGNORE;</a>
+<a name="ln1760"> </a>
+<a name="ln1761">    UnityTestResultsBegin(Unity.TestFile, line);</a>
+<a name="ln1762">    UnityPrint(UnityStrFail);</a>
+<a name="ln1763">    if (msg != NULL)</a>
+<a name="ln1764">    {</a>
+<a name="ln1765">        UNITY_OUTPUT_CHAR(':');</a>
+<a name="ln1766"> </a>
+<a name="ln1767">#ifdef UNITY_PRINT_TEST_CONTEXT</a>
+<a name="ln1768">        UNITY_PRINT_TEST_CONTEXT();</a>
+<a name="ln1769">#endif</a>
+<a name="ln1770">#ifndef UNITY_EXCLUDE_DETAILS</a>
+<a name="ln1771">        if (Unity.CurrentDetail1)</a>
+<a name="ln1772">        {</a>
+<a name="ln1773">            UnityPrint(UnityStrDetail1Name);</a>
+<a name="ln1774">            UnityPrint(Unity.CurrentDetail1);</a>
+<a name="ln1775">            if (Unity.CurrentDetail2)</a>
+<a name="ln1776">            {</a>
+<a name="ln1777">                UnityPrint(UnityStrDetail2Name);</a>
+<a name="ln1778">                UnityPrint(Unity.CurrentDetail2);</a>
+<a name="ln1779">            }</a>
+<a name="ln1780">            UnityPrint(UnityStrSpacer);</a>
+<a name="ln1781">        }</a>
+<a name="ln1782">#endif</a>
+<a name="ln1783">        if (msg[0] != ' ')</a>
+<a name="ln1784">        {</a>
+<a name="ln1785">            UNITY_OUTPUT_CHAR(' ');</a>
+<a name="ln1786">        }</a>
+<a name="ln1787">        UnityPrint(msg);</a>
+<a name="ln1788">    }</a>
+<a name="ln1789"> </a>
+<a name="ln1790">    UNITY_FAIL_AND_BAIL;</a>
+<a name="ln1791">}</a>
+<a name="ln1792"> </a>
+<a name="ln1793">/*-----------------------------------------------*/</a>
+<a name="ln1794">void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)</a>
+<a name="ln1795">{</a>
+<a name="ln1796">    RETURN_IF_FAIL_OR_IGNORE;</a>
+<a name="ln1797"> </a>
+<a name="ln1798">    UnityTestResultsBegin(Unity.TestFile, line);</a>
+<a name="ln1799">    UnityPrint(UnityStrIgnore);</a>
+<a name="ln1800">    if (msg != NULL)</a>
+<a name="ln1801">    {</a>
+<a name="ln1802">        UNITY_OUTPUT_CHAR(':');</a>
+<a name="ln1803">        UNITY_OUTPUT_CHAR(' ');</a>
+<a name="ln1804">        UnityPrint(msg);</a>
+<a name="ln1805">    }</a>
+<a name="ln1806">    UNITY_IGNORE_AND_BAIL;</a>
+<a name="ln1807">}</a>
+<a name="ln1808"> </a>
+<a name="ln1809">/*-----------------------------------------------*/</a>
+<a name="ln1810">void UnityMessage(const char* msg, const UNITY_LINE_TYPE line)</a>
+<a name="ln1811">{</a>
+<a name="ln1812">    UnityTestResultsBegin(Unity.TestFile, line);</a>
+<a name="ln1813">    UnityPrint(&quot;INFO&quot;);</a>
+<a name="ln1814">    if (msg != NULL)</a>
+<a name="ln1815">    {</a>
+<a name="ln1816">      UNITY_OUTPUT_CHAR(':');</a>
+<a name="ln1817">      UNITY_OUTPUT_CHAR(' ');</a>
+<a name="ln1818">      UnityPrint(msg);</a>
+<a name="ln1819">    }</a>
+<a name="ln1820">    UNITY_PRINT_EOL();</a>
+<a name="ln1821">}</a>
+<a name="ln1822"> </a>
+<a name="ln1823">/*-----------------------------------------------*/</a>
+<a name="ln1824">/* If we have not defined our own test runner, then include our default test runner to make life easier */</a>
+<a name="ln1825">#ifndef UNITY_SKIP_DEFAULT_RUNNER</a>
+<a name="ln1826">void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum)</a>
+<a name="ln1827">{</a>
+<a name="ln1828">    Unity.CurrentTestName = FuncName;</a>
+<a name="ln1829">    Unity.CurrentTestLineNumber = (UNITY_LINE_TYPE)FuncLineNum;</a>
+<a name="ln1830">    Unity.NumberOfTests++;</a>
+<a name="ln1831">    UNITY_CLR_DETAILS();</a>
+<a name="ln1832">    UNITY_EXEC_TIME_START();</a>
+<a name="ln1833">    if (TEST_PROTECT())</a>
+<a name="ln1834">    {</a>
+<a name="ln1835">        setUp();</a>
+<a name="ln1836">        Func();</a>
+<a name="ln1837">    }</a>
+<a name="ln1838">    if (TEST_PROTECT())</a>
+<a name="ln1839">    {</a>
+<a name="ln1840">        tearDown();</a>
+<a name="ln1841">    }</a>
+<a name="ln1842">    UNITY_EXEC_TIME_STOP();</a>
+<a name="ln1843">    UnityConcludeTest();</a>
+<a name="ln1844">}</a>
+<a name="ln1845">#endif</a>
+<a name="ln1846"> </a>
+<a name="ln1847">/*-----------------------------------------------*/</a>
+<a name="ln1848">void UnitySetTestFile(const char* filename)</a>
+<a name="ln1849">{</a>
+<a name="ln1850">	Unity.TestFile = filename;</a>
+<a name="ln1851">}</a>
+<a name="ln1852"> </a>
+<a name="ln1853">/*-----------------------------------------------*/</a>
+<a name="ln1854">void UnityBegin(const char* filename)</a>
+<a name="ln1855">{</a>
+<a name="ln1856">    Unity.TestFile = filename;</a>
+<a name="ln1857">    Unity.CurrentTestName = NULL;</a>
+<a name="ln1858">    Unity.CurrentTestLineNumber = 0;</a>
+<a name="ln1859">    Unity.NumberOfTests = 0;</a>
+<a name="ln1860">    Unity.TestFailures = 0;</a>
+<a name="ln1861">    Unity.TestIgnores = 0;</a>
+<a name="ln1862">    Unity.CurrentTestFailed = 0;</a>
+<a name="ln1863">    Unity.CurrentTestIgnored = 0;</a>
+<a name="ln1864"> </a>
+<a name="ln1865">    UNITY_CLR_DETAILS();</a>
+<a name="ln1866">    UNITY_OUTPUT_START();</a>
+<a name="ln1867">}</a>
+<a name="ln1868"> </a>
+<a name="ln1869">/*-----------------------------------------------*/</a>
+<a name="ln1870">int UnityEnd(void)</a>
+<a name="ln1871">{</a>
+<a name="ln1872">    UNITY_PRINT_EOL();</a>
+<a name="ln1873">    UnityPrint(UnityStrBreaker);</a>
+<a name="ln1874">    UNITY_PRINT_EOL();</a>
+<a name="ln1875">    UnityPrintNumber((UNITY_INT)(Unity.NumberOfTests));</a>
+<a name="ln1876">    UnityPrint(UnityStrResultsTests);</a>
+<a name="ln1877">    UnityPrintNumber((UNITY_INT)(Unity.TestFailures));</a>
+<a name="ln1878">    UnityPrint(UnityStrResultsFailures);</a>
+<a name="ln1879">    UnityPrintNumber((UNITY_INT)(Unity.TestIgnores));</a>
+<a name="ln1880">    UnityPrint(UnityStrResultsIgnored);</a>
+<a name="ln1881">    UNITY_PRINT_EOL();</a>
+<a name="ln1882">    if (Unity.TestFailures == 0U)</a>
+<a name="ln1883">    {</a>
+<a name="ln1884">        UnityPrint(UnityStrOk);</a>
+<a name="ln1885">    }</a>
+<a name="ln1886">    else</a>
+<a name="ln1887">    {</a>
+<a name="ln1888">        UnityPrint(UnityStrFail);</a>
+<a name="ln1889">#ifdef UNITY_DIFFERENTIATE_FINAL_FAIL</a>
+<a name="ln1890">        UNITY_OUTPUT_CHAR('E'); UNITY_OUTPUT_CHAR('D');</a>
+<a name="ln1891">#endif</a>
+<a name="ln1892">    }</a>
+<a name="ln1893">    UNITY_PRINT_EOL();</a>
+<a name="ln1894">    UNITY_FLUSH_CALL();</a>
+<a name="ln1895">    UNITY_OUTPUT_COMPLETE();</a>
+<a name="ln1896">    return (int)(Unity.TestFailures);</a>
+<a name="ln1897">}</a>
+<a name="ln1898"> </a>
+<a name="ln1899">/*-----------------------------------------------</a>
+<a name="ln1900"> * Command Line Argument Support</a>
+<a name="ln1901"> *-----------------------------------------------*/</a>
+<a name="ln1902">#ifdef UNITY_USE_COMMAND_LINE_ARGS</a>
+<a name="ln1903"> </a>
+<a name="ln1904">char* UnityOptionIncludeNamed = NULL;</a>
+<a name="ln1905">char* UnityOptionExcludeNamed = NULL;</a>
+<a name="ln1906">int UnityVerbosity            = 1;</a>
+<a name="ln1907"> </a>
+<a name="ln1908">/*-----------------------------------------------*/</a>
+<a name="ln1909">int UnityParseOptions(int argc, char** argv)</a>
+<a name="ln1910">{</a>
+<a name="ln1911">    int i;</a>
+<a name="ln1912">    UnityOptionIncludeNamed = NULL;</a>
+<a name="ln1913">    UnityOptionExcludeNamed = NULL;</a>
+<a name="ln1914"> </a>
+<a name="ln1915">    for (i = 1; i &lt; argc; i++)</a>
+<a name="ln1916">    {</a>
+<a name="ln1917">        if (argv[i][0] == '-')</a>
+<a name="ln1918">        {</a>
+<a name="ln1919">            switch (argv[i][1])</a>
+<a name="ln1920">            {</a>
+<a name="ln1921">                case 'l': /* list tests */</a>
+<a name="ln1922">                    return -1;</a>
+<a name="ln1923">                case 'n': /* include tests with name including this string */</a>
+<a name="ln1924">                case 'f': /* an alias for -n */</a>
+<a name="ln1925">                    if (argv[i][2] == '=')</a>
+<a name="ln1926">                    {</a>
+<a name="ln1927">                        UnityOptionIncludeNamed = &amp;argv[i][3];</a>
+<a name="ln1928">                    }</a>
+<a name="ln1929">                    else if (++i &lt; argc)</a>
+<a name="ln1930">                    {</a>
+<a name="ln1931">                        UnityOptionIncludeNamed = argv[i];</a>
+<a name="ln1932">                    }</a>
+<a name="ln1933">                    else</a>
+<a name="ln1934">                    {</a>
+<a name="ln1935">                        UnityPrint(&quot;ERROR: No Test String to Include Matches For&quot;);</a>
+<a name="ln1936">                        UNITY_PRINT_EOL();</a>
+<a name="ln1937">                        return 1;</a>
+<a name="ln1938">                    }</a>
+<a name="ln1939">                    break;</a>
+<a name="ln1940">                case 'q': /* quiet */</a>
+<a name="ln1941">                    UnityVerbosity = 0;</a>
+<a name="ln1942">                    break;</a>
+<a name="ln1943">                case 'v': /* verbose */</a>
+<a name="ln1944">                    UnityVerbosity = 2;</a>
+<a name="ln1945">                    break;</a>
+<a name="ln1946">                case 'x': /* exclude tests with name including this string */</a>
+<a name="ln1947">                    if (argv[i][2] == '=')</a>
+<a name="ln1948">                    {</a>
+<a name="ln1949">                        UnityOptionExcludeNamed = &amp;argv[i][3];</a>
+<a name="ln1950">                    }</a>
+<a name="ln1951">                    else if (++i &lt; argc)</a>
+<a name="ln1952">                    {</a>
+<a name="ln1953">                        UnityOptionExcludeNamed = argv[i];</a>
+<a name="ln1954">                    }</a>
+<a name="ln1955">                    else</a>
+<a name="ln1956">                    {</a>
+<a name="ln1957">                        UnityPrint(&quot;ERROR: No Test String to Exclude Matches For&quot;);</a>
+<a name="ln1958">                        UNITY_PRINT_EOL();</a>
+<a name="ln1959">                        return 1;</a>
+<a name="ln1960">                    }</a>
+<a name="ln1961">                    break;</a>
+<a name="ln1962">                default:</a>
+<a name="ln1963">                    UnityPrint(&quot;ERROR: Unknown Option &quot;);</a>
+<a name="ln1964">                    UNITY_OUTPUT_CHAR(argv[i][1]);</a>
+<a name="ln1965">                    UNITY_PRINT_EOL();</a>
+<a name="ln1966">                    return 1;</a>
+<a name="ln1967">            }</a>
+<a name="ln1968">        }</a>
+<a name="ln1969">    }</a>
+<a name="ln1970"> </a>
+<a name="ln1971">    return 0;</a>
+<a name="ln1972">}</a>
+<a name="ln1973"> </a>
+<a name="ln1974">/*-----------------------------------------------*/</a>
+<a name="ln1975">int IsStringInBiggerString(const char* longstring, const char* shortstring)</a>
+<a name="ln1976">{</a>
+<a name="ln1977">    const char* lptr = longstring;</a>
+<a name="ln1978">    const char* sptr = shortstring;</a>
+<a name="ln1979">    const char* lnext = lptr;</a>
+<a name="ln1980"> </a>
+<a name="ln1981">    if (*sptr == '*')</a>
+<a name="ln1982">    {</a>
+<a name="ln1983">        return 1;</a>
+<a name="ln1984">    }</a>
+<a name="ln1985"> </a>
+<a name="ln1986">    while (*lptr)</a>
+<a name="ln1987">    {</a>
+<a name="ln1988">        lnext = lptr + 1;</a>
+<a name="ln1989"> </a>
+<a name="ln1990">        /* If they current bytes match, go on to the next bytes */</a>
+<a name="ln1991">        while (*lptr &amp;&amp; *sptr &amp;&amp; (*lptr == *sptr))</a>
+<a name="ln1992">        {</a>
+<a name="ln1993">            lptr++;</a>
+<a name="ln1994">            sptr++;</a>
+<a name="ln1995"> </a>
+<a name="ln1996">            /* We're done if we match the entire string or up to a wildcard */</a>
+<a name="ln1997">            if (*sptr == '*')</a>
+<a name="ln1998">                return 1;</a>
+<a name="ln1999">            if (*sptr == ',')</a>
+<a name="ln2000">                return 1;</a>
+<a name="ln2001">            if (*sptr == '&quot;')</a>
+<a name="ln2002">                return 1;</a>
+<a name="ln2003">            if (*sptr == '\'')</a>
+<a name="ln2004">                return 1;</a>
+<a name="ln2005">            if (*sptr == ':')</a>
+<a name="ln2006">                return 2;</a>
+<a name="ln2007">            if (*sptr == 0)</a>
+<a name="ln2008">                return 1;</a>
+<a name="ln2009">        }</a>
+<a name="ln2010"> </a>
+<a name="ln2011">        /* Otherwise we start in the long pointer 1 character further and try again */</a>
+<a name="ln2012">        lptr = lnext;</a>
+<a name="ln2013">        sptr = shortstring;</a>
+<a name="ln2014">    }</a>
+<a name="ln2015"> </a>
+<a name="ln2016">    return 0;</a>
+<a name="ln2017">}</a>
+<a name="ln2018"> </a>
+<a name="ln2019">/*-----------------------------------------------*/</a>
+<a name="ln2020">int UnityStringArgumentMatches(const char* str)</a>
+<a name="ln2021">{</a>
+<a name="ln2022">    int retval;</a>
+<a name="ln2023">    const char* ptr1;</a>
+<a name="ln2024">    const char* ptr2;</a>
+<a name="ln2025">    const char* ptrf;</a>
+<a name="ln2026"> </a>
+<a name="ln2027">    /* Go through the options and get the substrings for matching one at a time */</a>
+<a name="ln2028">    ptr1 = str;</a>
+<a name="ln2029">    while (ptr1[0] != 0)</a>
+<a name="ln2030">    {</a>
+<a name="ln2031">        if ((ptr1[0] == '&quot;') || (ptr1[0] == '\''))</a>
+<a name="ln2032">        {</a>
+<a name="ln2033">            ptr1++;</a>
+<a name="ln2034">        }</a>
+<a name="ln2035"> </a>
+<a name="ln2036">        /* look for the start of the next partial */</a>
+<a name="ln2037">        ptr2 = ptr1;</a>
+<a name="ln2038">        ptrf = 0;</a>
+<a name="ln2039">        do</a>
+<a name="ln2040">        {</a>
+<a name="ln2041">            ptr2++;</a>
+<a name="ln2042">            if ((ptr2[0] == ':') &amp;&amp; (ptr2[1] != 0) &amp;&amp; (ptr2[0] != '\'') &amp;&amp; (ptr2[0] != '&quot;') &amp;&amp; (ptr2[0] != ','))</a>
+<a name="ln2043">            {</a>
+<a name="ln2044">                ptrf = &amp;ptr2[1];</a>
+<a name="ln2045">            }</a>
+<a name="ln2046">        } while ((ptr2[0] != 0) &amp;&amp; (ptr2[0] != '\'') &amp;&amp; (ptr2[0] != '&quot;') &amp;&amp; (ptr2[0] != ','));</a>
+<a name="ln2047"> </a>
+<a name="ln2048">        while ((ptr2[0] != 0) &amp;&amp; ((ptr2[0] == ':') || (ptr2[0] == '\'') || (ptr2[0] == '&quot;') || (ptr2[0] == ',')))</a>
+<a name="ln2049">        {</a>
+<a name="ln2050">            ptr2++;</a>
+<a name="ln2051">        }</a>
+<a name="ln2052"> </a>
+<a name="ln2053">        /* done if complete filename match */</a>
+<a name="ln2054">        retval = IsStringInBiggerString(Unity.TestFile, ptr1);</a>
+<a name="ln2055">        if (retval == 1)</a>
+<a name="ln2056">        {</a>
+<a name="ln2057">            return retval;</a>
+<a name="ln2058">        }</a>
+<a name="ln2059"> </a>
+<a name="ln2060">        /* done if testname match after filename partial match */</a>
+<a name="ln2061">        if ((retval == 2) &amp;&amp; (ptrf != 0))</a>
+<a name="ln2062">        {</a>
+<a name="ln2063">            if (IsStringInBiggerString(Unity.CurrentTestName, ptrf))</a>
+<a name="ln2064">            {</a>
+<a name="ln2065">                return 1;</a>
+<a name="ln2066">            }</a>
+<a name="ln2067">        }</a>
+<a name="ln2068"> </a>
+<a name="ln2069">        /* done if complete testname match */</a>
+<a name="ln2070">        if (IsStringInBiggerString(Unity.CurrentTestName, ptr1) == 1)</a>
+<a name="ln2071">        {</a>
+<a name="ln2072">            return 1;</a>
+<a name="ln2073">        }</a>
+<a name="ln2074"> </a>
+<a name="ln2075">        ptr1 = ptr2;</a>
+<a name="ln2076">    }</a>
+<a name="ln2077"> </a>
+<a name="ln2078">    /* we couldn't find a match for any substrings */</a>
+<a name="ln2079">    return 0;</a>
+<a name="ln2080">}</a>
+<a name="ln2081"> </a>
+<a name="ln2082">/*-----------------------------------------------*/</a>
+<a name="ln2083">int UnityTestMatches(void)</a>
+<a name="ln2084">{</a>
+<a name="ln2085">    /* Check if this test name matches the included test pattern */</a>
+<a name="ln2086">    int retval;</a>
+<a name="ln2087">    if (UnityOptionIncludeNamed)</a>
+<a name="ln2088">    {</a>
+<a name="ln2089">        retval = UnityStringArgumentMatches(UnityOptionIncludeNamed);</a>
+<a name="ln2090">    }</a>
+<a name="ln2091">    else</a>
+<a name="ln2092">    {</a>
+<a name="ln2093">        retval = 1;</a>
+<a name="ln2094">    }</a>
+<a name="ln2095"> </a>
+<a name="ln2096">    /* Check if this test name matches the excluded test pattern */</a>
+<a name="ln2097">    if (UnityOptionExcludeNamed)</a>
+<a name="ln2098">    {</a>
+<a name="ln2099">        if (UnityStringArgumentMatches(UnityOptionExcludeNamed))</a>
+<a name="ln2100">        {</a>
+<a name="ln2101">            retval = 0;</a>
+<a name="ln2102">        }</a>
+<a name="ln2103">    }</a>
+<a name="ln2104"> </a>
+<a name="ln2105">    return retval;</a>
+<a name="ln2106">}</a>
+<a name="ln2107"> </a>
+<a name="ln2108">#endif /* UNITY_USE_COMMAND_LINE_ARGS */</a>
+<a name="ln2109">/*-----------------------------------------------*/</a>
+
+</code></pre>
+<div class="balloon" rel="1"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v009/" target="_blank">V009</a> To use free version of PVS-Studio, source code files are required to start with a special comment.</p></div>
+
+<link rel="stylesheet" href="highlight.css">
+<script src="highlight.pack.js"></script>
+<script src="highlightjs-line-numbers.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>hljs.initLineNumbersOnLoad();</script>
+<script>
+  $(document).ready(function() {
+      $('.balloon').each(function () {
+          var bl = $(this);
+          var line = bl.attr('rel');
+          var text = $('a[name="ln'+line+'"]').text();
+
+          var space_count = 0;
+          for(var i = 0; i<text.length; i++){
+              var char = text[i];
+              if((char !== ' ')&&(char !== '\t'))break;
+              if(char === '\t')space_count++;
+              space_count++;
+          }
+
+          bl.css('margin-left', space_count*8);
+          $('a[name="ln'+line+'"]').after(bl);
+      });
+
+      window.location = window.location;
+  });
+</script>
+</body>
+</html>
