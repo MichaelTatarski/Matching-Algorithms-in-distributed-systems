@@ -1,0 +1,10 @@
+attribute;value;data_type
+VendorID;3949535677154791209;int64
+SensorID;1782372591326297062;int64
+Timestamp;5476824839210461364;int64
+Unit;70817452;int32
+Temperature;14.65;double
+SensorLabel;QUX;text32
+Building;HJB;text32
+Floor;44;text32
+Room;867;text32
