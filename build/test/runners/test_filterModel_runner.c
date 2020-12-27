@@ -13,10 +13,7 @@ char* GlobalOrderError;
 /*=======External Functions This Runner Calls=====*/
 extern void setUp(void);
 extern void tearDown(void);
-extern void test_addSubFilterINT64(void);
-extern void test_addSubFilterINT32(void);
-extern void test_addSubFilterDouble(void);
-extern void test_addSubFilterText(void);
+extern void test_isFilterMatching(void);
 
 
 /*=======Mock Management=====*/
@@ -81,10 +78,7 @@ static void run_test(UnityTestFunction func, const char* name, int line_num)
 int main(void)
 {
   UnityBegin("test_filterModel.c");
-  run_test(test_addSubFilterINT64, "test_addSubFilterINT64", 15);
-  run_test(test_addSubFilterINT32, "test_addSubFilterINT32", 21);
-  run_test(test_addSubFilterDouble, "test_addSubFilterDouble", 27);
-  run_test(test_addSubFilterText, "test_addSubFilterText", 33);
+  run_test(test_isFilterMatching, "test_isFilterMatching", 17);
 
   return UnityEnd();
 }

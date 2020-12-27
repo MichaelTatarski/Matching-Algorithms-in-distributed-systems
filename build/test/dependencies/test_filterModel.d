@@ -12,4 +12,14 @@ build/test/out/c/test_filterModel.o: \
  src/core/filterModel/../../lib/utlist.h \
  src/core/filterModel/../dataModel/dataModel.h \
  src/core/filterModel/../dataModel/../../lib/uthash.h \
- src/core/filterModel/../dataModel/../../utility/dataType.h
+ src/core/filterModel/../dataModel/../../utility/dataType.h \
+ src/core/dataModel/../../core/matchingAlgorithms/predicateCountingAlgorithm.h \
+ src/core/dataModel/../../core/matchingAlgorithms/../dataModel/dataModel.h \
+ src/core/dataModel/../../core/matchingAlgorithms/../../lib/utlist.h \
+ src/core/dataModel/../../core/matchingAlgorithms/../../utility/dataType.h \
+ src/core/dataModel/../../core/matchingAlgorithms/../../utility/logicalExpressions.h \
+ src/core/dataModel/../../core/matchingAlgorithms/predicateCountingDataStructure.h \
+ src/core/dataModel/../../core/matchingAlgorithms/../filterModel/filterModel.h \
+ src/core/dataModel/../../core/matchingAlgorithms/../filterModel/filterList.h \
+ src/core/dataModel/../../core/matchingAlgorithms/../filterModel/filterModel.h \
+ src/core/dataModel/../../core/filterModel/filterList.h

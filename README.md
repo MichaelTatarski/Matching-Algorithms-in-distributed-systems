@@ -1,8 +1,8 @@
 # NEidI AVA - matching algorithms in PubSub systems
 
-This project is part of the NEiDI course of the winter lecture 2020/2021. The objective of our project is to implement different matching algorithms in a Pub/Sub system and compare them with regard to their time efficiency on a testbed. In order to accomplish that, we will develop a simple data and filter model as well.
+This project is part of the NEiDI course of the winter lecture 2020/2021 at the university of Rostock. The objective of our project is to implement different matching algorithms in a Pub/Sub system and compare them with regard to their time efficiency on a testbed. In order to accomplish that, we will develop a simple data and filter model as well. Our code base follows the [MISRA](https://www.misra.org.uk/), [SEI CERT](https://wiki.sei.cmu.edu/confluence/display/seccode/SEI+CERT+Coding+Standards) and [CWE](https://cwe.mitre.org/) guidelines (look in the _security_analysis_ folder for further information).
 
-> **Note:** Our tool is intended to be used on an embedded Linux system with a GCC compiler. It is not yet supported for other platforms and will probably not compile on other architectures. Please be aware that our tool doesn't provide a command line interface - it merely comes as a simple static library.
+> **Note:** The tool is intended to be used on an embedded Linux system with a GCC compiler. It is not yet supported for other platforms and will probably not compile on other architectures. Please be aware that our tool doesn't provide a command line interface - it merely comes as a simple static library.
 
 ## Installation
 
@@ -86,11 +86,24 @@ FilterList *newFilterList =  filterList_create();
 filterList_addFilter(newFilterList, newFilter);
 ```
 
-### 3. Utilizing the matching algorithms (not yet implemented)
+### 3. Utilizing the matching algorithms
 
-Now we have created all the necessary components, which are needed as an input for our matching algorithms.
+#### Brute-Force algorithm
 
-To be continued...
+to be continued
+
+#### Predicate-Counting algorithm
+
+Now we need to create the data structure for our system. For that we need to call the "setUpPredicateCounting" function. This funtion only needs the filterList, where all subscribtions are stored.
+Next, we need to use our new data structure to use the predicateCounting function. This function is checking which of the given filters inside the filterList is matching to the given notification (newdataModel).
+This function is returning a list of bools, where the index of the boolList is corresponding to the index of the newFilterList.
+
+Example:
+
+```c
+NameList *predicateCountingDatastructure = setUpPredicateCounting(newFilterList)
+BoolList *predicateCounting(newFilterList, predicateCountingDatastructure, newdataModel)
+```
 
 ## Running tests and benchmarks
 

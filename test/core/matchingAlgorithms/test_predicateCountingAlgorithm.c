@@ -3,11 +3,15 @@
 #include "../../core/matchingAlgorithms/predicateCountingAlgorithm.h"
 #include "../core/filterModel/filterModel.h"
 #include "../core/dataModel/dataModel.h"
+#include "../../core/filterModel/filterList.h"
 
 NameList *headNameElement;
 OperatorList *firstOperatorElement;
 ValueList *firstValueElement;
 Data data1, data2;
+NameList *nameList = NULL;
+FilterList *subscribtion;
+DataModel *notification;
 
 void setUp(void)
 {
@@ -51,6 +55,27 @@ void setUp(void)
     LL_APPEND(OperatorElement2->valueListHead, ValueElement4);
 
     firstValueElement = firstOperatorElement->valueListHead;
+    /*----------------------------------------------------------------------------------------------------------------*/
+    subscribtion = filterList_create();
+    Filter *testFilter1 = filter_create();
+    Filter *testFilter2 = filter_create();
+    Filter *testFilter3 = filter_create();
+
+    testFilter1 = filter_addSubFilterINT64(testFilter1, "temperatur", GREATER_THAN, 10);
+    testFilter1 = filter_addSubFilterINT64(testFilter1, "fehler", LESSER_THAN, 5);
+
+    testFilter2 = filter_addSubFilterINT64(testFilter2, "fehler", EQUALS, 1);
+    testFilter2 = filter_addSubFilterINT64(testFilter2, "temperatur", LESSER_THAN, 100);
+
+    testFilter3 = filter_addSubFilterINT64(testFilter3, "temperatur", GREATER_THAN, 0);
+    testFilter3 = filter_addSubFilterINT64(testFilter3, "fehler", LESSER_THAN, 30);
+
+    subscribtion = filterList_addFilter(subscribtion, testFilter1);
+    subscribtion = filterList_addFilter(subscribtion, testFilter2);
+    subscribtion = filterList_addFilter(subscribtion, testFilter3);
+
+    notification = dataModel_create();
+    dataModel_addAttributeINT64(notification, "temperatur", 5);
 }
 
 void tearDown(void)
@@ -108,7 +133,7 @@ void test_matchingOfEqual(void)
     DataModel *notification = dataModel_create();
     dataModel_addAttributeDOUBLE(notification, "bazz", 16.0);
 
-    startMatching(notification, headNameElement);
+    startMatching(notification->DataModelHead, headNameElement);
     TEST_ASSERT_TRUE(headNameElement->operatorListHead->next->valueListHead->next->isMatching);
 }
 
@@ -117,6 +142,20 @@ void test_matchingOfGreaterThan(void)
     DataModel *notification = dataModel_create();
     dataModel_addAttributeDOUBLE(notification, "bazz", 42.0);
 
-    startMatching(notification, headNameElement);
+    startMatching(notification->DataModelHead, headNameElement);
     TEST_ASSERT_TRUE(headNameElement->operatorListHead->valueListHead->next->isMatching);
+}
+
+void test_setUpPredicateCounting(void)
+{
+    nameList = setUpPredicateCounting(subscribtion);
+
+    TEST_ASSERT_NOT_NULL(doesNameReferenceExist("temperatur", nameList));
+}
+
+void test_predicateCounting(void)
+{
+    nameList = setUpPredicateCounting(subscribtion);
+    BoolList *machingSubscribtions = predicateCounting(subscribtion, nameList, notification);
+    TEST_ASSERT_TRUE(machingSubscribtions->Booleanvalue);
 }

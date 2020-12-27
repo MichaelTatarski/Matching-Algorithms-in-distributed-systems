@@ -171,22 +171,22 @@ ValueList *lookForPredicate(Filter *filter, NameList *nameList)
     return predicateReference;
 }
 
-void startMatching(DataModel *dataModel, NameList *nameList)
+void startMatching(Attribute *attribute, NameList *nameList)
 {
     NameList *nameListElement;
     ValueList *newValueListNode, *currentValue;
-    char *name = dataModel->DataModelHead->Name;
-    DataType *type = &(dataModel->DataModelHead->type);
+    char *name = attribute->Name;
+    DataType *type = &(attribute->type);
     OperatorList *currentOperator;
 
     Data *value = malloc(sizeof(Data));
 
     if (*type == INTEGER64)
-        value->INTEGER64 = dataModel->DataModelHead->data.INTEGER64;
+        value->INTEGER64 = attribute->data.INTEGER64;
     if (*type == INTEGER32)
-        value->INTEGER32 = dataModel->DataModelHead->data.INTEGER32;
+        value->INTEGER32 = attribute->data.INTEGER32;
     if (*type == DOUBLE)
-        value->DOUBLE = dataModel->DataModelHead->data.DOUBLE;
+        value->DOUBLE = attribute->data.DOUBLE;
     if (*type == TEXT)
         strcpy(value->TEXT, name);
 
@@ -244,4 +244,39 @@ void startMatching(DataModel *dataModel, NameList *nameList)
             currentOperator = currentOperator->next;
         }
     }
+}
+
+NameList *setUpPredicateCounting(FilterList *subscribtions)
+{
+    NameList *nameList = NULL;
+    FilterList *currentSubscribtion = subscribtions;
+
+    NameList *firstElement = createNameListElement(currentSubscribtion->FilterHead->attribute.Name);
+    LL_APPEND(nameList, firstElement);
+
+    while (currentSubscribtion != NULL)
+    {
+        Filter *currentPredicate = currentSubscribtion->FilterHead;
+        while (currentPredicate != NULL)
+        {
+            currentPredicate->predicateCountingReference = lookForPredicate(currentPredicate, nameList);
+            currentPredicate = currentPredicate->next;
+        }
+        currentSubscribtion = currentSubscribtion->next;
+    }
+    return nameList;
+}
+
+BoolList *predicateCounting(FilterList *subscribtions, NameList *nameList, DataModel *notifications)
+{
+
+    Attribute *currentAttribute = notifications->DataModelHead;
+    while (currentAttribute != NULL)
+    {
+        startMatching(currentAttribute, nameList);
+        currentAttribute = currentAttribute->hh.next;
+    }
+    BoolList *matchingFilters = isFilterListMatching(subscribtions);
+
+    return matchingFilters;
 }

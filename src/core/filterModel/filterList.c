@@ -4,17 +4,9 @@
 
 #include "filterList.h"
 
-typedef struct FilterList
-{
-    Filter *FilterHead;
-    struct FilterList *next;
-
-} FilterList;
-
 FilterList *filterList_create(void)
 {
     FilterList *newFilterList = malloc(sizeof(FilterList));
-    newFilterList = NULL;
     return newFilterList;
 }
 
@@ -23,4 +15,19 @@ void filterList_addFilter(FilterList *filterList, Filter *filter)
     FilterList *newFilterListNode = malloc(sizeof(FilterList));
     newFilterListNode->FilterHead = filter;
     LL_APPEND(filterList, newFilterListNode);
+}
+
+BoolList *isFilterListMatching(FilterList *filterList)
+{
+    BoolList *boolListHeader = NULL;
+    FilterList *currentFilterList = filterList;
+    while (currentFilterList != NULL)
+    {
+        Filter *tempFilter = currentFilterList->FilterHead;
+        BoolList *newBoolNode = malloc(sizeof(BoolList));
+        newBoolNode->Booleanvalue = isFilterMatching(tempFilter);
+        currentFilterList = currentFilterList->next;
+        LL_APPEND(boolListHeader, newBoolNode);
+    }
+    return boolListHeader;
 }

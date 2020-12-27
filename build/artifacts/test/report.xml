@@ -17,43 +17,10 @@
 		<Test id="5">
 			<Name>test/core/dataModel/test_dataModel.c::test_dataModel_getDataType</Name>
 		</Test>
-		<Test id="6">
-			<Name>test/core/filterModel/test_filterList.c::test_FilterList_addFilter</Name>
-		</Test>
-		<Test id="7">
-			<Name>test/core/filterModel/test_filterModel.c::test_addSubFilterINT64</Name>
-		</Test>
-		<Test id="8">
-			<Name>test/core/filterModel/test_filterModel.c::test_addSubFilterINT32</Name>
-		</Test>
-		<Test id="9">
-			<Name>test/core/filterModel/test_filterModel.c::test_addSubFilterDouble</Name>
-		</Test>
-		<Test id="10">
-			<Name>test/core/filterModel/test_filterModel.c::test_addSubFilterText</Name>
-		</Test>
-		<Test id="11">
-			<Name>test/core/matchingAlgorithms/test_predicateCountingAlgorithm.c::test_doesValueReferenceExist</Name>
-		</Test>
-		<Test id="12">
-			<Name>test/core/matchingAlgorithms/test_predicateCountingAlgorithm.c::test_getReferenceForPredicate</Name>
-		</Test>
-		<Test id="13">
-			<Name>test/core/matchingAlgorithms/test_predicateCountingAlgorithm.c::test_insertPredicate</Name>
-		</Test>
-		<Test id="14">
-			<Name>test/core/matchingAlgorithms/test_predicateCountingAlgorithm.c::test_lookForPredicate</Name>
-		</Test>
-		<Test id="15">
-			<Name>test/core/matchingAlgorithms/test_predicateCountingAlgorithm.c::test_matchingOfEqual</Name>
-		</Test>
-		<Test id="16">
-			<Name>test/core/matchingAlgorithms/test_predicateCountingAlgorithm.c::test_matchingOfGreaterThan</Name>
-		</Test>
 	</SuccessfulTests>
 	<IgnoredTests/>
 	<Statistics>
-		<Tests>16</Tests>
+		<Tests>5</Tests>
 		<Ignores>0</Ignores>
 		<FailuresTotal>0</FailuresTotal>
 		<Errors>0</Errors>

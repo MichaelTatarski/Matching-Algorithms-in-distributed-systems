@@ -15,7 +15,6 @@ Filter *createSubFilter(char name[TEXT32], Operator constraintOperator)
 Filter *filter_create(void)
 {
     Filter *newFilter = malloc(sizeof(Filter));
-    newFilter = NULL;
     return newFilter;
 }
 
@@ -45,4 +44,20 @@ void filter_addSubFilterTEXT32(Filter *filter, char name[TEXT32], Operator const
     Filter *newSubFilter = createSubFilter(name, constraintOperator);
     strcpy(newSubFilter->attribute.data.TEXT, constraintValue);
     LL_APPEND(filter, newSubFilter);
+}
+
+bool isFilterMatching(Filter *filter)
+{
+    Filter *currentPredicate = filter;
+    while (currentPredicate != NULL)
+    {
+        if (currentPredicate->predicateCountingReference->isMatching == false)
+            return false;
+        else
+        {
+            currentPredicate->predicateCountingReference->isMatching = false;
+            currentPredicate = currentPredicate->next;
+        }
+    }
+    return true;
 }
