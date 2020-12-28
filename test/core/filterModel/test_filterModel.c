@@ -7,7 +7,7 @@ Filter *testFilter;
 
 void setUp(void)
 {
-    testFilter = filter_create();
+    testFilter = filter_createINT64("testString", GREATER_THAN, 2020);
 }
 
 void tearDown(void)
@@ -16,11 +16,7 @@ void tearDown(void)
 
 void test_isFilterMatching(void)
 {
-    filter_addSubFilterINT64(testFilter, "testString", GREATER_THAN, 2020);
     filter_addSubFilterINT64(testFilter, "2ndtestName", LESSER_THAN, 30);
-
-    // _filter_addSubFilterINT64_(testFilter, "testString", GREATER_THAN, 2020);
-    // _filter_addSubFilterINT64_(testFilter, "2ndtestName", LESSER_THAN, 30);
     Data data1, data2;
     data1.INTEGER64 = 2020;
     data2.INTEGER64 = 30;
