@@ -13,7 +13,14 @@ char* GlobalOrderError;
 /*=======External Functions This Runner Calls=====*/
 extern void setUp(void);
 extern void tearDown(void);
-extern void test_FilterList_addFilter(void);
+extern void test_doesValueReferenceExist(void);
+extern void test_getReferenceForPredicate(void);
+extern void test_insertPredicate(void);
+extern void test_lookForPredicate(void);
+extern void test_matchingOfEqual(void);
+extern void test_matchingOfGreaterThan(void);
+extern void test_setUpPredicateCounting(void);
+extern void test_predicateCounting(void);
 
 
 /*=======Mock Management=====*/
@@ -77,8 +84,15 @@ static void run_test(UnityTestFunction func, const char* name, int line_num)
 /*=======MAIN=====*/
 int main(void)
 {
-  UnityBegin("test_filterList.c");
-  run_test(test_FilterList_addFilter, "test_FilterList_addFilter", 17);
+  UnityBegin("test_predicateCountingAlgorithm.c");
+  run_test(test_doesValueReferenceExist, "test_doesValueReferenceExist", 82);
+  run_test(test_getReferenceForPredicate, "test_getReferenceForPredicate", 87);
+  run_test(test_insertPredicate, "test_insertPredicate", 95);
+  run_test(test_lookForPredicate, "test_lookForPredicate", 103);
+  run_test(test_matchingOfEqual, "test_matchingOfEqual", 113);
+  run_test(test_matchingOfGreaterThan, "test_matchingOfGreaterThan", 122);
+  run_test(test_setUpPredicateCounting, "test_setUpPredicateCounting", 131);
+  run_test(test_predicateCounting, "test_predicateCounting", 142);
 
   return UnityEnd();
 }

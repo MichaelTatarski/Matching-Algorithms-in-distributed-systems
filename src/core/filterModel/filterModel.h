@@ -17,12 +17,15 @@ typedef struct Filter
     Operator Operator;
     struct ValueList *predicateCountingReference;
     struct Filter *next;
-
 } Filter;
 
 Filter *createSubFilter(char name[TEXT32], Operator constraintOperator);
 
-Filter *filter_create(void);
+Filter *filter_createINT64(char name[TEXT32], Operator constraintOperator, int64_t constraintValue);
+Filter *filter_createINT32(char name[TEXT32], Operator constraintOperator, int32_t constraintValue);
+Filter *filter_createDOUBLE(char name[TEXT32], Operator constraintOperator, double constraintValue);
+Filter *filter_createTEXT(char name[TEXT32], Operator constraintOperator, char constraintValue[TEXT32]);
+
 bool isFilterMatching(Filter *filter);
 void filter_addSubFilterINT64(Filter *filter, char name[TEXT32], Operator constraintOperator, int64_t constraintValue);
 void filter_addSubFilterINT32(Filter *filter, char name[TEXT32], Operator constraintOperator, int32_t constraintValue);

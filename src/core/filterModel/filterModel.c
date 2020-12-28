@@ -12,9 +12,39 @@ Filter *createSubFilter(char name[TEXT32], Operator constraintOperator)
     return newSubFilter;
 }
 
-Filter *filter_create(void)
+Filter *filter_createINT64(char name[TEXT32], Operator constraintOperator, int64_t constraintValue)
 {
     Filter *newFilter = malloc(sizeof(Filter));
+    strcpy(newFilter->attribute.Name, name);
+    newFilter->Operator = constraintOperator;
+    newFilter->attribute.data.INTEGER64 = constraintValue;
+    return newFilter;
+}
+
+Filter *filter_createINT32(char name[TEXT32], Operator constraintOperator, int32_t constraintValue)
+{
+    Filter *newFilter = malloc(sizeof(Filter));
+    strcpy(newFilter->attribute.Name, name);
+    newFilter->Operator = constraintOperator;
+    newFilter->attribute.data.INTEGER32 = constraintValue;
+    return newFilter;
+}
+
+Filter *filter_createDOUBLE(char name[TEXT32], Operator constraintOperator, double constraintValue)
+{
+    Filter *newFilter = malloc(sizeof(Filter));
+    strcpy(newFilter->attribute.Name, name);
+    newFilter->Operator = constraintOperator;
+    newFilter->attribute.data.DOUBLE = constraintValue;
+    return newFilter;
+}
+
+Filter *filter_createTEXT(char name[TEXT32], Operator constraintOperator, char constraintValue[TEXT32])
+{
+    Filter *newFilter = malloc(sizeof(Filter));
+    strcpy(newFilter->attribute.Name, name);
+    newFilter->Operator = constraintOperator;
+    strcpy(newFilter->attribute.data.TEXT, constraintValue);
     return newFilter;
 }
 
@@ -48,7 +78,7 @@ void filter_addSubFilterTEXT32(Filter *filter, char name[TEXT32], Operator const
 
 bool isFilterMatching(Filter *filter)
 {
-    Filter *currentPredicate = filter;
+    Filter *currentPredicate = filter->next;
     while (currentPredicate != NULL)
     {
         if (currentPredicate->predicateCountingReference->isMatching == false)

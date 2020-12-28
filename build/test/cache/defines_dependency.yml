@@ -1,13 +1,13 @@
 ---
-src/core/filterModel/filterModel.c:
-- TEST
-- UNITY_INCLUDE_DOUBLE
 src/core/matchingAlgorithms/predicateCountingAlgorithm.c:
 - TEST
 - UNITY_INCLUDE_DOUBLE
-src/core/filterModel/filterList.c:
+src/core/filterModel/filterModel.c:
 - TEST
 - UNITY_INCLUDE_DOUBLE
 src/core/dataModel/dataModel.c:
+- TEST
+- UNITY_INCLUDE_DOUBLE
+src/core/filterModel/filterList.c:
 - TEST
 - UNITY_INCLUDE_DOUBLE

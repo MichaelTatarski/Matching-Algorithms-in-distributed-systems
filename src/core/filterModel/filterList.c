@@ -4,9 +4,10 @@
 
 #include "filterList.h"
 
-FilterList *filterList_create(void)
+FilterList *filterList_create(Filter *filter)
 {
     FilterList *newFilterList = malloc(sizeof(FilterList));
+    newFilterList->FilterHead = filter;
     return newFilterList;
 }
 

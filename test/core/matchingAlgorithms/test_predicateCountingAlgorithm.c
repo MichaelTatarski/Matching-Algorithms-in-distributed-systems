@@ -56,26 +56,23 @@ void setUp(void)
 
     firstValueElement = firstOperatorElement->valueListHead;
     /*----------------------------------------------------------------------------------------------------------------*/
-    subscribtion = filterList_create();
-    Filter *testFilter1 = filter_create();
-    Filter *testFilter2 = filter_create();
-    Filter *testFilter3 = filter_create();
 
-    testFilter1 = filter_addSubFilterINT64(testFilter1, "temperatur", GREATER_THAN, 10);
-    testFilter1 = filter_addSubFilterINT64(testFilter1, "fehler", LESSER_THAN, 5);
+    Filter *testFilter1 = filter_createINT64("temperatur", GREATER_THAN, 10);
+    filter_addSubFilterINT64(testFilter1, "fehler", LESSER_THAN, 5);
 
-    testFilter2 = filter_addSubFilterINT64(testFilter2, "fehler", EQUALS, 1);
-    testFilter2 = filter_addSubFilterINT64(testFilter2, "temperatur", LESSER_THAN, 100);
+    Filter *testFilter2 = filter_createINT64("fehler", EQUALS, 1);
+    filter_addSubFilterINT64(testFilter2, "temperatur", LESSER_THAN, 100);
 
-    testFilter3 = filter_addSubFilterINT64(testFilter3, "temperatur", GREATER_THAN, 0);
-    testFilter3 = filter_addSubFilterINT64(testFilter3, "fehler", LESSER_THAN, 30);
+    Filter *testFilter3 = filter_createINT64("temperatur", GREATER_THAN, 0);
+    filter_addSubFilterINT64(testFilter3, "fehler", LESSER_THAN, 30);
 
-    subscribtion = filterList_addFilter(subscribtion, testFilter1);
-    subscribtion = filterList_addFilter(subscribtion, testFilter2);
-    subscribtion = filterList_addFilter(subscribtion, testFilter3);
+    subscribtion = filterList_create(testFilter1);
+    filterList_addFilter(subscribtion, testFilter2);
+    filterList_addFilter(subscribtion, testFilter3);
 
     notification = dataModel_create();
     dataModel_addAttributeINT64(notification, "temperatur", 5);
+    dataModel_addAttributeINT64(notification, "fehler", 1);
 }
 
 void tearDown(void)
@@ -89,25 +86,15 @@ void test_doesValueReferenceExist(void)
 
 void test_getReferenceForPredicate(void)
 {
-
-    Filter *testFilter = malloc(sizeof(Filter));
-    testFilter->attribute.data.DOUBLE = 16.0;
-    testFilter->attribute.type = DOUBLE;
-    strcpy(testFilter->attribute.Name, "bazz");
-    testFilter->Operator = GREATER_THAN;
-
+    Filter *testFilter = filter_createDOUBLE("bazz", GREATER_THAN, 16.0);
     ValueList *test_predicate = getReferenceForPredicate(testFilter, headNameElement);
 
-    TEST_ASSERT_EQUAL_PTR(test_predicate, firstValueElement->next);
+    TEST_ASSERT_EQUAL_PTR(firstValueElement->next, test_predicate);
 }
 
 void test_insertPredicate(void)
 {
-    Filter *testFilter = malloc(sizeof(Filter));
-    testFilter->attribute.data.DOUBLE = 42.0;
-    testFilter->attribute.type = DOUBLE;
-    strcpy(testFilter->attribute.Name, "hello");
-    testFilter->Operator = GREATER_THAN;
+    Filter *testFilter = filter_createDOUBLE("hello", GREATER_THAN, 42.0);
 
     insertPredicate(testFilter, headNameElement);
     TEST_ASSERT_NOT_NULL(getReferenceForPredicate(testFilter, headNameElement));
@@ -115,11 +102,7 @@ void test_insertPredicate(void)
 
 void test_lookForPredicate(void)
 {
-    Filter *testFilter = malloc(sizeof(Filter));
-    testFilter->attribute.data.INTEGER64 = 53;
-    testFilter->attribute.type = INTEGER64;
-    strcpy(testFilter->attribute.Name, "keks");
-    testFilter->Operator = LESSER_THAN_EQUAL;
+    Filter *testFilter = filter_createINT64("keks", LESSER_THAN_EQUAL, 53);
 
     ValueList *testValue = lookForPredicate(testFilter, headNameElement);
     TEST_ASSERT_EQUAL(testValue->value.INTEGER64, 53);
@@ -129,7 +112,6 @@ void test_lookForPredicate(void)
 
 void test_matchingOfEqual(void)
 {
-
     DataModel *notification = dataModel_create();
     dataModel_addAttributeDOUBLE(notification, "bazz", 16.0);
 
@@ -148,14 +130,18 @@ void test_matchingOfGreaterThan(void)
 
 void test_setUpPredicateCounting(void)
 {
-    nameList = setUpPredicateCounting(subscribtion);
+    Data data;
+    data.INTEGER64 = 30;
+    NameList *structure = setUpPredicateCounting(subscribtion);
 
-    TEST_ASSERT_NOT_NULL(doesNameReferenceExist("temperatur", nameList));
+    TEST_ASSERT_NOT_NULL(doesNameReferenceExist("temperatur", structure));
+    TEST_ASSERT_NULL(doesNameReferenceExist("hello", structure));
+    TEST_ASSERT_NOT_NULL(doesValueReferenceExist(data, structure->next->operatorListHead->valueListHead->next, INTEGER64));
 }
 
 void test_predicateCounting(void)
 {
     nameList = setUpPredicateCounting(subscribtion);
     BoolList *machingSubscribtions = predicateCounting(subscribtion, nameList, notification);
-    TEST_ASSERT_TRUE(machingSubscribtions->Booleanvalue);
+    TEST_ASSERT_TRUE(machingSubscribtions->next->Booleanvalue);
 }

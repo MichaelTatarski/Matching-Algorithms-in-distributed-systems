@@ -19,7 +19,7 @@ typedef struct BoolList
     struct BoolList *next;
 } BoolList;
 
-FilterList *filterList_create(void);
+FilterList *filterList_create(Filter *filter);
 void filterList_addFilter(FilterList *filterList, Filter *filter);
 BoolList *isFilterListMatching(FilterList *filterList);
 

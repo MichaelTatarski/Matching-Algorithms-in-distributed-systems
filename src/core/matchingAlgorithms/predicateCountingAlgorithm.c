@@ -103,12 +103,9 @@ ValueList *getReferenceForPredicate(Filter *filter, NameList *nameList)
 
 ValueList *insertNameAndOperatorAndValue(char *name, Operator *operator, Data value, DataType * type, NameList * nameList)
 {
-    ValueList *newValueListNode;
+    ValueList *newValueListNode = createValueListElement(value, *type);
     NameList *newNameListNode = createNameListElement(name);
     OperatorList *newOperatorListNode = createOperatorListElement(*operator);
-    newValueListNode = createValueListElement(value, *type);
-    newNameListNode->operatorListHead = NULL;
-    newOperatorListNode->valueListHead = NULL;
 
     LL_APPEND(nameList, newNameListNode);
     LL_APPEND(newNameListNode->operatorListHead, newOperatorListNode);
@@ -122,8 +119,6 @@ ValueList *insertOperatorAndValue(NameList *nameExist, Operator *operator, Data 
 
     OperatorList *newOperatorListNode = createOperatorListElement(*operator);
     newValueListNode = createValueListElement(value, *type);
-
-    newOperatorListNode->valueListHead = NULL;
 
     LL_APPEND(nameExist->operatorListHead, newOperatorListNode);
     LL_APPEND(newOperatorListNode->valueListHead, newValueListNode);
@@ -160,7 +155,7 @@ ValueList *insertPredicate(Filter *filter, NameList *nameList)
 
     newValueListNode = createValueListElement(value, *type);
     LL_APPEND(operatorExist->valueListHead, newValueListNode);
-    return NULL;
+    return newValueListNode;
 }
 
 ValueList *lookForPredicate(Filter *filter, NameList *nameList)
@@ -248,11 +243,8 @@ void startMatching(Attribute *attribute, NameList *nameList)
 
 NameList *setUpPredicateCounting(FilterList *subscribtions)
 {
-    NameList *nameList = NULL;
+    NameList *nameList = createNameListElement(subscribtions->FilterHead->attribute.Name);
     FilterList *currentSubscribtion = subscribtions;
-
-    NameList *firstElement = createNameListElement(currentSubscribtion->FilterHead->attribute.Name);
-    LL_APPEND(nameList, firstElement);
 
     while (currentSubscribtion != NULL)
     {
