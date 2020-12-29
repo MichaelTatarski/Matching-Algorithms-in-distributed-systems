@@ -81,3 +81,12 @@ FilterList *filterList_create(void);
 void filterList_addFilter(FilterList *filterList, Filter *filter);
 
 #endif // FILTERLIST_H
+#ifndef DATAMODELCSVIMPORT_H
+#define DATAMODELCSVIMPORT_H
+
+#include <stdlib.h>
+
+void dataModel_importFromCsv(DataModel *dataModel, char *filePath);
+void filterModel_importFromCsv(Filter *filter, char *filePath);
+
+#endif // DATAMODELCSVIMPORT_H

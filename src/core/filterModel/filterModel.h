@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../utility/dataType.h"
-#include "../utility/logicalExpressions.h"
-#include "../lib/utlist.h"
+#include "../../utility/dataType.h"
+#include "../../utility/logicalExpressions.h"
+#include "../../lib/utlist.h"
 
 typedef struct Filter Filter;
 
