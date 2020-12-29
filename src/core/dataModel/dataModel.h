@@ -6,8 +6,21 @@
 #include "../../lib/uthash.h"
 #include "../../utility/dataType.h"
 
-typedef struct Attribute Attribute;
-typedef struct DataModel DataModel;
+typedef struct Attribute
+{
+
+    char Name[TEXT32];
+    Data data;
+    DataType type;
+    UT_hash_handle hh;
+
+} Attribute;
+
+typedef struct DataModel
+{
+    Attribute *DataModelHead;
+
+} DataModel;
 
 DataModel *dataModel_create(void);
 void dataModel_addAttributeTEXT32(DataModel *dataModel, char name[TEXT32], char text[TEXT32]);

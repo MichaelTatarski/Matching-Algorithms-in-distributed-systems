@@ -1,20 +1,7 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #include "dataModel.h"
-
-typedef struct Attribute
-{
-
-    char Name[TEXT32];
-    Data data;
-    DataType type;
-    UT_hash_handle hh;
-
-} Attribute;
-
-typedef struct DataModel
-{
-    Attribute *DataModelHead;
-
-} DataModel;
 
 Attribute *makeAttribute(char name[TEXT32])
 {
