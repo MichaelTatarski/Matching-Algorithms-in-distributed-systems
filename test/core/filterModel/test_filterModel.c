@@ -1,6 +1,6 @@
 #include "unity.h"
 #include "filterModel.h"
-#include "../../core/matchingAlgorithms/predicateCountingAlgorithm.h"
+#include "../../core/matchingAlgorithms/predicateCountingAlgorithm.c"
 #include "../../core/filterModel/filterList.h"
 
 Filter *testFilter;
