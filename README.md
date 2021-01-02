@@ -1,20 +1,26 @@
 # NEidI AVA - matching algorithms in PubSub systems
 
-This project is part of the NEiDI course of the winter lecture 2020/2021 at the university of Rostock. The objective of our project is to implement different matching algorithms in a Pub/Sub system and compare them with regard to their time efficiency on a testbed. In order to accomplish that, we will develop a simple data and filter model as well. Our code base follows the [MISRA](https://www.misra.org.uk/), [SEI CERT](https://wiki.sei.cmu.edu/confluence/display/seccode/SEI+CERT+Coding+Standards) and [CWE](https://cwe.mitre.org/) guidelines (look in the _security_analysis_ folder for further information).
+This project is part of the NEiDI course of the winter lecture 2020/2021 at the university of Rostock. The objective of our project is to implement different matching algorithms in a Pub/Sub system and compare them with regard to their time efficiency on a testbed. In order to accomplish that, we will develop a simple data and filter model as well. Our code base attempts to follow the [MISRA](https://www.misra.org.uk/), [SEI CERT](https://wiki.sei.cmu.edu/confluence/display/seccode/SEI+CERT+Coding+Standards) and [CWE](https://cwe.mitre.org/) guidelines (look in the _security_analysis_ folder for further information).
 
 > **Note:** The tool is intended to be used on an embedded Linux system with a GCC compiler. It is not yet supported for other platforms and will probably not compile on other architectures. Please be aware that our tool doesn't provide a command line interface - it merely comes as a simple static library.
 
-## Installation
+## Installation and usage
 
 Even though we are developing with multiple files, we aim for a single-header form of distribution. Hence, you only have to include one single header file to use all the functionality provided by our tool.
 
-Simply follow the steps listed below to integrate the tool into your own project:
+Simply follow the steps listed below to integrate it into your own project:
 
-1.  Copy the **libMADS.a** and the **libMADS.h** file from the release _build/release_ path into your project directory
+1.  Copy the **libMADS.a** and the **libMADS.h** file from the _release folder_ into your project directory
 
 2.  Include the header file into your source code
 
 3.  Compile your program into an object file and link it against the archive file
+
+If you are using gcc as a compiler, you can link your source code (which already has to be compiled in an object file) with this statement:
+
+```
+gcc yourprogram.o libMADS.a
+```
 
 ## Getting Started
 
@@ -94,9 +100,9 @@ to be continued
 
 #### Predicate-Counting algorithm
 
-Now we need to create the data structure for our system. For that we need to call the "setUpPredicateCounting" function. This funtion only needs the filterList, where all subscribtions are stored.
-Next, we need to use our new data structure to use the predicateCounting function. This function is checking which of the given filters inside the filterList is matching to the given notification (newdataModel).
-This function is returning a list of bools, where the index of the boolList is corresponding to the index of the newFilterList.
+Now we need to create the data structure for our system. For that we need to call the "setUpPredicateCounting" function. This function only needs the filterList in which all subscriptions are stored.
+Next, we need to use our new data structure as a parameter to utilize the predicateCounting function. This function is checking which of the given filters inside the filterList is matching to the given notification (newdataModel).
+This function is returning a list of booleans in which the index of the boolList is corresponding to the index of the newFilterList.
 
 Example:
 
