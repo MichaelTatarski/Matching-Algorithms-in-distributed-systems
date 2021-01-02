@@ -138,7 +138,7 @@ Furthermore, here is an overview of the current directory content
 | -------------------: | :------------------------------------------------------------------------------------ |
 |                  src | Source for the MADS tool                                                              |
 |    security_analysis | Classes for the intermediate representation of the parsed Phylum and Rule definitions |
-| benchmark-experiment | Example projects to demonstrate the usage of the tool                                 |
+| benchmark_experiment | Example projects to demonstrate the usage of the tool                                 |
 |                 test | unit tests that are implemented in ceedling                                           |
 
 ## License
