@@ -100,9 +100,9 @@ to be continued
 
 #### Predicate-Counting algorithm
 
-Now we need to create the data structure for our system. For that we need to call the "setUpPredicateCounting" function. This funtion only needs the filterList, where all subscribtions are stored.
-Next, we need to use our new data structure to use the predicateCounting function. This function is checking which of the given filters inside the filterList is matching to the given notification (newdataModel).
-This function is returning a list of bools, where the index of the boolList is corresponding to the index of the newFilterList.
+Now we need to create the data structure for our system. For that we need to call the "setUpPredicateCounting" function. This function only needs the filterList in which all subscriptions are stored.
+Next, we need to use our new data structure as a parameter to utilize the predicateCounting function. This function is checking which of the given filters inside the filterList is matching to the given notification (newdataModel).
+This function is returning a list of booleans in which the index of the boolList is corresponding to the index of the newFilterList.
 
 Example:
 
