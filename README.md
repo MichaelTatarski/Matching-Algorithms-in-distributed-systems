@@ -16,7 +16,7 @@ Simply follow the steps listed below to integrate it into your own project:
 
 3.  Compile your program into an object file and link it against the archive file
 
-If you are using gcc as a compiler, you could link your source code (which already has to be compiled in an object file) with this statement:
+If you are using gcc as a compiler, you can link your source code (which already has to be compiled in an object file) with this statement:
 
 ```
 gcc yourprogram.o libMADS.a
