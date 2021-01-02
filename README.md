@@ -134,12 +134,12 @@ A simple documentation for the APIs can be found inside the **core folder**.
 
 Furthermore, here is an overview of the current directory content
 
-|          folder name | Content                                                                               |
+| folder name          | Content                                                                               |
 | -------------------: | :------------------------------------------------------------------------------------ |
-|                  src | Source for the MADS tool                                                              |
-|    security_analysis | Classes for the intermediate representation of the parsed Phylum and Rule definitions |
+| src                  | Source for the MADS tool                                                              |
+| security_analysis    | Classes for the intermediate representation of the parsed Phylum and Rule definitions |
 | benchmark_experiment | Example projects to demonstrate the usage of the tool                                 |
-|                 test | unit tests that are implemented in ceedling                                           |
+| test                 | unit tests that are implemented in ceedling                                           |
 
 ## License
 
