@@ -124,22 +124,20 @@ Furthermore, pull requests are welcome. For major changes, please open an issue 
 A simple documentation for the APIs can be found inside the **core folder**.
 
 ```
-├── build
 ├── src
 │   ├── core #core folder containing essential functionality
 │   ├── lib
 │   └── utility
-└── test
 ```
 
-Furthermore, here is an overview of the current directory content
+Furthermore, here is an overview of the current directory content:
 
-|          folder name | Content                                              |
-| -------------------: | :--------------------------------------------------- |
-|                  src | Source for the MADS tool                             |
-|    security_analysis | static analyzer results                              |
+| folder name          | Content                                              |
+| :------------------- | :--------------------------------------------------- |
+| src                  | Source for the MADS tool                             |
+| security_analysis    | static analyzer results                              |
 | benchmark_experiment | Example project to demonstrate the usage of the tool |
-|                 test | unit tests that are implemented in ceedling          |
+| test                 | unit tests that are implemented in ceedling          |
 
 ## License
 
